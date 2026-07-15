@@ -91,7 +91,7 @@
       <span class="header-lock-status" onclick="security.triggerPasswordResetOption()">⚙️ Reset PIN</span>
     </header>
 
-    <main class="view-deck">
+    <div class="view-deck">
       <!-- PANEL 1: PIPELINE INGESTION LOG DECK -->
       <section id="pane-feed" class="app-view active-view">
         <div class="export-panel-container">
@@ -144,7 +144,7 @@
           <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
         </form>
       </section>
-    </main>
+    </div>
 
     <!-- FULL SCREEN CURATOR DRAWER WRAPPER -->
     <section class="fullscreen-overlay" id="curation-drawer">
@@ -452,9 +452,18 @@
       },
 
       navigate(target) {
-        this.activeViewName = target; document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view')); document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
-        if (target === 'feed') { document.getElementById('pane-feed').classList.add('active-view'); document.getElementById('nav-feed').classList.add('tab-active'); this.renderFeedTimeline(); } 
-        else if (target === 'intake') { document.getElementById('pane-intake').classList.add('active-view'); document.getElementById('nav-intake').classList.add('tab-active'); }
+        this.activeViewName = target; 
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view')); 
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
+        
+        if (target === 'feed') { 
+          document.getElementById('pane-feed').classList.add('active-view'); 
+          document.getElementById('nav-feed').classList.add('tab-active'); 
+          this.renderFeedTimeline(); 
+        } else if (target === 'intake') { 
+          document.getElementById('pane-intake').classList.add('active-view'); 
+          document.getElementById('nav-intake').classList.add('tab-active'); 
+        }
       },
 
       async renderFeedTimeline() {
