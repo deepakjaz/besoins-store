@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BESOINS - Collection Catalog</title>
+  <style>
+    :root {
+      --bg-primary: #d6d7d9;      /* Light Concrete */
+      --bg-surface: #e5e6e8;      /* Cement Tint */
+      --bg-card: #f0f1f2;         /* Pale Bleached Stone */
+      --bg-active: #c8c9cc;       
+      --text-primary: #1a1a1a;    /* Charcoal Text */
+      --text-muted: #6b6c6e;      
+      --accent: #222222;          /* Matte Black Logo Tint */
+      --border: #b8b9bc;          
+      --warning: #cf7011;         /* Rust Warning */
+    }
+
+    * { 
+      box-sizing: border-box; margin: 0; padding: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Times New Roman", "Didot", serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; }
+    .phone-shell { width: 100%; max-width: 480px; height: 100vh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+    
+    .app-header {
+      height: 75px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.85); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0;
+    }
+    .brand-title-container { display: flex; flex-direction: column; }
+    .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
+    .brand-title-sub { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 600; }
+
+    .view-deck { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; }
+    .feed-container { display: flex; flex-direction: column; gap: 20px; }
+    
+    .feed-card {
+      background: var(--bg-card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; }
+    .card-media-gallery::-webkit-scrollbar { display: none; }
+    .card-media-gallery img { width: 92%; flex-shrink: 0; height: 300px; object-fit: contain; border-radius: 6px; scroll-snap-align: start; background: #e1e2e4; border: 1px solid var(--border); cursor: zoom-in; }
+
+    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.3rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
+    .feed-card-body h3::first-letter { text-transform: uppercase; }
+    .feed-card-body p { font-size: 0.9rem; color: #333333; line-height: 1.5; margin-top: 6px; white-space: pre-wrap; }
+    
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .attribute-chip { background: rgba(0, 0, 0, 0.04); border: 1px solid var(--border); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+
+    .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+    .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .shipping-extra-tag { font-size: 0.8rem; color: var(--warning); font-weight: 700; text-transform: uppercase; }
+    
+    .action-btn { padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; }
+
+    .pincode-widget { margin-top: 6px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; }
+    .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
+    .pincode-input { flex: 1; min-width: 0; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; }
+    .pincode-btn { padding: 0 18px; background: var(--accent); color: var(--bg-surface); font-weight: 700; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 8px 12px; border-radius: 6px; display: block; width: 100%; text-align: left; margin-top: 4px; }
+    .feedback-pending { background: rgba(207, 112, 17, 0.08); color: var(--warning); border: 1px solid rgba(207, 112, 17, 0.15); }
+    .feedback-verified { background: rgba(0, 0, 0, 0.04); color: var(--accent); border: 1px solid var(--border); }
+
+    .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .guess-pill { font-size: 0.7rem; background: var(--bg-active); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #444; border: 1px solid rgba(0,0,0,0.05); }
+
+    .heart-like-toggle { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #b8b9bc; transition: transform 0.12s ease; z-index: 5; }
+    .heart-like-toggle.is-active-favorite { color: #c92a2a; transform: scale(1.15); }
+    .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 5px 12px; border-radius: 4px; color: var(--bg-surface); align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* DYNAMIC FILTER MENUS BAR styling */
+    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+    .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; width: 100%; }
+    .filter-scroller::-webkit-scrollbar { display: none; }
+    .chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); padding: 8px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
+    .chip.chip-active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+    .empty-state { color: var(--text-muted); text-align: center; padding: 60px 20px; font-size: 0.9rem; font-family: serif; font-style: italic; }
+
+    #gallery-theater-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 200; display: none; justify-content: center; align-items: center; touch-action: none; }
+    .theater-close-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 210; display: flex; justify-content: center; align-items: center; }
+    #theater-zoom-viewport { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    #theater-zoom-image { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; transition: transform 0.05s ease-out; }
+    
+    .floating-bag-cta { position: absolute; bottom: 20px; right: 20px; background: var(--accent); color: var(--bg-surface); padding: 14px 22px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50; display: none; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+
+  <div class="phone-shell">
+    <header class="app-header">
+      <div class="brand-title-container">
+        <span class="brand-title-main">Besoins</span>
+        <span class="brand-title-sub">Fashion & More</span>
+      </div>
+    </header>
+
+    <!-- AUTOMATIC SYSTEM SEGMENT FILTER ROW SYSTEM -->
+    <nav class="catalog-navigation-bar">
+      <div class="filter-scroller" id="client-category-scroller">
+        <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
+      </div>
+    </nav>
+
+    <main class="view-deck">
+      <div id="customer-cards-anchor" class="feed-container"></div>
+    </main>
+
+    <button class="floating-bag-cta" id="floating-bag-trigger" onclick="catalog.checkoutBagIntent()">Inquire Selected Items (0)</button>
+  </div>
+
+  <div id="gallery-theater-overlay">
+    <button class="theater-close-btn" onclick="theater.dismiss()">×</button>
+    <div id="theater-zoom-viewport"><img id="theater-zoom-image" src="" alt="Zoom Window"></div>
+  </div>
+
+  <script>
+    const DB = {
+      instance: null,
+      async init() {
+        return new Promise((resolve) => {
+          const req = indexedDB.open('CommerceOS_Storage_Optimized_V5', 1);
+          req.onsuccess = (e) => { this.instance = e.target.result; resolve(); };
+        });
+      },
+      async fetchAllDrafts() {
+        if (!this.instance) await this.init();
+        return new Promise((resolve) => {
+          const trans = this.instance.transaction('drafts', 'readonly');
+          const request = trans.objectStore('drafts').getAll();
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => resolve([]);
+        });
+      },
+      async fetchMedia(draftId) {
+        if (!this.instance) await this.init();
+        return new Promise((resolve) => {
+          const trans = this.instance.transaction('media_blocks', 'readonly');
+          const request = trans.objectStore('media_blocks').get(draftId);
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => resolve(null);
+        });
+      }
+    };
+
+    const theater = {
+      scale: 1, lastScale: 1, startDistance: 0, active: false,
+      init() {
+        const viewNode = document.getElementById('theater-zoom-viewport');
+        if (!viewNode) return;
+        viewNode.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 2) {
+            this.active = true;
+            this.startDistance = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+            this.lastScale = this.scale;
+          }
+        }, { passive: true });
+        viewNode.addEventListener('touchmove', (e) => {
+          if (this.active && e.touches.length === 2) {
+            const currentDist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+            if (this.startDistance > 0) { this.scale = Math.min(Math.max((currentDist / this.startDistance) * this.lastScale, 1), 4); this.applyTransform(); }
+          }
+        }, { passive: true });
+        viewNode.addEventListener('touchend', (e) => { if (e.touches.length < 2) { this.active = false; this.lastScale = this.scale; } }, { passive: true });
+      },
+      applyTransform() { const img = document.getElementById('theater-zoom-image'); if (img) img.style.transform = `scale(${this.scale})`; },
+      launch(src) { this.scale = 1; this.applyTransform(); document.getElementById('theater-zoom-image').src = src; document.getElementById('gallery-theater-overlay').style.display = 'flex'; },
+      dismiss() { document.getElementById('gallery-theater-overlay').style.display = 'none'; }
+    };
+
+    const catalog = {
+      allItems: [], selectedCategory: 'all', likedIDs: [], cachedPincode: '',
+
+      async boot() {
+        theater.init();
+        this.likedIDs = JSON.parse(localStorage.getItem('Besoins_Likes_Cache') || '[]');
+        this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
+        await DB.init();
+        await this.loadTimelineData();
+      },
+
+      async loadTimelineData() {
+        const data = await DB.fetchAllDrafts();
+        this.allItems = data.filter(d => d.status === 'Ready'); // Enforce strict production shielding layer
+        this.buildCategoryFiltersUI();
+        await this.renderFeedTimeline();
+        this.updateBagFloatingCTAState();
+      },
+
+      buildCategoryFiltersUI() {
+        const container = document.getElementById('client-category-scroller');
+        const categories = new Set();
+        this.allItems.forEach(item => {
+          if(item.category && item.category.trim()) categories.add(item.category.trim().toLowerCase());
+          if(item.collection && item.collection.trim()) categories.add(item.collection.trim().toLowerCase());
+        });
+
+        // Clear dynamic elements, keep 'All'
+        container.innerHTML = `<div class="chip ${this.selectedCategory === 'all' ? 'chip-active' : ''}" onclick="catalog.filterCategory('all', this)">All Products</div>`;
+        
+        categories.forEach(cat => {
+          const div = document.createElement('div');
+          div.className = `chip ${this.selectedCategory === cat ? 'chip-active' : ''}`;
+          div.innerText = cat;
+          div.onclick = () => this.filterCategory(cat, div);
+          container.appendChild(div);
+        });
+      },
+
+      filterCategory(target, element) {
+        document.querySelectorAll('.filter-scroller .chip').forEach(c => c.classList.remove('chip-active'));
+        element.classList.add('chip-active');
+        this.selectedCategory = target;
+        this.renderFeedTimeline();
+      },
+
+      async renderFeedTimeline() {
+        const anchor = document.getElementById('customer-cards-anchor');
+        if (!anchor) return;
+
+        const filtered = this.allItems.filter(item => {
+          if (this.selectedCategory === 'all') return true;
+          const catMatch = item.category && item.category.toLowerCase().trim() === this.selectedCategory;
+          const colMatch = item.collection && item.collection.toLowerCase().trim() === this.selectedCategory;
+          return catMatch || colMatch;
+        });
+
+        anchor.innerHTML = '';
+        if (filtered.length === 0) {
+          anchor.innerHTML = `<div class="empty-state"><h3>Collection processing updates.</h3><p>Check back shortly.</p></div>`;
+          return;
+        }
+
+        filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+        for (const d of filtered) {
+          if (!d.customAttributes) d.customAttributes = {};
+          const card = document.createElement('div');
+          card.className = 'feed-card';
+          const isFav = this.likedIDs.includes(d.id);
+
+          let chipsHtml = '';
+          for (const [key, value] of Object.entries(d.customAttributes)) {
+            if (value) chipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
+          }
+
+          let mediaGalleryHtml = '';
+          if (d.has_images) {
+            const block = await DB.fetchMedia(d.id);
+            if (block && block.images && block.images.length > 0) {
+              const imgs = block.images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
+              mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
+            }
+          }
+
+          // DYNAMIC RATE GUESS HELPER GENERATOR MATRIX
+          let guessPillsHtml = '';
+          const matrices = Object.keys(d.pincode_rates || {});
+          if (matrices.length > 0) {
+            guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.65rem; color:var(--text-muted);">Quick Selection:</span>` +
+              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
+          }
+
+          card.innerHTML = `
+            ${mediaGalleryHtml}
+            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="catalog.handleLikeTap('${d.id}', this)">♥</div>
+            <div class="brand-pill">Exclusive Catalog</div>
+            <div class="feed-card-body">
+              <h3>${d.title}</h3>
+              <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
+              <div class="dynamic-attributes-container">${chipsHtml}</div>
+            </div>
+            <div class="feed-card-pricing" id="price-box-${d.id}">
+              <div style="display:flex; align-items:baseline; gap:6px;">
+                 <span class="price-tag">₹${d.consumerPrice || '0'}</span>
+                 <span class="shipping-extra-tag">+ Shipping Extra</span>
+              </div>
+            </div>
+            
+            <div class="pincode-widget">
+              <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area</label>
+              <div class="pincode-row-inputs">
+                <input type="text" class="pincode-input" id="input-pin-${d.id}" value="${this.cachedPincode}" placeholder="6-digit Pincode">
+                <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${d.id}')">Verify</button>
+              </div>
+              ${guessPillsHtml}
+              <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
+            </div>
+
+            <button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">💬 Order via WhatsApp</button>
+          `;
+          anchor.appendChild(card);
+          if(this.cachedPincode) this.verifyPincodeTrigger(d.id); // Hydrate instant states
+        }
+      },
+
+      autoFillPincodeWidget(id, code) {
+        const input = document.getElementById(`input-pin-${id}`);
+        if(input) { input.value = code; this.verifyPincodeTrigger(id); }
+      },
+
+      async verifyPincodeTrigger(id) {
+        const code = document.getElementById(`input-pin-${id}`).value.trim();
+        const feedback = document.getElementById(`feedback-pin-${id}`);
+        const priceBox = document.getElementById(`price-box-${id}`);
+        if(!code || code.length < 5) return;
+
+        const d = this.allItems.find(item => item.id === id);
+        if(!d) return;
+
+        localStorage.setItem('Besoins_Active_Pincode', code);
+        this.cachedPincode = code;
+        feedback.style.display = "block";
+
+        const table = d.pincode_rates || {};
+        if (table[code] !== undefined) {
+          const fee = parseFloat(table[code]) || 0;
+          feedback.className = "pincode-feedback feedback-verified";
+          feedback.innerText = `✓ Standard Route Verified: Shipping ₹${fee}`;
+          priceBox.innerHTML = `<span class="price-tag">₹${(parseFloat(d.consumerPrice) || 0) + fee} Total</span> <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">(Inc. Shipping)</span>`;
+        } else {
+          feedback.className = "pincode-feedback feedback-pending";
+          feedback.innerText = "⏳ Custom rate requested. Proceed to checkout to verify route ETA.";
+          priceBox.innerHTML = `<div style="display:flex; align-items:baseline; gap:6px;"><span class="price-tag">₹${d.consumerPrice}</span><span class="shipping-extra-tag">+ Shipping Extra</span></div>`;
+          
+          // Log fallback search query event into local store buffer safely
+          let requests = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+          if(!requests[id]) requests[id] = [];
+          if(!requests[id].includes(code)) requests[id].push(code);
+          localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(requests));
+        }
+      },
+
+      handleLikeTap(id, element) {
+        if(this.likedIDs.includes(id)) { this.likedIDs = this.likedIDs.filter(x => x !== id); element.classList.remove('is-active-favorite'); } 
+        else { this.likedIDs.push(id); element.classList.add('is-active-favorite'); }
+        localStorage.setItem('Besoins_Likes_Cache', JSON.stringify(this.likedIDs));
+        this.updateBagFloatingCTAState();
+      },
+
+      updateBagFloatingCTAState() {
+        const cta = document.getElementById('floating-bag-trigger');
+        if (!cta) return;
+        if(this.likedIDs.length > 0) { cta.innerText = `Inquire Selected Items (${this.likedIDs.length})`; cta.style.display = 'block'; } 
+        else { cta.style.display = 'none'; }
+      },
+
+      triggerDirectWhatsAppInquiry(id) {
+        const d = this.allItems.find(x => x.id === id); if(!d) return;
+        let text = `Hi BESOINS! I am interested in ordering this design variant:\n\n📌 *Product:* ${d.title}\n🆔 *ID:* \`${d.id}\`\n💰 *Price:* ₹${d.consumerPrice} + Shipping\n`;
+        if (this.cachedPincode) text += `📍 *Delivery Pincode:* ${this.cachedPincode}\n`;
+        window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
+      },
+
+      async checkoutBagIntent() {
+        if(this.likedIDs.length === 0) return;
+        let text = `Hi BESOINS! I have curated my selection line queue:\n`;
+        if(this.cachedPincode) text += `📍 *Shipping Location Pincode:* ${this.cachedPincode}\n`;
+        text += `\n-----------------------\n`;
+        for (const id of this.likedIDs) {
+          const d = this.allItems.find(x => x.id === id);
+          if (d) text += `▪️ *${d.title}* (ID: \`${d.id}\`) - ₹${d.consumerPrice}\n`;
+        }
+        text += `\nPlease check custom availability and dispatch slots for me. Thanks!`;
+        window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => catalog.boot());
+  </script>
+</body>
+</html>

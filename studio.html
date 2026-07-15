@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BESOINS - Studio Hub Panel</title>
+  <style>
+    :root {
+      --bg-primary: #d6d7d9; --bg-surface: #e5e6e8; --bg-card: #f0f1f2; --bg-active: #c8c9cc;
+      --text-primary: #1a1a1a; --text-muted: #6b6c6e; --accent: #222222; --danger: #b3261e;
+      --border: #b8b9bc; --warning: #cf7011; --info: #2b6cb0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; }
+    .phone-shell { width: 100%; max-width: 480px; height: 100vh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+    
+    .app-header { height: 70px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.9); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0; }
+    .header-lock-status { font-size: 0.7rem; background: var(--accent); color: #fff; padding: 4px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+    
+    .view-deck { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 110px; -webkit-overflow-scrolling: touch; }
+    .app-view { display: none; } .app-view.active-view { display: block; }
+    .feed-container { display: flex; flex-direction: column; gap: 20px; }
+    
+    .feed-card { background: var(--bg-card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; position: relative; }
+    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .card-media-gallery img { width: 92%; flex-shrink: 0; height: 180px; object-fit: contain; background: #e1e2e4; border-radius: 6px; border: 1px solid var(--border); }
+
+    .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-top: 4px; }
+    .action-btn { padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+    .btn-reject { background: #f2dede; color: var(--danger); border: 1px solid rgba(179,38,30,0.15); }
+    .btn-edit-curate { background: var(--bg-active); color: var(--accent); border: 1px solid var(--border); }
+
+    .intake-meta-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; font-weight: 700; }
+    select, textarea, input.native-input { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); padding: 14px; font-size: 0.95rem; border-radius: 8px; outline: none; }
+
+    .export-panel-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .export-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+    .export-table th { text-align: left; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .export-table td { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+
+    .fullscreen-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-surface); z-index: 100; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.22s ease-out; }
+    .fullscreen-overlay.overlay-open { transform: translateY(0) !important; }
+    .overlay-header { height: 70px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .overlay-body { flex: 1; overflow-y: auto; padding: 16px; }
+    .editor-actions-bar { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface); display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+
+    .drawer-media-uploader { background: var(--bg-card); border: 1px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer; }
+    .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: contain; background:#e1e2e4; border-radius: 6px; border: 1px solid var(--border); }
+
+    .matrix-editor-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    .matrix-editor-table th { text-align: left; font-size: 0.7rem; color: var(--text-muted); padding-bottom: 6px; }
+    .matrix-editor-table td { padding: 4px 0; }
+    .remove-matrix-row-btn { background: none; border: none; color: var(--danger); font-size: 1.4rem; cursor: pointer; padding: 0 8px; }
+    .add-matrix-row-trigger { background: var(--bg-surface); border: 1px dashed var(--border); padding: 12px; border-radius: 6px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; }
+
+    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(229, 230, 232, 0.95); border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; z-index: 20; backdrop-filter: blur(20px); }
+    .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; font-size: 0.65rem; font-weight: 700; gap: 4px; text-transform: uppercase; }
+    .tab-item.tab-active { color: var(--accent); }
+
+    /* GATEWAY SECURITY CURTAIN ELEMENT OVERLAYS */
+    #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--bg-surface); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; transition: transform 0.3s ease-out; }
+    .security-card-box { background:var(--bg-card); padding:30px; border-radius:12px; border:1px solid var(--border); width:100%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.05); }
+
+    .chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+    .chip.chip-active { background: var(--accent); color: var(--bg-surface); }
+    .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; width: 100%; scrollbar-width: none; }
+    .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border); padding: 12px; border-radius: 10px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <!-- THE PROTECTION ENTRY GATEWAY SHIELD -->
+  <div id="studio-security-shield-curtain">
+    <div class="security-card-box">
+      <h2 style="font-family:serif; letter-spacing:1px; margin-bottom:6px; text-transform:uppercase;">Studio Security</h2>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Verification sequence required for workspace decryption.</p>
+      <input type="password" id="gateway-pin-field" class="native-input" placeholder="Enter Access Password Key" style="text-align:center; margin-bottom:14px; letter-spacing:4px;">
+      <button class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%;" onclick="security.verifyPINAttempt()">Unlock Framework</button>
+    </div>
+  </div>
+
+  <div class="phone-shell">
+    <header class="app-header">
+      <div style="display:flex; flex-direction:column;">
+        <span style="font-family:serif; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px; font-weight:bold;">Studio Panel</span>
+        <span style="font-size:0.6rem; text-transform:uppercase; color:var(--text-muted); font-weight:bold;">Besoins Core Management</span>
+      </div>
+      <span class="header-lock-status" onclick="security.triggerPasswordResetOption()">⚙️ Reset PIN</span>
+    </header>
+
+    <main class="view-deck">
+      <!-- PANEL 1: PIPELINE INGESTION LOG DECK -->
+      <section id="pane-feed" class="app-view active-view">
+        <div class="export-panel-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">📦 Client Pincode Request Backlog Queue</h4>
+            <button class="chip" style="font-size:0.65rem; padding:4px 8px; background:var(--accent); color:var(--bg-surface); border:none;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
+          </div>
+          <table class="export-table">
+            <thead>
+              <tr><th>Sourced From</th><th>Item Heading</th><th>Pincodes Logged</th></tr>
+            </thead>
+            <tbody id="export-queue-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="filter-scroller">
+          <div class="chip chip-active" data-status-filter="all">All Workspace</div>
+          <div class="chip" data-status-filter="Imported">New Imports</div>
+          <div class="chip" data-status-filter="Reviewing">Reviewing</div>
+          <div class="chip" data-status-filter="Ready">Ready to Share</div>
+          <button type="button" class="chip" style="margin-left:auto; background:var(--bg-card);" onclick="admin.showSupplierManager()">⚙️ Factories</button>
+        </div>
+        <div id="feed-cards-anchor" class="feed-container" style="margin-top: 16px;"></div>
+      </section>
+
+      <!-- PANEL 2: RAW TEXT BATCH CHAT STREAM PARSER ENGINE -->
+      <section id="pane-intake" class="app-view">
+        <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
+          <div class="intake-meta-row">
+            <div>
+              <label class="form-label">Sourcing Supplier Factory</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <select id="intake-supplier-select" style="flex:1; height:46px;"></select>
+                <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Default Markup Margin</label>
+              <select id="intake-margin-preset" style="height:46px;">
+                <option value="1.25">Standard (+25%)</option>
+                <option value="1.20">High Ticket (+20%)</option>
+                <option value="1.30">Premium (+30%)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Raw Sourced Message Content Block</label>
+            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats... Keyword clean triggers execute automatically."></textarea>
+          </div>
+          <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- FULL SCREEN CURATOR DRAWER WRAPPER -->
+    <section class="fullscreen-overlay" id="curation-drawer">
+      <div class="overlay-header">
+        <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Curate Collection Master</h2>
+        <button type="button" class="chip" onclick="admin.hideCuratorDrawer()">Minimize</button>
+      </div>
+      <div class="overlay-body">
+        <form id="curate-form" onsubmit="event.preventDefault();">
+          <input type="hidden" id="curate-draft-id">
+          
+          <div class="drawer-media-uploader" onclick="document.getElementById('drawer-hidden-file-input').click();">
+            <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase;">📸 Upload Variant Texture Imagery</span>
+            <input type="file" id="drawer-hidden-file-input" accept="image/*" multiple style="display:none;" onchange="admin.handleDrawerImageUpload(event)">
+            <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">Customer Display Title Heading</label>
+            <input type="text" id="curate-title" class="native-input" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div><label class="form-label">Factory Base Cost (₹)</label><input type="number" id="curate-base-price" class="native-input" oninput="admin.syncMarkupMath()"></div>
+            <div><label class="form-label">Listed Retail Price (₹)</label><input type="number" id="curate-consumer-price" class="native-input"></div>
+          </div>
+
+          <!-- REGIONAL SHIPPING OVERRIDES PROFILE TABLE LAYER -->
+          <div class="form-group" style="margin-bottom:16px; border:1px solid var(--border); padding:12px; border-radius:8px; background:rgba(0,0,0,0.01);">
+            <label class="form-label" style="font-weight:700;">Approved Regional Pincode Shipping Matrices</label>
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <input type="text" id="matrix-pincode-input" class="native-input" placeholder="Pincode" style="padding:8px; height:36px;">
+              <input type="number" id="matrix-rate-input" class="native-input" placeholder="Rate (₹)" style="padding:8px; height:36px;">
+              <button type="button" class="chip" style="background:var(--accent); color:#fff;" onclick="admin.addPincodeOverrideRow()">Add</button>
+            </div>
+            <table class="matrix-editor-table">
+              <thead><tr><th>Pincode</th><th>Delivery Fee</th><th style="width:40px;"></th></tr></thead>
+              <tbody id="drawer-pincode-matrix-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">Clean White-Labeled Client Description</label>
+            <textarea id="curate-description" rows="4"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">Technical Product Specifications Dictionary</label>
+            <table class="matrix-editor-table">
+              <thead><tr><th>Spec Key</th><th>Value Mapping</th><th style="width:40px;"></th></tr></thead>
+              <tbody id="drawer-attributes-tbody"></tbody>
+            </table>
+            <div class="add-matrix-row-trigger" onclick="admin.appendBlankAttributeRow()">+ Append Specification Field</div>
+          </div>
+
+          <div class="intake-meta-row">
+            <div><label class="form-label">Category Chip Tab</label><input type="text" id="curate-category" class="native-input"></div>
+            <div><label class="form-label">Marketing Collection</label><input type="text" id="curate-collection" class="native-input"></div>
+          </div>
+          <div class="intake-meta-row">
+            <div>
+              <label class="form-label">Pipeline Workflow Stage</label>
+              <select id="curate-status" style="height:44px;"><option value="Imported">Imported</option><option value="Reviewing">Reviewing</option><option value="Ready">Ready to Share</option></select>
+            </div>
+            <div>
+              <label class="form-label">Triage Decision Control</label>
+              <select id="curate-decision" style="height:44px;"><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Rejected">Rejected</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Raw Sourced Supplier Text History Log</label><textarea id="curate-raw-text" rows="4" readonly style="font-family:monospace; font-size:0.75rem; opacity:0.6;"></textarea></div>
+        </form>
+      </div>
+      <div class="editor-actions-bar">
+        <button type="button" class="action-btn btn-reject" onclick="admin.drawerRejectSkip()">Skip/Purge</button>
+        <button type="button" class="action-btn" style="background:var(--accent); color:#fff;" onclick="admin.drawerSaveAndTrain()">Commit Changes</button>
+      </div>
+    </section>
+
+    <!-- SUPPLIER DICTIONARY PANEL -->
+    <section class="fullscreen-overlay" id="supplier-manager-drawer">
+      <div class="overlay-header">
+        <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Sourcing Factories</h2>
+        <button type="button" class="chip" onclick="admin.hideSupplierManager()">Close</button>
+      </div>
+      <div class="overlay-body">
+        <div style="background:var(--bg-card); border:1px solid var(--border); padding:14px; border-radius:8px; margin-bottom:16px;">
+          <label class="form-label">Register Factory Pipeline Name</label>
+          <div style="display:flex; gap:8px; margin-top:6px;">
+            <input type="text" id="manager-new-supplier-name" class="native-input" placeholder="e.g. Surat HQ" style="height:44px; padding:10px;">
+            <button type="button" class="chip" style="background:var(--accent); color:#fff; height:44px;" onclick="admin.addSupplierFromManager()">Register</button>
+          </div>
+        </div>
+        <label class="form-label">Active Sourcing Connections Directory</label>
+        <div id="supplier-directory-list" style="margin-top:8px;"></div>
+      </div>
+    </section>
+
+    <nav class="bottom-tabs">
+      <div class="tab-item tab-active" id="nav-feed" onclick="admin.navigate('feed')">📥 Workspace Deck</div>
+      <div class="tab-item" id="nav-intake" onclick="admin.navigate('intake')">➕ Stream Ingest</div>
+    </nav>
+  </div>
+
+  <script>
+    const security = {
+      vaultKey: 'Besoins_Master_Secure_PIN_V5',
+      verifyPINAttempt() {
+        const pin = document.getElementById('gateway-pin-field').value.trim();
+        const master = localStorage.getItem(this.vaultKey) || '1156'; 
+        if (pin === master) {
+          document.getElementById('studio-security-shield-curtain').style.transform = 'translateY(-100%)';
+          setTimeout(() => {
+            const node = document.getElementById('studio-security-shield-curtain');
+            if(node) node.remove();
+          }, 300);
+          admin.start();
+        } else { alert("Decryption verification argument mismatch error."); }
+      },
+      triggerPasswordResetOption() {
+        const old = prompt("Specify the active running operational password credentials:");
+        const master = localStorage.getItem(this.vaultKey) || '1156';
+        if (old !== master) return alert("Current credential loop check signature verified as invalid.");
+        const fresh = prompt("Type your new personal replacement master workspace PIN:");
+        if (!fresh || fresh.trim().length < 2) return alert("New credentials size metrics bound threshold anomaly.");
+        localStorage.setItem(this.vaultKey, fresh.trim());
+        alert("Master security encryption passphrase updated successfully.");
+      }
+    };
+
+    const DB = {
+      instance: null,
+      init() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open('CommerceOS_Storage_Optimized_V5', 1);
+          req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('suppliers')) d.createObjectStore('suppliers', { keyPath: 'id' });
+            if (!d.objectStoreNames.contains('rules')) d.createObjectStore('rules', { keyPath: 'supplierId' });
+            if (!d.objectStoreNames.contains('drafts')) d.createObjectStore('drafts', { keyPath: 'id' });
+            if (!d.objectStoreNames.contains('media_blocks')) d.createObjectStore('media_blocks', { keyPath: 'draftId' });
+          };
+          req.onsuccess = (e) => { this.instance = e.target.result; resolve(); };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      },
+      async operation(store, mode, method, payload = null) {
+        if (!this.instance) await this.init();
+        return new Promise((resolve, reject) => {
+          const trans = this.instance.transaction(store, mode);
+          const objStore = trans.objectStore(store);
+          const request = payload !== null ? objStore[method](payload) : objStore[method]();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+    };
+
+    const LearningParser = {
+      async executeParse(supplierId, rawText) {
+        if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {} };
+        let rule = null; try { rule = await DB.operation('rules', 'readonly', 'get', supplierId); } catch (e){}
+        if (!rule) { rule = { supplierId: supplierId, priceAnchors: ['rate :', 'rate:', 'rate', 'price', 'prc', 'cost'], attributeAnchors: { 'fabric': ['fabric', 'fabrics', 'top :'], 'sizes': ['size', 'size:', 'sizes'], 'weight': ['weight', 'weight :', 'weight:'] } }; }
+
+        const lines = rawText.split('\n').map(l => l.trim());
+        let detectedPrice = 0; let customAttributes = {};
+
+        for (const line of lines) {
+          if (!line) continue; const lowerLine = line.toLowerCase();
+          for (const anchor of rule.priceAnchors) {
+            if (lowerLine.includes(anchor)) {
+              const segment = lowerLine.split(anchor)[1] || ''; const match = segment.match(/\d+/);
+              if (match) { detectedPrice = parseFloat(match[0]); break; }
+            }
+          }
+        }
+
+        for (const [attrKey, anchors] of Object.entries(rule.attributeAnchors)) {
+          for (const line of lines) {
+            if (!line) continue; const lowerLine = line.toLowerCase();
+            for (const anchor of anchors) {
+              if (lowerLine.includes(anchor)) {
+                let derivedVal = line.split(new RegExp(anchor, 'i'))[1] || ''; derivedVal = derivedVal.replace(/^[:\-\s]+/, '').trim();
+                if (derivedVal) { customAttributes[attrKey] = derivedVal; break; }
+              }
+            }
+            if (customAttributes[attrKey]) break;
+          }
+        }
+
+        const sliceLines = lines.slice(1);
+        const customerDescription = sliceLines.filter(line => {
+          const lower = line.toLowerCase();
+          return !(lower.includes('rate') || lower.includes('rs') || lower.includes('₹') || lower.includes('$') || lower.includes('+') || lower.includes('price') || lower.includes('/-') || lower.includes('ship'));
+        }).join('\n');
+
+        return { derivedPrice: detectedPrice, customerDescription, customAttributes };
+      }
+    };
+
+    const admin = {
+      currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, temporaryImagesCache: [],
+
+      async start() {
+        try {
+          await DB.init();
+          await this.seedSuppliersData();
+          await this.loadSuppliersSelectionUI();
+          await this.renderFeedTimeline();
+          this.initFilterChips();
+        } catch (err) { console.error(err); }
+      },
+
+      async seedSuppliersData() {
+        const data = await DB.operation('suppliers', 'readonly', 'getAll');
+        if (data.length === 0) {
+          const seed = [{ id: 'sup_1', name: 'Kumbh Textiles (Surat HQ)' }, { id: 'sup_2', name: 'Shabeena Embroidery Wholesalers' }];
+          for (const s of seed) await DB.operation('suppliers', 'readwrite', 'put', s);
+        }
+        const freshList = await DB.operation('suppliers', 'readonly', 'getAll');
+        this.suppliersCache = {}; freshList.forEach(s => this.suppliersCache[s.id] = s.name);
+      },
+
+      async loadSuppliersSelectionUI() {
+        const list = await DB.operation('suppliers', 'readonly', 'getAll');
+        const selectEl = document.getElementById('intake-supplier-select');
+        if (selectEl) { selectEl.innerHTML = list.map(s => `<option value="${s.id}" ${s.id === this.stickySupplierId ? 'selected' : ''}>${s.name}</option>`).join(''); }
+      },
+
+      initFilterChips() {
+        document.querySelectorAll('[data-status-filter]').forEach(chip => {
+          chip.addEventListener('click', (e) => {
+            document.querySelectorAll('[data-status-filter]').forEach(c => c.classList.remove('chip-active'));
+            e.target.classList.add('chip-active'); this.currentFilter = e.target.dataset.statusFilter;
+            this.renderFeedTimeline();
+          });
+        });
+      },
+
+      async promptQuickAddSupplier() {
+        const name = prompt("Type factory pipeline registry index name:"); if (!name || !name.trim()) return;
+        const newId = 'sup_' + Date.now(); await DB.operation('suppliers', 'readwrite', 'put', { id: newId, name: name.trim() });
+        this.suppliersCache[newId] = name.trim(); this.stickySupplierId = newId;
+        await this.loadSuppliersSelectionUI(); await this.renderFeedTimeline();
+      },
+
+      async showSupplierManager() { document.getElementById('supplier-manager-drawer').classList.add('overlay-open'); await this.renderSupplierDirectoryList(); },
+      hideSupplierManager() { document.getElementById('supplier-manager-drawer').classList.remove('overlay-open'); },
+
+      async renderSupplierDirectoryList() {
+        const directoryContainer = document.getElementById('supplier-directory-list'); if (!directoryContainer) return;
+        const list = await DB.operation('suppliers', 'readonly', 'getAll'); directoryContainer.innerHTML = '';
+        list.forEach(sup => {
+          const div = document.createElement('div'); div.className = 'supplier-list-item';
+          div.innerHTML = `<div><span style="font-weight:bold;">${sup.name}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
+          directoryContainer.appendChild(div);
+        });
+      },
+
+      async addSupplierFromManager() {
+        const nameInput = document.getElementById('manager-new-supplier-name'); const name = nameInput ? nameInput.value.trim() : ''; if (!name) return;
+        const newId = 'sup_' + Date.now(); await DB.operation('suppliers', 'readwrite', 'put', { id: newId, name });
+        this.suppliersCache[newId] = name; nameInput.value = ''; await this.renderSupplierDirectoryList(); await this.loadSuppliersSelectionUI();
+      },
+
+      async deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; await DB.operation('suppliers', 'readwrite', 'delete', id); delete this.suppliersCache[id]; await this.renderSupplierDirectoryList(); await this.loadSuppliersSelectionUI(); },
+
+      handleDrawerImageUpload(e) {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+          const reader = new FileReader(); reader.onload = (event) => { this.temporaryImagesCache.push(event.target.result); this.renderDrawerImagesPreviewUI(); };
+          reader.readAsDataURL(file);
+        });
+      },
+
+      renderDrawerImagesPreviewUI() {
+        const anchor = document.getElementById('drawer-media-preview-anchor'); if (!anchor) return; anchor.innerHTML = '';
+        this.temporaryImagesCache.forEach((imgSrc, idx) => {
+          const img = document.createElement('img'); img.src = imgSrc; img.className = 'drawer-preview-thumb';
+          img.onclick = (e) => { e.stopPropagation(); admin.temporaryImagesCache.splice(idx, 1); admin.renderDrawerImagesPreviewUI(); };
+          anchor.appendChild(img);
+        });
+      },
+
+      async handleIntakeSubmit(e) {
+        e.preventDefault();
+        try {
+          const supplierId = document.getElementById('intake-supplier-select').value; this.stickySupplierId = supplierId;
+          const rawTextEl = document.getElementById('intake-raw-text'); const rawText = rawTextEl ? rawTextEl.value.trim() : '';
+          const baseMargin = parseFloat(document.getElementById('intake-margin-preset').value); if (!rawText) return;
+
+          const draftId = 'drf_' + crypto.randomUUID();
+          const parsed = await LearningParser.executeParse(supplierId, rawText);
+          const lines = rawText.split('\n').filter(l => l.trim().length > 0);
+          const inferredTitle = lines[0] ? lines[0].replace(/[^\w\s]/gi, '').substring(0, 35) : 'Batch Item Design';
+
+          await DB.operation('drafts', 'readwrite', 'put', {
+            id: draftId, supplierId, title: inferredTitle, description: parsed.customerDescription, rawText: rawText,
+            basePrice: parsed.derivedPrice || 0, consumerPrice: parsed.derivedPrice ? Math.round(parsed.derivedPrice * baseMargin) : 0,
+            pincode_rates: {}, has_images: false, customAttributes: parsed.customAttributes || {},
+            category: '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+          });
+
+          rawTextEl.value = ''; await this.renderFeedTimeline(); this.navigate('feed');
+        } catch (err) { alert(err.message); }
+      },
+
+      navigate(target) {
+        this.activeViewName = target; document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view')); document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
+        if (target === 'feed') { document.getElementById('pane-feed').classList.add('active-view'); document.getElementById('nav-feed').classList.add('tab-active'); this.renderFeedTimeline(); } 
+        else if (target === 'intake') { document.getElementById('pane-intake').classList.add('active-view'); document.getElementById('nav-intake').classList.add('tab-active'); }
+      },
+
+      async renderFeedTimeline() {
+        if (!DB.instance) return;
+        const anchor = document.getElementById('feed-cards-anchor'); if (!anchor) return;
+        const drafts = await DB.operation('drafts', 'readonly', 'getAll');
+        
+        const tbody = document.getElementById('export-queue-tbody');
+        if(tbody) {
+          tbody.innerHTML = '';
+          const backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+          let hasRows = false;
+          for(const [draftId, pinCodes] of Object.entries(backlog)) {
+            const match = drafts.find(x => x.id === draftId);
+            if(match && pinCodes.length > 0) {
+              hasRows = true; const tr = document.createElement('tr');
+              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
+              tbody.appendChild(tr);
+            }
+          }
+          if(!hasRows) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes fully verified clear.</td></tr>`;
+        }
+
+        const filtered = drafts.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
+        const counterNode = document.getElementById('feed-badge-counter');
+        if (counterNode) counterNode.innerText = filtered.length; 
+        anchor.innerHTML = '';
+        if (filtered.length === 0) { anchor.innerHTML = `<div class="empty-state"><h3>Pipeline Stream Clear</h3></div>`; return; }
+        filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+        for (const d of filtered) {
+          if (!d.customAttributes) d.customAttributes = {};
+          const card = document.createElement('div'); card.className = 'feed-card'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
+
+          let mediaGalleryHtml = '';
+          if (d.has_images) {
+            const mediaBlock = await DB.operation('media_blocks', 'readonly', 'get', d.id);
+            if (mediaBlock && mediaBlock.images && mediaBlock.images.length > 0) {
+              const imgs = mediaBlock.images.map(src => `<img src="${src}" alt="Pattern">`).join('');
+              mediaGalleryHtml = `<div class="card-media-gallery" style="display:flex; gap:6px; overflow-x:auto;">${imgs}</div>`;
+            }
+          }
+
+          card.innerHTML = `
+            ${mediaGalleryHtml}
+            <div class="feed-card-header"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
+            <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
+            <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
+            <div class="feed-quick-actions">
+              <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${d.id}')">Purge</button>
+              <button type="button" class="action-btn btn-edit-curate" onclick="admin.showCuratorDrawer('${d.id}')">Curate</button>
+            </div>
+          `;
+          anchor.appendChild(card);
+        }
+      },
+
+      copyBulkPincodeIntent() {
+        const backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+        let txt = "Hi Factory Desk! Please verify shipping logistics parameters for these lookups:\n\n";
+        let hasData = false;
+        for(const [id, codes] of Object.entries(backlog)) { if(codes.length > 0) { hasData = true; txt += `▪️ Item Reference Slot: [${id}]\n📍 Route Target Pincodes: ${codes.join(', ')}\n\n`; } }
+        if(!hasData) return alert("Log backlog trace empty.");
+        navigator.clipboard.writeText(txt); alert("Log ticket copied to system buffer clipboard.");
+      },
+
+      async fastSkipItem(id) {
+        if(!confirm("Purge asset block context permanently?")) return;
+        await DB.operation('drafts', 'readwrite', 'delete', id); await DB.operation('media_blocks', 'readwrite', 'delete', id);
+        
+        let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+        delete backlog[id]; localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(backlog));
+        this.renderFeedTimeline();
+      },
+
+      async showCuratorDrawer(id) {
+        const d = await DB.operation('drafts', 'readonly', 'get', id); if (!d) return;
+        this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
+        this.temporaryImagesCache = [];
+        if (d.has_images) { const block = await DB.operation('media_blocks', 'readonly', 'get', id); if (block && block.images) this.temporaryImagesCache = [...block.images]; }
+
+        document.getElementById('curate-draft-id').value = d.id;
+        document.getElementById('curate-title').value = d.title || '';
+        document.getElementById('curate-base-price').value = d.basePrice || '';
+        document.getElementById('curate-consumer-price').value = d.consumerPrice || '';
+        document.getElementById('curate-description').value = d.description || '';
+        document.getElementById('curate-category').value = d.category || '';
+        document.getElementById('curate-collection').value = d.collection || '';
+        document.getElementById('curate-status').value = d.status;
+        document.getElementById('curate-decision').value = d.decision;
+        document.getElementById('curate-raw-text').value = d.rawText || '';
+
+        this.renderDrawerPincodeMatrixUI(); this.renderDrawerImagesPreviewUI();
+
+        const tbody = document.getElementById('drawer-attributes-tbody'); tbody.innerHTML = '';
+        if (d.customAttributes) { for (const [key, val] of Object.entries(d.customAttributes)) { this.injectMatrixRowHTML(key, val); } }
+        document.getElementById('curation-drawer').classList.add('overlay-open');
+      },
+
+      renderDrawerPincodeMatrixUI() {
+        const tbody = document.getElementById('drawer-pincode-matrix-tbody'); tbody.innerHTML = '';
+        for (const [pin, rate] of Object.entries(this.temporaryPincodeCache)) {
+          const tr = document.createElement('tr'); tr.innerHTML = `<td><b>${pin}</b></td><td>₹${rate}</td><td><button type="button" class="remove-matrix-row-btn" onclick="admin.deletePincodeOverrideRow('${pin}')">×</button></td>`;
+          tbody.appendChild(tr);
+        }
+      },
+
+      addPincodeOverrideRow() {
+        const pinInput = document.getElementById('matrix-pincode-input'); const rateInput = document.getElementById('matrix-rate-input');
+        const pin = pinInput.value.trim(); const rate = parseFloat(rateInput.value) || 0; if (!pin || rate <= 0) return;
+        this.temporaryPincodeCache[pin] = rate; pinInput.value = ''; rateInput.value = ''; this.renderDrawerPincodeMatrixUI();
+        
+        let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+        if(backlog[this.activeDraftRecord.id]) {
+          backlog[this.activeDraftRecord.id] = backlog[this.activeDraftRecord.id].filter(x => x !== pin);
+          localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(backlog));
+        }
+      },
+
+      deletePincodeOverrideRow(pin) { delete this.temporaryPincodeCache[pin]; this.renderDrawerPincodeMatrixUI(); },
+
+      injectMatrixRowHTML(key = '', val = '') {
+        const tbody = document.getElementById('drawer-attributes-tbody'); const tr = document.createElement('tr'); tr.className = 'matrix-row';
+        tr.innerHTML = `<td><input type="text" class="native-input style-attr-key" style="padding:8px;" value="${key}"></td><td><input type="text" class="native-input style-attr-val" style="padding:8px;" value="${val}"></td><td><button type="button" class="remove-matrix-row-btn" onclick="this.closest('tr').remove()">×</button></td>`;
+        tbody.appendChild(tr);
+      },
+
+      appendBlankAttributeRow() { this.injectMatrixRowHTML('', ''); },
+      syncMarkupMath() { const cost = parseFloat(document.getElementById('curate-base-price').value) || 0; document.getElementById('curate-consumer-price').value = Math.round(cost * 1.25); },
+
+      async drawerSaveAndTrain() {
+        if (!this.activeDraftRecord) return;
+        let customAttributes = {};
+        document.querySelectorAll('.matrix-row').forEach(tr => {
+          const k = tr.querySelector('.style-attr-key')?.value.trim().toLowerCase();
+          const v = tr.querySelector('.style-attr-val')?.value.trim(); if (k && v) customAttributes[k] = v;
+        });
+
+        const targetId = this.activeDraftRecord.id; const imageElementsExist = this.temporaryImagesCache.length > 0;
+        if (imageElementsExist) { await DB.operation('media_blocks', 'readwrite', 'put', { draftId: targetId, images: this.temporaryImagesCache }); } 
+        else { await DB.operation('media_blocks', 'readwrite', 'delete', targetId); }
+
+        const updated = {
+          ...this.activeDraftRecord, title: document.getElementById('curate-title').value,
+          basePrice: parseFloat(document.getElementById('curate-base-price').value) || 0,
+          consumerPrice: parseFloat(document.getElementById('curate-consumer-price').value) || 0,
+          pincode_rates: this.temporaryPincodeCache, has_images: imageElementsExist,
+          description: document.getElementById('curate-description').value,
+          category: document.getElementById('curate-category').value.trim(),
+          collection: document.getElementById('curate-collection').value.trim(),
+          status: document.getElementById('curate-status').value, decision: document.getElementById('curate-decision').value,
+          customAttributes: customAttributes, updatedAt: new Date().toISOString()
+        };
+
+        await DB.operation('drafts', 'readwrite', 'put', updated); this.hideCuratorDrawer();
+      },
+
+      async drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { await this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
+      hideCuratorDrawer() { this.activeDraftRecord = null; this.temporaryImagesCache = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
+    };
+  </script>
+</body>
+</html>
