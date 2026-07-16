@@ -4,135 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>BESOINS - Official Platform Hub</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#222222">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     /* =========================================================================
-       🎨 COMBINED ROOT STYLES & BRUTALIST UI TOKENS
+       🎨 MODERIZED PREMIUM APPLE & TRANSLUCENT GLASS LAYER TOKENS
        ========================================================================= */
     :root {
-      --bg-primary: #d6d7d9;      /* Light Concrete */
-      --bg-surface: #e5e6e8;      /* Cement Tint */
-      --bg-card: #f0f1f2;         /* Pale Bleached Stone */
-      --bg-active: #c8c9cc;       
-      --text-primary: #1a1a1a;    /* Charcoal Text */
-      --text-muted: #6b6c6e;      
-      --accent: #222222;          /* Matte Black Logo Tint */
-      --border: #b8b9bc;          
-      --warning: #cf7011;         /* Rust Warning */
-      --danger: #b3261e;
-      --info: #2b6cb0;
+      --bg-primary: #e0e1e3;      /* Ultra Smooth Light Gray Base */
+      --bg-surface: rgba(245, 246, 248, 0.8);
+      --bg-card: #ffffff;         /* Pure Apple White Base Blocks */
+      --bg-active: #e2e3e5;       
+      --text-primary: #1c1c1e;    /* Deep Apple System Dark Gray */
+      --text-muted: #8e8e93;      
+      --accent: #222222;          
+      --warning: #ff9500;         /* System Apple Orange Warning Tints */
+      --danger: #ff3b30;          /* Apple iOS Notification Crimson Scarlet Red */
+      --info: #007aff;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-blur: blur(30px) saturate(190%);
     }
 
     * { 
       box-sizing: border-box; margin: 0; padding: 0; 
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Times New Roman", "Didot", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; position: fixed; }
     
     /* THE STABLE VIEWPORT CONTAINMENT CELL UNIT */
-    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); z-index: 1; }
+    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: #edeef0; display: flex; flex-direction: column; position: relative; overflow: hidden; z-index: 1; }
     
-    /* UNIVERSAL INTERACTIVE HEADER LAYER WITH HAMBURGER DROPDOWN */
+    /* UNIVERSAL INTERACTIVE HEADER LAYER WITH GLASS BLUR OVERLAY */
     .app-header {
-      height: 75px; padding: 0 20px; padding-top: max(0px, env(safe-area-inset-top)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.85); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0; position: relative; width: 100%;
+      height: 80px; padding: 0 24px; padding-top: max(0px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 100; flex-shrink: 0; position: relative; width: 100%;
     }
     .brand-title-container { display: flex; flex-direction: column; }
-    .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
-    .brand-title-sub { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 600; }
+    .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.5rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
+    .brand-title-sub { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
     
     /* HAMBURGER STYLING ELEMENTS */
-    .hamburger-icon-trigger { font-size: 1.6rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; }
-    .header-dropdown-menu { position: absolute; top: 75px; right: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; width: 200px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: none; flex-direction: column; z-index: 100; overflow: hidden; }
-    .dropdown-menu-item { padding: 14px 16px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; background: none; border: none; width: 100%; }
+    .hamburger-icon-trigger { font-size: 1.6rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; }
+    .header-dropdown-menu { position: absolute; top: 80px; right: 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; width: 220px; box-shadow: 0 12px 30px rgba(0,0,0,0.05); display: none; flex-direction: column; z-index: 200; overflow: hidden; }
+    .dropdown-menu-item { padding: 16px 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); text-align: left; background: none; border: none; width: 100%; }
     .dropdown-menu-item:last-child { border-bottom: none; }
-    .dropdown-menu-item:active { background: var(--bg-active); }
+    .dropdown-menu-item:active { background: rgba(0,0,0,0.04); }
 
     /* RUNTIME SWITCHABLE VIEW CONFIGURATIONS */
-    .view-deck { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: calc(85px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
+    .view-deck { flex: 1; overflow-y: auto; padding: 20px 16px; padding-bottom: calc(110px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
     .global-view-wrapper { display: none; width: 100%; } .global-view-wrapper.active-frame { display: block; }
-    .feed-container { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+    .feed-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
     
-    /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS */
-    .feed-card { background: var(--bg-card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); width: 100%; }
+    /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS - OUTLINES STRIPPED COMPLETELY */
+    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; }
     
-    /* HARD OVERRIDE PIN: STOPS MEDIA IMAGES BLEEDING OUT INTO DESKTOP BACKGROUND BACKDROPS */
-    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 300px; max-height: 300px; position: relative; }
+    /* GALLERY VIEWPORT CONFIGURATION SETUP */
+    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 320px; max-height: 320px; position: relative; }
     .card-media-gallery::-webkit-scrollbar { display: none; }
-    .card-media-gallery img { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; scroll-snap-align: start; background: #e1e2e4; border: 1px solid var(--border); cursor: zoom-in; display: block; }
+    .card-media-gallery img { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; cursor: zoom-in; display: block; }
     
-    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.3rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
+    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
     .feed-card-body h3::first-letter { text-transform: uppercase; }
-    .feed-card-body p { font-size: 0.9rem; color: #333333; line-height: 1.5; margin-top: 6px; white-space: pre-wrap; }
-    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .attribute-chip { background: rgba(0, 0, 0, 0.04); border: 1px solid var(--border); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .attribute-chip { background: rgba(0, 0, 0, 0.04); color: var(--text-primary); font-size: 0.7rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
-    .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-    .shipping-extra-tag { font-size: 0.8rem; color: var(--warning); font-weight: 700; text-transform: uppercase; }
-    .action-btn { padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; }
+    .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+    .shipping-extra-tag { font-size: 0.75rem; color: var(--warning); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .pincode-widget { margin-top: 6px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    /* MODERIZED APPLE ACTION LAYOUT PACKS */
+    .action-btn { padding: 16px; border-radius: 16px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; transition: background 0.2s ease, transform 0.1s ease; }
+    .action-btn:active { transform: scale(0.97); }
+    
+    .pincode-widget { margin-top: 8px; padding-top: 16px; border-top: 1px dashed #e5e5ea; display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
-    .pincode-input { flex: 1; min-width: 0; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; transition: border-color 0.2s ease; }
-    .pincode-input.pulse-alert { border-color: var(--warning); box-shadow: 0 0 8px rgba(207, 112, 17, 0.4); }
-    .pincode-btn { padding: 0 14px; background: var(--accent); color: var(--bg-surface); font-weight: 700; font-size: 0.75rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
-    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 8px 12px; border-radius: 6px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.4; }
-    .feedback-pending { background: rgba(207, 112, 17, 0.08); color: var(--warning); border: 1px solid rgba(207, 112, 17, 0.15); }
-    .feedback-verified { background: rgba(0, 0, 0, 0.04); color: var(--accent); border: 1px solid var(--border); }
-    .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-    .guess-pill { font-size: 0.7rem; background: var(--bg-active); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #444; border: 1px solid rgba(0,0,0,0.05); }
+    .pincode-input { flex: 1; min-width: 0; padding: 14px 16px; background: #f2f2f7; border: none; color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; transition: all 0.2s ease; }
+    .pincode-input.pulse-alert { background: rgba(255, 149, 0, 0.08); box-shadow: 0 0 0 2px var(--warning); }
+    .pincode-btn { padding: 0 20px; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.75rem; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
+    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 12px 16px; border-radius: 12px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.4; }
+    .feedback-pending { background: rgba(255, 149, 0, 0.08); color: var(--warning); }
+    .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; align-items: center; }
+    .guess-pill { font-size: 0.7rem; background: #e5e5ea; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #48484a; border: none; }
     
-    /* PUBLIC HEART FAVS MODULE BUTTON */
-    .heart-like-toggle { position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.8); border: 1px solid var(--border); padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 4px; transition: all 0.12s ease; z-index: 5; }
-    .heart-like-toggle.is-active-favorite { border-color: #c92a2a; color: #c92a2a; transform: scale(1.05); background: #fff; }
-    .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 5px 12px; border-radius: 4px; color: var(--bg-surface); align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
+    /* FLOATING APPLE GLASS LIKE MODULE OVERLAY BUTTONS */
+    .heart-like-toggle { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 8px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5; }
+    .heart-like-toggle.is-active-favorite { border-color: #c92a2a; color: #c92a2a; transform: scale(1.05); background: #fff; box-shadow: 0 4px 16px rgba(201, 42, 42, 0.12); }
+    .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 6px 14px; border-radius: 8px; color: #fff; align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
+    .demo-tag { font-size: 0.6rem; background: var(--warning); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; vertical-align: middle; margin-left: 6px; text-transform: uppercase; }
 
-    /* 🏷️ CUSTOMER CATALOG NAVIGATION FILTER BAR */
-    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); flex-shrink: 0; width: 100%; }
+    /* CUSTOMER CATALOG BAR FILTER CHIPS */
+    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; background: var(--bg-surface); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); flex-shrink: 0; width: 100%; }
     .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; width: 100%; }
     .filter-scroller::-webkit-scrollbar { display: none; }
-    .chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); padding: 8px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
-    .chip.chip-active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
-    .empty-state { color: var(--text-muted); text-align: center; padding: 60px 20px; font-size: 0.9rem; font-family: serif; font-style: italic; }
+    .chip { background: var(--bg-card); color: var(--text-primary); padding: 12px 18px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; transition: all 0.2s ease; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .chip.chip-active { background: var(--accent); color: #fff; }
 
     /* 🛠========= SECURE WORKSPACE BACKEND UI ELEMENTS ========= */
-    .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 14px; }
-    .form-group label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
-    .native-input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; }
-    .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-top: 4px; }
-    .btn-reject { background: #f2dede; color: var(--danger); border: 1px solid rgba(179,38,30,0.15); }
-    .btn-edit-curate { background: var(--bg-active); color: var(--accent); border: 1px solid var(--border); }
-    .export-panel-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; width: 100%; }
-    .export-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
-    .export-table th { text-align: left; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .export-table td { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 16px; }
+    .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+    .native-input, select, textarea { width: 100%; padding: 14px 16px; border: none; background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
+    .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; margin-top: 4px; }
+    .btn-reject { background: #ffe5e5; color: var(--danger); }
+    .btn-edit-curate { background: var(--bg-active); color: var(--accent); }
+    .export-panel-container { background: var(--bg-card); border-radius: 20px; padding: 18px; margin-bottom: 24px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.02); }
+    .export-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+    .export-table th { text-align: left; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid #f2f2f7; }
+    .export-table td { padding: 12px 0; border-bottom: 1px solid #f2f2f7; }
 
-    /* HARDWARE ASSIGNMENT FIX: REFINES THE FULLSCREEN DRAWER LAYER LAYER OVERLAPS */
-    .fullscreen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-surface); z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.22s ease-out; }
+    /* FULLSCREEN SLIDING APPLE DRAWER OVERLAY ASSIGNMENTS */
+    .fullscreen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 300; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
     .fullscreen-overlay.overlay-open { transform: translateY(0) !important; }
-    .overlay-header { height: 70px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; background: var(--bg-card); }
-    .overlay-body { flex: 1; overflow-y: auto; padding: 16px; width: 100%; }
-    .editor-actions-bar { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface); display: grid; grid-template-columns: 1fr 2fr; gap: 12px; flex-shrink: 0; width: 100%; }
-    .drawer-media-uploader { background: var(--bg-card); border: 1px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; }
+    .overlay-header { height: 75px; padding: 0 24px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; background: rgba(255,255,255,0.4); }
+    .overlay-body { flex: 1; overflow-y: auto; padding: 20px 16px; width: 100%; }
+    .editor-actions-bar { padding: 18px 16px; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.4); display: grid; grid-template-columns: 1fr 2fr; gap: 14px; flex-shrink: 0; width: 100%; }
+    
+    .drawer-media-uploader { background: var(--bg-card); border: 2px dashed #c7c7cc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; }
     .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; width: 100%; }
-    .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: contain; background:#e1e2e4; border-radius: 6px; border: 1px solid var(--border); }
+    .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; background:#edeef0; border-radius: 10px; }
     .matrix-editor-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
     .matrix-editor-table th { text-align: left; font-size: 0.7rem; color: var(--text-muted); padding-bottom: 6px; }
-    .matrix-editor-table td { padding: 4px 0; }
+    .matrix-editor-table td { padding: 6px 0; }
     .remove-matrix-row-btn { background: none; border: none; color: var(--danger); font-size: 1.4rem; cursor: pointer; padding: 0 8px; }
-    .add-matrix-row-trigger { background: var(--bg-surface); border: 1px dashed var(--border); padding: 12px; border-radius: 6px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; width: 100%; }
+    .add-matrix-row-trigger { background: rgba(0,0,0,0.03); padding: 14px; border-radius: 12px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; width: 100%; }
 
-    /* STICKY BOTTOM SYSTEM NAVIGATION FOOTER */
-    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(75px + env(safe-area-inset-bottom)); background: rgba(229, 230, 232, 0.95); border-top: 1px solid var(--border); z-index: 20; backdrop-filter: blur(20px); padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; }
-    .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; font-size: 0.65rem; font-weight: 700; gap: 4px; text-transform: uppercase; }
+    /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
+    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(85px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.03); }
+    .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
     .tab-item.tab-active { color: var(--accent); }
-    .tab-counter-badge { background: var(--accent); color: var(--bg-surface); padding: 1px 6px; border-radius: 10px; font-size: 0.6rem; font-weight: bold; margin-left: 2px; }
+    .tab-item svg { width: 28px; height: 28px; fill: currentColor; transition: transform 0.2s ease; }
+    .tab-item:active svg { transform: scale(0.9); }
+    
+    /* 🔴 THE NATIVE ABSOLUTE FLOATING CIRCULAR BADGE OVER SHOULDER NODE */
+    .tab-counter-badge { position: absolute; top: 12px; right: calc(50% - 24px); background: var(--danger); color: #ffffff; font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(255, 59, 48, 0.3); z-index: 10; font-family: -apple-system, system-ui, sans-serif; }
 
-    /* SECURITY PIN SHIELD GATEWAY CURTAIN */
-    #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--bg-surface); z-index:999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; }
-    .security-card-box { background:var(--bg-card); padding:30px; border-radius:12px; border:1px solid var(--border); width:100%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.05); }
-    .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border); padding: 12px; border-radius: 10px; margin-bottom: 8px; }
-    .supplier-pill { background: var(--bg-active); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+    /* PRIVILEGED GATEWAY SHIELD */
+    #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; }
+    .security-card-box { background: #ffffff; padding: 36px 24px; border-radius: 28px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+    .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
+    .supplier-pill { background: #e5e5ea; padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #48484a; }
   </style>
 </head>
 <body>
@@ -142,19 +154,19 @@
     <!-- 🔒 PRIVILEGED GATEWAY LOCK SHIELD BLOCK -->
     <div id="studio-security-shield-curtain">
       <div class="security-card-box">
-        <h3 style="font-family:serif; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase;">Operator Gateway</h3>
-        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px;">Provide encrypted authorization sequence credentials.</p>
+        <h3 style="font-family:serif; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; font-size:1.2rem;">Operator Gateway</h3>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:24px;">Provide encrypted authorization sequence credentials.</p>
         <div class="form-group">
-          <input type="password" id="gateway-pin-field" class="native-input" placeholder="••••" style="text-align:center; font-size:1.6rem; letter-spacing:8px; padding:10px;">
+          <input type="password" id="gateway-pin-field" class="native-input" placeholder="••••" style="text-align:center; font-size:1.8rem; letter-spacing:10px; padding:12px; border-radius:14px; background:#f2f2f7;">
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
-          <button type="button" class="action-btn" style="background:var(--bg-active);" onclick="globalNavigation.dismissSecurityCurtain()">Cancel</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:15px;">
+          <button type="button" class="action-btn" style="background:#e5e5ea; color:#1c1c1e;" onclick="globalNavigation.dismissSecurityCurtain()">Cancel</button>
           <button type="button" class="action-btn" style="background:var(--accent); color:#fff;" onclick="security.verifyPINAttempt()">Verify</button>
         </div>
       </div>
     </div>
 
-    <!-- CORE SYSTEM INTEGRATED HEADER LAYOUT WITH TOP HAMBURGER MENU -->
+    <!-- HEADER NAVIGATION CANVAS MODULE -->
     <header class="app-header">
       <div class="brand-title-container">
         <span class="brand-title-main" id="dynamic-header-title">Besoins</span>
@@ -169,7 +181,7 @@
       </div>
     </header>
 
-    <!-- CUSTOMER CATALOG FILTER CONTROLS -->
+    <!-- NAVIGATION FILTER CHIP BAR -->
     <nav class="catalog-navigation-bar" id="public-navigation-filter-row">
       <div class="filter-scroller" id="client-category-scroller">
         <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
@@ -179,22 +191,22 @@
     <!-- CORE INTERACTIVE APPARATUS DECK ARCHITECTURE -->
     <div class="view-deck">
       
-      <!-- 🛒 VIEW DECK 1: PUBLIC MAIN STOREFRONT TIMELINE GRID -->
+      <!-- 🛒 CLIENT STREAM DECK 1: LIVE STOREFRONT GRID -->
       <section id="frame-customer-storefront" class="global-view-wrapper active-frame">
         <div id="customer-cards-anchor" class="feed-container"></div>
       </section>
 
-      <!-- ❤️ VIEW DECK 2: CUSTOMER MY SELECTION LIST -->
+      <!-- ❤️ CLIENT STREAM DECK 2: CUSTOMER MY SELECTION LIST -->
       <section id="frame-customer-selections" class="global-view-wrapper">
         <div id="customer-selections-anchor" class="feed-container"></div>
       </section>
 
-      <!-- 📥 VIEW DECK 3: OPERATIONAL WORKSPACE REVIEWS STREAM -->
+      <!-- 📥 CONTROL PANEL PANE 3: WORKSPACE PIPELINE DIRECTORY -->
       <section id="pane-feed" class="global-view-wrapper">
         <div class="export-panel-container">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">📦 Client Pincode Request Backlog Queue</h4>
-            <button class="chip" style="font-size:0.65rem; padding:4px 8px; background:var(--accent); color:var(--bg-surface); border:none;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
+            <button class="chip" style="font-size:0.65rem; padding:6px 10px; background:var(--accent); color:#fff;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
           </div>
           <table class="export-table">
             <thead>
@@ -209,25 +221,25 @@
           <div class="chip" data-status-filter="Imported">New Imports</div>
           <div class="chip" data-status-filter="Reviewing">Reviewing</div>
           <div class="chip" data-status-filter="Ready">Ready to Share</div>
-          <button type="button" class="chip" style="margin-left:auto; background:var(--bg-card);" onclick="admin.showSupplierManager()">⚙️ Factories</button>
+          <button type="button" class="chip" style="margin-left:auto; background:#e5e5ea;" onclick="admin.showSupplierManager()">⚙️ Factories</button>
         </div>
         <div id="feed-cards-anchor" class="feed-container" style="margin-top: 16px;"></div>
       </section>
 
-      <!-- ➕ VIEW DECK 4: RAW UNORGANIZED CHAT INGESTER STREAM -->
+      <!-- ➕ CONTROL PANEL PANE 4: TEXT RAW UNORGANIZED CHAT INGESTER -->
       <section id="pane-intake" class="global-view-wrapper">
         <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
-          <div class="intake-meta-row" style="display:grid; grid-template-columns: 1fr; gap:10px;">
+          <div style="display:grid; grid-template-columns: 1fr; gap:12px;">
             <div class="form-group">
               <label class="form-label">Sourcing Supplier Factory</label>
               <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
-                <select id="intake-supplier-select" style="flex:1; height:46px;"></select>
+                <select id="intake-supplier-select" style="flex:1; height:46px; background:#fff;"></select>
                 <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0; flex-shrink:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
               </div>
             </div>
             <div class="form-group">
               <label class="form-label">Default Markup Margin</label>
-              <select id="intake-margin-preset" style="height:46px; width: 100%;">
+              <select id="intake-margin-preset" style="height:46px; width: 100%; background:#fff;">
                 <option value="1.25">Standard (+25%)</option>
                 <option value="1.20">High Ticket (+20%)</option>
                 <option value="1.30">Premium (+30%)</option>
@@ -236,7 +248,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Raw Sourced Message Content Block</label>
-            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats..." style="width: 100%; resize: none;"></textarea>
+            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats..." style="width: 100%; resize: none; border-radius:16px; background:#fff;"></textarea>
           </div>
           <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
         </form>
@@ -244,7 +256,7 @@
 
     </div> <!-- Close view-deck -->
 
-    <!-- SECURE MASTER CURATOR DRAWER INTERFACE PANEL -->
+    <!-- SECURE MASTER CURATOR FULLSCREEN DRAWER -->
     <section class="fullscreen-overlay" id="curation-drawer">
       <div class="overlay-header">
         <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Curate Collection Master</h2>
@@ -255,26 +267,26 @@
           <input type="hidden" id="curate-draft-id">
           
           <div class="drawer-media-uploader" onclick="document.getElementById('drawer-hidden-file-input').click();">
-            <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase;">📸 Upload Variant Texture Imagery</span>
+            <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Upload Variant Texture Imagery</span>
             <input type="file" id="drawer-hidden-file-input" accept="image/*" multiple style="display:none;" onchange="admin.handleDrawerImageUpload(event)">
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Customer Display Title Heading</label>
-            <input type="text" id="curate-title" class="native-input" required>
+            <input type="text" id="curate-title" class="native-input" style="background:#fff;" required>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-            <div><label class="form-label">Factory Base Cost (₹)</label><input type="number" id="curate-base-price" class="native-input" oninput="admin.syncMarkupMath()"></div>
-            <div><label class="form-label">Listed Retail Price (₹)</label><input type="number" id="curate-consumer-price" class="native-input"></div>
+            <div><label class="form-label">Factory Base Cost (₹)</label><input type="number" id="curate-base-price" class="native-input" style="background:#fff;" oninput="admin.syncMarkupMath()"></div>
+            <div><label class="form-label">Listed Retail Price (₹)</label><input type="number" id="curate-consumer-price" class="native-input" style="background:#fff;"></div>
           </div>
 
-          <div class="form-group" style="border:1px solid var(--border); padding:12px; border-radius:8px; background:rgba(0,0,0,0.01);">
+          <div class="form-group" style="padding:16px; border-radius:16px; background:rgba(255,255,255,0.5);">
             <label class="form-label" style="font-weight:700;">Approved Regional Pincode Shipping Matrices</label>
             <div style="display:flex; gap:8px; margin-bottom:8px;">
-              <input type="text" id="matrix-pincode-input" class="native-input" placeholder="Pincode" style="padding:8px; height:36px;">
-              <input type="number" id="matrix-rate-input" class="native-input" placeholder="Rate (₹)" style="padding:8px; height:36px;">
+              <input type="text" id="matrix-pincode-input" class="native-input" placeholder="Pincode" style="padding:8px; height:38px; background:#fff;">
+              <input type="number" id="matrix-rate-input" class="native-input" placeholder="Rate (₹)" style="padding:8px; height:38px; background:#fff;">
               <button type="button" class="chip" style="background:var(--accent); color:#fff;" onclick="admin.addPincodeOverrideRow()">Add</button>
             </div>
             <table class="matrix-editor-table">
@@ -285,7 +297,7 @@
 
           <div class="form-group">
             <label class="form-label">Clean White-Labeled Client Description</label>
-            <textarea id="curate-description" rows="4"></textarea>
+            <textarea id="curate-description" rows="4" style="background:#fff;"></textarea>
           </div>
 
           <div class="form-group">
@@ -297,21 +309,21 @@
             <div class="add-matrix-row-trigger" onclick="admin.appendBlankAttributeRow()">+ Append Specification Field</div>
           </div>
 
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label class="form-label">Category Chip Tab</label><input type="text" id="curate-category" class="native-input"></div>
-            <div class="form-group"><label class="form-label">Marketing Collection</label><input type="text" id="curate-collection" class="native-input"></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="form-group"><label class="form-label">Category Chip Tab</label><input type="text" id="curate-category" class="native-input" style="background:#fff;"></div>
+            <div class="form-group"><label class="form-label">Marketing Collection</label><input type="text" id="curate-collection" class="native-input" style="background:#fff;"></div>
           </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div class="form-group">
               <label class="form-label">Pipeline Workflow Stage</label>
-              <select id="curate-status" style="height:44px;"><option value="Imported">Imported</option><option value="Reviewing">Reviewing</option><option value="Ready">Ready to Share</option></select>
+              <select id="curate-status" style="height:44px; background:#fff;"><option value="Imported">Imported</option><option value="Reviewing">Reviewing</option><option value="Ready">Ready to Share</option></select>
             </div>
             <div class="form-group">
               <label class="form-label">Triage Decision Control</label>
-              <select id="curate-decision" style="height:44px;"><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Rejected">Rejected</option></select>
+              <select id="curate-decision" style="height:44px; background:#fff;"><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Rejected">Rejected</option></select>
             </div>
           </div>
-          <div class="form-group"><label class="form-label">Raw Sourced Supplier Text History Log</label><textarea id="curate-raw-text" rows="4" readonly style="font-family:monospace; font-size:0.75rem; opacity:0.6;"></textarea></div>
+          <div class="form-group"><label class="form-label">Raw Sourced Supplier Text History Log</label><textarea id="curate-raw-text" rows="4" readonly style="font-family:monospace; font-size:0.75rem; opacity:0.6; background:#fff;"></textarea></div>
         </form>
       </div>
       <div class="editor-actions-bar">
@@ -320,47 +332,94 @@
       </div>
     </section>
 
-    <!-- FACTORIES MANAGEMENT DIRECTORY PANEL -->
+    <!-- FACTORIES DIRECTORY OVERLAY -->
     <section class="fullscreen-overlay" id="supplier-manager-drawer">
       <div class="overlay-header">
         <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Sourcing Factories</h2>
         <button type="button" class="chip" onclick="admin.hideSupplierManager()">Close</button>
       </div>
       <div class="overlay-body">
-        <div style="background:var(--bg-card); border:1px solid var(--border); padding:14px; border-radius:8px; margin-bottom:16px;">
-          <label class="form-label">Register Factory Pipeline Name</label>
+        <div style="background:var(--bg-card); padding:16px; border-radius:16px; margin-bottom:16px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <label class="form-label" style="font-size: 0.7rem; font-weight: bold; color: var(--text-muted);">Register Factory Pipeline Name</label>
           <div style="display:flex; gap:8px; margin-top:6px;">
-            <input type="text" id="manager-new-supplier-name" class="native-input" placeholder="e.g. Surat HQ" style="height:44px; padding:10px;">
+            <input type="text" id="manager-new-supplier-name" class="native-input" placeholder="e.g. Surat HQ" style="height:44px; padding:10px; background:#f2f2f7;">
             <button type="button" class="chip" style="background:var(--accent); color:#fff; height:44px;" onclick="admin.addSupplierFromManager()">Register</button>
           </div>
         </div>
-        <label class="form-label">Active Sourcing Connections Directory</label>
+        <label class="form-label" style="font-size: 0.7rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Active Sourcing Connections Directory</label>
         <div id="supplier-directory-list" style="margin-top:8px;"></div>
       </div>
     </section>
 
-    <!-- 🛒 UNIFIED PUBLIC CUSTOMER APPLICATION SYSTEM NAVIGATION TABBAR -->
+    <!-- 🛒 RE-ALIGNED NATIVE SVG BOTTOM APPARATUS NAV BAR PANELS -->
     <nav class="bottom-tabs" id="public-customer-navigation-bar" style="grid-template-columns: repeat(4, 1fr); width: 100%;">
-      <div class="tab-item tab-active" id="cust-nav-shop" onclick="catalog.switchClientActiveTab('shop')">🛍️ Shop</div>
-      <div class="tab-item" id="cust-nav-list" onclick="catalog.switchClientActiveTab('list')">❤️ Selection <span class="tab-counter-badge" id="badge-selection-count">0</span></div>
-      <div class="tab-item" id="cust-nav-instagram" onclick="window.open('https://instagram.com/besoins.in', '_blank')">📸 Instagram</div>
-      <div class="tab-item" id="cust-nav-whatsapp" onclick="window.open('https://wa.me/919029515185', '_blank')">💬 WhatsApp</div>
+      <div class="tab-item tab-active" id="cust-nav-shop" onclick="catalog.switchClientActiveTab('shop')">
+        <svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/></svg>
+      </div>
+      <div class="tab-item" id="cust-nav-list" onclick="catalog.switchClientActiveTab('list')">
+        <!-- 🔴 NATIVE iOS ABSOLUTE BADGE ATTACHED OVER SHOULDER MATRIX OUTLINE -->
+        <span class="tab-counter-badge" id="badge-selection-count">0</span>
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+      <div class="tab-item" id="cust-nav-instagram" onclick="window.open('https://instagram.com/besoins.in', '_blank')">
+        <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6m8.9 1.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+      </div>
+      <div class="tab-item" id="cust-nav-whatsapp" onclick="window.open('https://wa.me/919029515185', '_blank')">
+        <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.82 14.07c-.24.67-1.39 1.25-1.92 1.32-.53.07-1.07.26-3.72-.78-3.19-1.25-5.23-4.48-5.39-4.7-.16-.22-1.3-1.73-1.3-3.3 0-1.57.82-2.34 1.11-2.65.3-.3.65-.38.86-.38.22 0 .43.01.62.02.2.01.46-.07.72.56.26.63.9 2.2.98 2.37.08.16.14.36.03.57-.11.22-.17.36-.34.56-.17.19-.36.43-.52.58-.18.17-.37.36-.16.73.21.36.94 1.55 2.01 2.5 1.38 1.23 2.54 1.61 2.9 1.79.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.8-.18.32.12 2.05 1.01 2.41 1.19.36.18.6.27.69.43.09.15.09.89-.15 1.56z"/></svg>
+      </div>
     </nav>
 
-    <!-- 🔒 PRIVILEGED OWNER SECURE OPERATIONS NAVIGATION BAR -->
+    <!-- SECURE OPERATOR CORE NAVIGATION LAYOUTS -->
     <nav class="bottom-tabs" id="privileged-studio-tabs-bar" style="display: none; grid-template-columns: 1fr 1fr;">
       <div class="tab-item tab-active" id="nav-feed" onclick="admin.navigate('feed')">📥 Workspace Deck</div>
       <div class="tab-item" id="nav-intake" onclick="admin.navigate('intake')">➕ Stream Ingest</div>
     </nav>
   </div> <!-- Close phone-shell -->
 
-  <!-- THEATER IMAGE VIEWER VIEWPORT LAYER -->
-  <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 200; display: none; justify-content: center; align-items: center; touch-action: none;">
-    <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 210; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
+  <!-- ZOOM CORE THEATER LAYER -->
+  <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 500; display: none; justify-content: center; align-items: center; touch-action: none;">
+    <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 510; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
     <div id="theater-zoom-viewport" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden;"><img id="theater-zoom-image" src="" alt="Zoom Window" style="max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; transition: transform 0.05s ease-out;"></div>
   </div>
 
   <script>
+    const CORE_DEMO_FALLBACK_DATABASE = [
+      {
+        id: "demo-item-1",
+        supplierId: "sup_1",
+        title: "Heavy Organza Silk Curation Slits",
+        description: "Premium high-contrast woven textures sourced directly from Surat manufacturing lines. Fully white-labeled for boutique drop shipments.",
+        basePrice: 1200,
+        consumerPrice: 1500,
+        status: "Ready",
+        decision: "Accepted",
+        category: "Organza",
+        collection: "Festival Edit",
+        pincode_rates: { "395001": 80, "395003": 80, "400001": 120 },
+        has_images: true,
+        customAttributes: { "fabric": "Pure Organza Silk", "sizes": "M, L, XL", "weight": "420 grams" },
+        updatedAt: new Date().toISOString(),
+        mock_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"]
+      },
+      {
+        id: "demo-item-2",
+        supplierId: "sup_2",
+        title: "Shabeena Lakhnavi Georgette Ensemble",
+        description: "Intricate traditional lucknowi micro-embroidery across premium flowing base threads. Clean unbranded client description template.",
+        basePrice: 2200,
+        consumerPrice: 2750,
+        status: "Ready",
+        decision: "Accepted",
+        category: "Georgette",
+        collection: "Luxury Lines",
+        pincode_rates: { "395001": 0, "110001": 150 },
+        has_images: true,
+        customAttributes: { "fabric": "Premium Georgette", "sizes": "Free Size", "work": "Handmade Chikankari" },
+        updatedAt: new Date().toISOString(),
+        mock_images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop"]
+      }
+    ];
+
     const globalNavigation = {
       activeContext: 'customer',
 
@@ -549,7 +608,7 @@
         let saved = localStorage.getItem('Besoins_Public_Likes_Matrix');
         if(saved) { this.staticLikesDatabase = JSON.parse(saved); } 
         else {
-          this.staticLikesDatabase = { 'drf_demo_1': 142, 'drf_demo_2': 98 };
+          this.staticLikesDatabase = { 'demo-item-1': 246, 'demo-item-2': 189 };
           localStorage.setItem('Besoins_Public_Likes_Matrix', JSON.stringify(this.staticLikesDatabase));
         }
       },
@@ -560,7 +619,12 @@
         const request = trans.objectStore('drafts').getAll();
         
         request.onsuccess = async () => {
-          this.allItems = (request.result || []).filter(d => d.status === 'Ready'); 
+          let userItems = (request.result || []).filter(d => d.status === 'Ready'); 
+          
+          const dynamicIds = new Set(userItems.map(item => item.id));
+          const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id));
+          this.allItems = [...userItems, ...verifiedDemoFallbackItems];
+
           this.buildCategoryFiltersUI();
           await this.renderFeedTimeline();
           this.updateBagFloatingCTAState();
@@ -634,7 +698,7 @@
         
         const ctaRow = document.createElement('div');
         ctaRow.style.padding = '10px 0';
-        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800; height:50px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
+        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; height:54px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
         anchor.appendChild(ctaRow);
       },
 
@@ -653,6 +717,7 @@
           card.className = 'feed-card';
           const isFav = this.likedIDs.includes(d.id);
           const currentCount = this.staticLikesDatabase[d.id] || 0;
+          const isDemoItem = d.id.startsWith('demo-item-');
 
           let chipsHtml = '';
           for (const [key, value] of Object.entries(d.customAttributes)) {
@@ -660,7 +725,10 @@
           }
 
           let mediaGalleryHtml = '';
-          if (d.has_images) {
+          if (isDemoItem && d.mock_images) {
+            const imgs = d.mock_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
+            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
+          } else if (d.has_images) {
             const trans = DB.instance.transaction('media_blocks', 'readonly');
             const mediaReq = trans.objectStore('media_blocks').get(d.id);
             await new Promise((res) => {
@@ -696,7 +764,7 @@
                 <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
               </div>
 
-              <button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800; margin-top:4px;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">
+              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">
                 💬 Check Dispatch &amp; Stock Availability
               </button>
             `;
@@ -707,7 +775,7 @@
             <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="catalog.handleLikeTap('${d.id}', this, ${appendInputsAndActions})">
               ❤️ <span class="likes-value">${currentCount}</span>
             </div>
-            <div class="brand-pill">Exclusive Catalog</div>
+            <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
               <h3>${d.title}</h3>
               <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
@@ -944,7 +1012,11 @@
       async renderFeedTimeline() {
         if (!DB.instance) return;
         const anchor = document.getElementById('feed-cards-anchor'); if (!anchor) return;
+        
         const drafts = await DB.operation('drafts', 'readonly', 'getAll');
+        const dynamicIds = new Set(drafts.map(item => item.id));
+        const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id));
+        const fullyCompiledAdminList = [...drafts, ...verifiedDemoFallbackItems];
         
         const tbody = document.getElementById('export-queue-tbody');
         if(tbody) {
@@ -952,7 +1024,7 @@
           const backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
           let hasRows = false;
           for(const [draftId, pinCodes] of Object.entries(backlog)) {
-            const match = drafts.find(x => x.id === draftId);
+            const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
               tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
@@ -962,7 +1034,7 @@
           if(!hasRows) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes fully verified clear.</td></tr>`;
         }
 
-        const filtered = drafts.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
+        const filtered = fullyCompiledAdminList.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
         anchor.innerHTML = '';
         if (filtered.length === 0) { anchor.innerHTML = `<div class="empty-state"><h3>Pipeline Stream Clear</h3></div>`; return; }
         filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
@@ -973,7 +1045,10 @@
           let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
 
           let mediaGalleryHtml = '';
-          if (d.has_images) {
+          if (d.id.startsWith('demo-item-') && d.mock_images) {
+            const imgs = d.mock_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
+            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
+          } else if (d.has_images) {
             const mediaBlock = await DB.operation('media_blocks', 'readonly', 'get', d.id);
             if (mediaBlock && mediaBlock.images && mediaBlock.images.length > 0) {
               const imgs = mediaBlock.images.map(src => `<img src="${src}" alt="Pattern">`).join('');
@@ -1006,18 +1081,40 @@
 
       async fastSkipItem(id) {
         if(!confirm("Purge asset slot permanently?")) return;
-        await DB.operation('drafts', 'readwrite', 'delete', id); await DB.operation('media_blocks', 'readwrite', 'delete', id);
+        
+        if(!id.startsWith('demo-item-')) {
+          await DB.operation('drafts', 'readwrite', 'delete', id); 
+          await DB.operation('media_blocks', 'readwrite', 'delete', id);
+        } else {
+          let blocked = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
+          blocked.push(id);
+          localStorage.setItem('Besoins_Blocked_Demo_IDs', JSON.stringify(blocked));
+        }
         
         let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
         delete backlog[id]; localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(backlog));
+        
+        await catalog.loadTimelineData();
         this.renderFeedTimeline();
       },
 
       async showCuratorDrawer(id) {
-        const d = await DB.operation('drafts', 'readonly', 'get', id); if (!d) return;
+        let d = null;
+        if(id.startsWith('demo-item-')) {
+          d = CORE_DEMO_FALLBACK_DATABASE.find(x => x.id === id);
+        } else {
+          d = await DB.operation('drafts', 'readonly', 'get', id);
+        }
+        if (!d) return;
+        
         this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
         this.temporaryImagesCache = [];
-        if (d.has_images) { const block = await DB.operation('media_blocks', 'readonly', 'get', id); if (block && block.images) this.temporaryImagesCache = [...block.images]; }
+        if (d.has_images && !id.startsWith('demo-item-')) { 
+          const block = await DB.operation('media_blocks', 'readonly', 'get', id); 
+          if (block && block.images) this.temporaryImagesCache = [...block.images]; 
+        } else if (d.mock_images) {
+          this.temporaryImagesCache = [...d.mock_images];
+        }
 
         document.getElementById('curate-draft-id').value = d.id;
         document.getElementById('curate-title').value = d.title || '';
@@ -1061,7 +1158,7 @@
 
       injectMatrixRowHTML(key = '', val = '') {
         const tbody = document.getElementById('drawer-attributes-tbody'); const tr = document.createElement('tr'); tr.className = 'matrix-row';
-        tr.innerHTML = `<td><input type="text" class="native-input style-attr-key" style="padding:8px;" value="${key}"></td><td><input type="text" class="native-input style-attr-val" style="padding:8px;" value="${val}"></td><td><button type="button" class="remove-matrix-row-btn" onclick="this.closest('tr').remove()">×</button></td>`;
+        tr.innerHTML = `<td><input type="text" class="native-input style-attr-key" style="padding:8px; background:#fff;" value="${key}"></td><td><input type="text" class="native-input style-attr-val" style="padding:8px; background:#fff;" value="${val}"></td><td><button type="button" class="remove-matrix-row-btn" onclick="this.closest('tr').remove()">×</button></td>`;
         tbody.appendChild(tr);
       },
 
@@ -1081,7 +1178,7 @@
         else { await DB.operation('media_blocks', 'readwrite', 'delete', targetId); }
 
         const updated = {
-          ...this.activeDraftRecord, title: document.getElementById('curate-title').value,
+          ...this.activeDraftRecord, id: targetId.startsWith('demo-item-') ? 'drf_' + crypto.randomUUID() : targetId, title: document.getElementById('curate-title').value,
           basePrice: parseFloat(document.getElementById('curate-base-price').value) || 0,
           consumerPrice: parseFloat(document.getElementById('curate-consumer-price').value) || 0,
           pincode_rates: this.temporaryPincodeCache, has_images: imageElementsExist,
@@ -1092,7 +1189,9 @@
           customAttributes: customAttributes, updatedAt: new Date().toISOString()
         };
 
-        await DB.operation('drafts', 'readwrite', 'put', updated); this.hideCuratorDrawer();
+        await DB.operation('drafts', 'readwrite', 'put', updated); 
+        this.hideCuratorDrawer();
+        await catalog.loadTimelineData();
       },
 
       async drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { await this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
