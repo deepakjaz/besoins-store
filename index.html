@@ -190,7 +190,7 @@
 
     <nav class="catalog-navigation-bar">
       <div class="filter-scroller" id="client-category-scroller">
-        <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
+        <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Products</div>
       </div>
     </nav>
 
@@ -209,7 +209,6 @@
   <script>
     let deferredPrompt = null;
 
-    // Register Service Worker for PWA compliance
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
@@ -228,7 +227,26 @@
       async init() {
         return new Promise((resolve) => {
           const req = indexedDB.open('CommerceOS_Storage_Optimized_V5', 1);
+          req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('drafts')) d.createObjectStore('drafts', { keyPath: 'id' });
+            if (!d.objectStoreNames.contains('media_blocks')) d.createObjectStore('media_blocks', { keyPath: 'draftId' });
+          };
           req.onsuccess = (e) => { this.instance = e.target.result; resolve(); };
+        });
+      },
+      async saveImportedData(drafts, mediaBlocks) {
+        if (!this.instance) await this.init();
+        return new Promise((resolve) => {
+          const trans = this.instance.transaction(['drafts', 'media_blocks'], 'readwrite');
+          const dStore = trans.objectStore('drafts');
+          const mStore = trans.objectStore('media_blocks');
+          
+          drafts.forEach(d => dStore.put(d));
+          if(mediaBlocks && mediaBlocks.length) {
+            mediaBlocks.forEach(m => mStore.put(m));
+          }
+          trans.oncomplete = () => resolve(true);
         });
       },
       async fetchAllDrafts() {
@@ -284,7 +302,26 @@
         this.likedIDs = JSON.parse(localStorage.getItem('Besoins_Likes_Cache') || '[]');
         this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
         await DB.init();
+        await this.handleIncomingSyncLink();
         await this.loadTimelineData();
+      },
+
+      async handleIncomingSyncLink() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('catalog');
+        if (!encodedData) return;
+
+        try {
+          const rawJson = atob(encodedData);
+          const payload = JSON.parse(rawJson);
+          if (payload && payload.drafts) {
+            await DB.saveImportedData(payload.drafts, payload.media || []);
+            // Clean URL query path safely without refreshing
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } catch (e) {
+          console.error("URL Sync processing engine error arguments:", e);
+        }
       },
 
       triggerPWAInstall() {
@@ -300,7 +337,7 @@
 
       async loadTimelineData() {
         const data = await DB.fetchAllDrafts();
-        this.allItems = data.filter(d => d.status === 'Ready'); 
+        this.allItems = data.filter(d => d.status === 'Ready');[cite: 2]
         this.buildCategoryFiltersUI();
         await this.renderFeedTimeline();
         this.updateBagFloatingCTAState();
@@ -345,7 +382,7 @@
 
         anchor.innerHTML = '';
         if (filtered.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Collection processing updates.</h3><p>Check back shortly.</p></div>`;
+          anchor.innerHTML = `<div class="empty-state"><h3>Collection processing updates.</h3><p>Use an active sync distribution link context.</p></div>`;
           return;
         }
 

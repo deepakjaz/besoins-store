@@ -146,7 +146,7 @@
           <span style="font-size:0.6rem; text-transform:uppercase; color:var(--text-muted); font-weight:bold;">Besoins Core Management</span>
         </div>
       </div>
-      <span class="header-lock-status" onclick="security.triggerPasswordResetOption()">⚙️ Reset PIN</span>
+      <button class="chip" style="font-size:0.65rem; background:var(--accent); color:#fff; border:none;" onclick="admin.generateGlobalSyncLink()">🔗 Share Catalog</button>
     </header>
 
     <div class="view-deck">
@@ -408,6 +408,38 @@
           await this.renderFeedTimeline();
           this.initFilterChips();
         } catch (err) { console.error(err); }
+      },
+
+      async generateGlobalSyncLink() {
+        try {
+          const drafts = await DB.operation('drafts', 'readonly', 'getAll');
+          const readyDrafts = drafts.filter(d => d.status === 'Ready');
+          
+          if(readyDrafts.length === 0) {
+            return alert("No products are currently marked as 'Ready to Share'.");
+          }
+
+          const mediaBlocks = await DB.operation('media_blocks', 'readonly', 'getAll');
+          const readyIds = readyDrafts.map(x => x.id);
+          const filteredMedia = mediaBlocks.filter(m => readyIds.includes(m.draftId));
+
+          const payload = {
+            drafts: readyDrafts,
+            media: filteredMedia
+          };
+
+          const jsonText = JSON.stringify(payload);
+          const base64Token = btoa(unescape(encodeURIComponent(jsonText)));
+          
+          // Generate customer link layout structure path
+          const cleanUrl = window.location.href.replace('studio.html', 'index.html');
+          const finalSyncLink = `${cleanUrl}?catalog=${base64Token}`;
+
+          await navigator.clipboard.writeText(finalSyncLink);
+          alert(`Success! Sync link for ${readyDrafts.length} items generated and copied to your clipboard.`);
+        } catch(err) {
+          alert("Link payload generation compilation metrics limit overflow: " + err.message);
+        }
       },
 
       async seedSuppliersData() {
