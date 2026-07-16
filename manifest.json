@@ -1,0 +1,17 @@
+{
+  "name": "BESOINS Fashion Platform",
+  "short_name": "BESOINS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#e5e6e8",
+  "theme_color": "#222222",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

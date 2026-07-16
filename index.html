@@ -2,19 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>BESOINS - Collection Catalog</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#222222">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon.svg">
   <style>
     :root {
-      --bg-primary: #d6d7d9;      /* Light Concrete */
-      --bg-surface: #e5e6e8;      /* Cement Tint */
-      --bg-card: #f0f1f2;         /* Pale Bleached Stone */
+      --bg-primary: #d6d7d9;      
+      --bg-surface: #e5e6e8;      
+      --bg-card: #f0f1f2;         
       --bg-active: #c8c9cc;       
-      --text-primary: #1a1a1a;    /* Charcoal Text */
+      --text-primary: #1a1a1a;    
       --text-muted: #6b6c6e;      
-      --accent: #222222;          /* Matte Black Logo Tint */
+      --accent: #222222;          
       --border: #b8b9bc;          
-      --warning: #cf7011;         /* Rust Warning */
+      --warning: #cf7011;         
     }
 
     * { 
@@ -23,17 +28,55 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; }
-    .phone-shell { width: 100%; max-width: 480px; height: 100vh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+    html, body { 
+      background: var(--bg-primary); 
+      color: var(--text-primary); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100%; 
+      width: 100%; 
+      overflow: hidden; 
+      position: fixed;
+    }
+    
+    .phone-shell { 
+      width: 100%; 
+      max-width: 480px; 
+      height: 100dvh; 
+      background: var(--bg-surface); 
+      display: flex; 
+      flex-direction: column; 
+      position: relative; 
+      overflow: hidden; 
+      border-left: 1px solid var(--border); 
+      border-right: 1px solid var(--border); 
+    }
     
     .app-header {
-      height: 75px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.85); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0;
+      height: 75px; 
+      padding: 0 20px; 
+      padding-top: max(0px, env(safe-area-inset-top));
+      border-bottom: 1px solid var(--border); 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background: rgba(229, 230, 232, 0.85); 
+      backdrop-filter: blur(20px); 
+      z-index: 10; 
+      flex-shrink: 0;
     }
     .brand-title-container { display: flex; flex-direction: column; }
     .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
     .brand-title-sub { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 600; }
 
-    .view-deck { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; }
+    .view-deck { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 16px; 
+      padding-bottom: calc(85px + env(safe-area-inset-bottom)); 
+      -webkit-overflow-scrolling: touch; 
+    }
     .feed-container { display: flex; flex-direction: column; gap: 20px; }
     
     .feed-card {
@@ -72,8 +115,7 @@
     .heart-like-toggle.is-active-favorite { color: #c92a2a; transform: scale(1.15); }
     .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 5px 12px; border-radius: 4px; color: var(--bg-surface); align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* DYNAMIC FILTER MENUS BAR styling */
-    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); flex-shrink: 0; }
     .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; width: 100%; }
     .filter-scroller::-webkit-scrollbar { display: none; }
     .chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); padding: 8px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
@@ -85,20 +127,67 @@
     #theater-zoom-viewport { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     #theater-zoom-image { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; transition: transform 0.05s ease-out; }
     
-    .floating-bag-cta { position: absolute; bottom: 20px; right: 20px; background: var(--accent); color: var(--bg-surface); padding: 14px 22px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50; display: none; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+    .floating-bag-cta { 
+      position: absolute; 
+      bottom: calc(20px + env(safe-area-inset-bottom)); 
+      right: 20px; 
+      left: 20px;
+      background: var(--accent); 
+      color: var(--bg-surface); 
+      padding: 16px 22px; 
+      border-radius: 12px; 
+      font-weight: bold; 
+      font-size: 0.85rem; 
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2); 
+      z-index: 50; 
+      display: none; 
+      border: none; 
+      cursor: pointer; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    .pwa-install-banner {
+      display: none;
+      background: var(--accent);
+      color: var(--bg-surface);
+      padding: 12px 16px;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      z-index: 15;
+      border-bottom: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
 
   <div class="phone-shell">
+    <div id="pwa-banner" class="pwa-install-banner">
+      <span>Install BESOINS App</span>
+      <button class="chip" style="background:var(--bg-surface); color:var(--accent); padding:4px 12px;" onclick="catalog.triggerPWAInstall()">Add</button>
+    </div>
+
     <header class="app-header">
-      <div class="brand-title-container">
-        <span class="brand-title-main">Besoins</span>
-        <span class="brand-title-sub">Fashion & More</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 38px; height: 38px; flex-shrink: 0;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%; height:100%;">
+            <path d="M260.5,88.2 C354.8,92.1 411.3,142.6 409.8,241.9 C408.2,341.2 322.7,422.3 228.4,418.4 C134.1,414.5 95.8,326.8 97.4,227.5 C99.0,128.2 166.2,84.3 260.5,88.2 Z" fill="#b8b9bc" />
+            <path d="M248.8,103.2 C338.2,106.8 418.5,130.6 422.1,223.4 C425.7,316.2 334.3,398.7 244.9,395.1 C155.5,391.5 106.3,322.4 102.7,229.6 C99.1,136.8 159.4,99.6 248.8,103.2 Z" fill="none" stroke="#222222" stroke-width="6" />
+          </svg>
+        </div>
+        <div class="brand-title-container">
+          <span class="brand-title-main">Besoins</span>
+          <span class="brand-title-sub">Fashion & More</span>
+        </div>
       </div>
     </header>
 
-    <!-- AUTOMATIC SYSTEM SEGMENT FILTER ROW SYSTEM -->
     <nav class="catalog-navigation-bar">
       <div class="filter-scroller" id="client-category-scroller">
         <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
@@ -118,6 +207,22 @@
   </div>
 
   <script>
+    let deferredPrompt = null;
+
+    // Register Service Worker for PWA compliance
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
+      });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+
     const DB = {
       instance: null,
       async init() {
@@ -182,9 +287,20 @@
         await this.loadTimelineData();
       },
 
+      triggerPWAInstall() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('pwa-banner').style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      },
+
       async loadTimelineData() {
         const data = await DB.fetchAllDrafts();
-        this.allItems = data.filter(d => d.status === 'Ready'); // Enforce strict production shielding layer
+        this.allItems = data.filter(d => d.status === 'Ready'); 
         this.buildCategoryFiltersUI();
         await this.renderFeedTimeline();
         this.updateBagFloatingCTAState();
@@ -198,7 +314,6 @@
           if(item.collection && item.collection.trim()) categories.add(item.collection.trim().toLowerCase());
         });
 
-        // Clear dynamic elements, keep 'All'
         container.innerHTML = `<div class="chip ${this.selectedCategory === 'all' ? 'chip-active' : ''}" onclick="catalog.filterCategory('all', this)">All Products</div>`;
         
         categories.forEach(cat => {
@@ -256,7 +371,6 @@
             }
           }
 
-          // DYNAMIC RATE GUESS HELPER GENERATOR MATRIX
           let guessPillsHtml = '';
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
@@ -293,7 +407,7 @@
             <button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">💬 Order via WhatsApp</button>
           `;
           anchor.appendChild(card);
-          if(this.cachedPincode) this.verifyPincodeTrigger(d.id); // Hydrate instant states
+          if(this.cachedPincode) this.verifyPincodeTrigger(d.id); 
         }
       },
 
@@ -313,20 +427,23 @@
 
         localStorage.setItem('Besoins_Active_Pincode', code);
         this.cachedPincode = code;
-        feedback.style.display = "block";
+        if(feedback) feedback.style.display = "block";
 
         const table = d.pincode_rates || {};
         if (table[code] !== undefined) {
           const fee = parseFloat(table[code]) || 0;
-          feedback.className = "pincode-feedback feedback-verified";
-          feedback.innerText = `✓ Standard Route Verified: Shipping ₹${fee}`;
-          priceBox.innerHTML = `<span class="price-tag">₹${(parseFloat(d.consumerPrice) || 0) + fee} Total</span> <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">(Inc. Shipping)</span>`;
+          if(feedback) {
+            feedback.className = "pincode-feedback feedback-verified";
+            feedback.innerText = `✓ Standard Route Verified: Shipping ₹${fee}`;
+          }
+          if(priceBox) priceBox.innerHTML = `<span class="price-tag">₹${(parseFloat(d.consumerPrice) || 0) + fee} Total</span> <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">(Inc. Shipping)</span>`;
         } else {
-          feedback.className = "pincode-feedback feedback-pending";
-          feedback.innerText = "⏳ Custom rate requested. Proceed to checkout to verify route ETA.";
-          priceBox.innerHTML = `<div style="display:flex; align-items:baseline; gap:6px;"><span class="price-tag">₹${d.consumerPrice}</span><span class="shipping-extra-tag">+ Shipping Extra</span></div>`;
+          if(feedback) {
+            feedback.className = "pincode-feedback feedback-pending";
+            feedback.innerText = "⏳ Custom rate requested. Proceed to checkout to verify route ETA.";
+          }
+          if(priceBox) priceBox.innerHTML = `<div style="display:flex; align-items:baseline; gap:6px;"><span class="price-tag">₹${d.consumerPrice}</span><span class="shipping-extra-tag">+ Shipping Extra</span></div>`;
           
-          // Log fallback search query event into local store buffer safely
           let requests = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
           if(!requests[id]) requests[id] = [];
           if(!requests[id].includes(code)) requests[id].push(code);
@@ -344,8 +461,12 @@
       updateBagFloatingCTAState() {
         const cta = document.getElementById('floating-bag-trigger');
         if (!cta) return;
-        if(this.likedIDs.length > 0) { cta.innerText = `Inquire Selected Items (${this.likedIDs.length})`; cta.style.display = 'block'; } 
-        else { cta.style.display = 'none'; }
+        if(this.likedIDs.length > 0) { 
+          cta.innerText = `Inquire Selected Items (${this.likedIDs.length})`; 
+          cta.style.display = 'block'; 
+        } else { 
+          cta.style.display = 'none'; 
+        }
       },
 
       triggerDirectWhatsAppInquiry(id) {
