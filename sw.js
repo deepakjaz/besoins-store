@@ -1,4 +1,4 @@
-const CACHE_NAME = 'besoins-v8-cache';
+const CACHE_NAME = 'besoins-v9-cache';
 const ASSETS = [
   './index.html',
   './studio.html',
