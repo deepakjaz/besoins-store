@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>BESOINS - Integrated Platform Hub</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#222222">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <title>BESOINS - Official Platform Hub</title>
   <style>
     /* =========================================================================
        🎨 COMBINED ROOT STYLES & BRUTALIST UI TOKENS
@@ -34,27 +29,38 @@
     }
 
     html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; position: fixed; }
-    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
     
-    /* UNIVERSAL INTERACTIVE HEADER LAYER */
+    /* THE STABLE VIEWPORT CONTAINMENT CELL UNIT */
+    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: var(--bg-surface); display: flex; flex-direction: column; position: relative; overflow: hidden; border-left: 1px solid var(--border); border-right: 1px solid var(--border); z-index: 1; }
+    
+    /* UNIVERSAL INTERACTIVE HEADER LAYER WITH HAMBURGER DROPDOWN */
     .app-header {
-      height: 75px; padding: 0 20px; padding-top: max(0px, env(safe-area-inset-top)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.85); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0;
+      height: 75px; padding: 0 20px; padding-top: max(0px, env(safe-area-inset-top)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(229, 230, 232, 0.85); backdrop-filter: blur(20px); z-index: 10; flex-shrink: 0; position: relative; width: 100%;
     }
     .brand-title-container { display: flex; flex-direction: column; }
     .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
     .brand-title-sub { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 600; }
-    .header-lock-status { font-size: 0.7rem; background: var(--accent); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-weight: bold; border: none; }
+    
+    /* HAMBURGER STYLING ELEMENTS */
+    .hamburger-icon-trigger { font-size: 1.6rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; }
+    .header-dropdown-menu { position: absolute; top: 75px; right: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; width: 200px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: none; flex-direction: column; z-index: 100; overflow: hidden; }
+    .dropdown-menu-item { padding: 14px 16px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; background: none; border: none; width: 100%; }
+    .dropdown-menu-item:last-child { border-bottom: none; }
+    .dropdown-menu-item:active { background: var(--bg-active); }
 
     /* RUNTIME SWITCHABLE VIEW CONFIGURATIONS */
-    .view-deck { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
-    .global-view-wrapper { display: none; } .global-view-wrapper.active-frame { display: block; }
-    .feed-container { display: flex; flex-direction: column; gap: 20px; }
+    .view-deck { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: calc(85px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
+    .global-view-wrapper { display: none; width: 100%; } .global-view-wrapper.active-frame { display: block; }
+    .feed-container { display: flex; flex-direction: column; gap: 20px; width: 100%; }
     
     /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS */
-    .feed-card { background: var(--bg-card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; }
+    .feed-card { background: var(--bg-card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); width: 100%; }
+    
+    /* HARD OVERRIDE PIN: STOPS MEDIA IMAGES BLEEDING OUT INTO DESKTOP BACKGROUND BACKDROPS */
+    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 300px; max-height: 300px; position: relative; }
     .card-media-gallery::-webkit-scrollbar { display: none; }
-    .card-media-gallery img { width: 92%; flex-shrink: 0; height: 300px; object-fit: contain; border-radius: 6px; scroll-snap-align: start; background: #e1e2e4; border: 1px solid var(--border); cursor: zoom-in; }
+    .card-media-gallery img { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; scroll-snap-align: start; background: #e1e2e4; border: 1px solid var(--border); cursor: zoom-in; display: block; }
+    
     .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.3rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
     .feed-card-body h3::first-letter { text-transform: uppercase; }
     .feed-card-body p { font-size: 0.9rem; color: #333333; line-height: 1.5; margin-top: 6px; white-space: pre-wrap; }
@@ -64,89 +70,106 @@
     .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
     .shipping-extra-tag { font-size: 0.8rem; color: var(--warning); font-weight: 700; text-transform: uppercase; }
     .action-btn { padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; }
-    .pincode-widget { margin-top: 6px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; }
+    
+    .pincode-widget { margin-top: 6px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; width: 100%; }
     .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
-    .pincode-input { flex: 1; min-width: 0; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; }
-    .pincode-btn { padding: 0 18px; background: var(--accent); color: var(--bg-surface); font-weight: 700; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
-    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 8px 12px; border-radius: 6px; display: block; width: 100%; text-align: left; margin-top: 4px; }
+    .pincode-input { flex: 1; min-width: 0; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; transition: border-color 0.2s ease; }
+    .pincode-input.pulse-alert { border-color: var(--warning); box-shadow: 0 0 8px rgba(207, 112, 17, 0.4); }
+    .pincode-btn { padding: 0 14px; background: var(--accent); color: var(--bg-surface); font-weight: 700; font-size: 0.75rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
+    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 8px 12px; border-radius: 6px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.4; }
     .feedback-pending { background: rgba(207, 112, 17, 0.08); color: var(--warning); border: 1px solid rgba(207, 112, 17, 0.15); }
     .feedback-verified { background: rgba(0, 0, 0, 0.04); color: var(--accent); border: 1px solid var(--border); }
     .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
     .guess-pill { font-size: 0.7rem; background: var(--bg-active); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #444; border: 1px solid rgba(0,0,0,0.05); }
-    .heart-like-toggle { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #b8b9bc; transition: transform 0.12s ease; z-index: 5; }
-    .heart-like-toggle.is-active-favorite { color: #c92a2a; transform: scale(1.15); }
+    
+    /* PUBLIC HEART FAVS MODULE BUTTON */
+    .heart-like-toggle { position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.8); border: 1px solid var(--border); padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 4px; transition: all 0.12s ease; z-index: 5; }
+    .heart-like-toggle.is-active-favorite { border-color: #c92a2a; color: #c92a2a; transform: scale(1.05); background: #fff; }
     .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 5px 12px; border-radius: 4px; color: var(--bg-surface); align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* 🏷️ CUSTOMER CATALOG FILTER NAVIGATION BAR */
-    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); flex-shrink: 0; }
+    /* 🏷️ CUSTOMER CATALOG NAVIGATION FILTER BAR */
+    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface); flex-shrink: 0; width: 100%; }
     .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; width: 100%; }
     .filter-scroller::-webkit-scrollbar { display: none; }
     .chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); padding: 8px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
     .chip.chip-active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+    .empty-state { color: var(--text-muted); text-align: center; padding: 60px 20px; font-size: 0.9rem; font-family: serif; font-style: italic; }
 
-    /* 🛠️ SECURE WORKSPACE SPECIFIC DRAWERS & ACTIONS */
+    /* 🛠========= SECURE WORKSPACE BACKEND UI ELEMENTS ========= */
+    .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 14px; }
+    .form-group label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .native-input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); border-radius: 6px; font-size: 0.9rem; outline: none; }
     .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-top: 4px; }
     .btn-reject { background: #f2dede; color: var(--danger); border: 1px solid rgba(179,38,30,0.15); }
     .btn-edit-curate { background: var(--bg-active); color: var(--accent); border: 1px solid var(--border); }
-    .intake-meta-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .form-label { display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; font-weight: 700; }
-    select, textarea, input.native-input { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); padding: 14px; font-size: 0.95rem; border-radius: 8px; outline: none; }
-    .export-panel-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .export-panel-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; width: 100%; }
     .export-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
     .export-table th { text-align: left; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
     .export-table td { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-    /* FULLSCREEN OVERLAYS AND DECK TABS */
-    .fullscreen-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-surface); z-index: 100; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.22s ease-out; }
+    /* HARDWARE ASSIGNMENT FIX: REFINES THE FULLSCREEN DRAWER LAYER LAYER OVERLAPS */
+    .fullscreen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-surface); z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.22s ease-out; }
     .fullscreen-overlay.overlay-open { transform: translateY(0) !important; }
-    .overlay-header { height: 70px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .overlay-body { flex: 1; overflow-y: auto; padding: 16px; }
-    .editor-actions-bar { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface); display: grid; grid-template-columns: 1fr 2fr; gap: 12px; flex-shrink: 0; }
-    .drawer-media-uploader { background: var(--bg-card); border: 1px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer; }
-    .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .overlay-header { height: 70px; padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; background: var(--bg-card); }
+    .overlay-body { flex: 1; overflow-y: auto; padding: 16px; width: 100%; }
+    .editor-actions-bar { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface); display: grid; grid-template-columns: 1fr 2fr; gap: 12px; flex-shrink: 0; width: 100%; }
+    .drawer-media-uploader { background: var(--bg-card); border: 1px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; }
+    .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; width: 100%; }
     .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: contain; background:#e1e2e4; border-radius: 6px; border: 1px solid var(--border); }
     .matrix-editor-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
     .matrix-editor-table th { text-align: left; font-size: 0.7rem; color: var(--text-muted); padding-bottom: 6px; }
     .matrix-editor-table td { padding: 4px 0; }
     .remove-matrix-row-btn { background: none; border: none; color: var(--danger); font-size: 1.4rem; cursor: pointer; padding: 0 8px; }
-    .add-matrix-row-trigger { background: var(--bg-surface); border: 1px dashed var(--border); padding: 12px; border-radius: 6px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; }
+    .add-matrix-row-trigger { background: var(--bg-surface); border: 1px dashed var(--border); padding: 12px; border-radius: 6px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; width: 100%; }
 
-    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(229, 230, 232, 0.95); border-top: 1px solid var(--border); display: none; grid-template-columns: 1fr 1fr; z-index: 20; backdrop-filter: blur(20px); }
+    /* STICKY BOTTOM SYSTEM NAVIGATION FOOTER */
+    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(75px + env(safe-area-inset-bottom)); background: rgba(229, 230, 232, 0.95); border-top: 1px solid var(--border); z-index: 20; backdrop-filter: blur(20px); padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; }
     .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; font-size: 0.65rem; font-weight: 700; gap: 4px; text-transform: uppercase; }
     .tab-item.tab-active { color: var(--accent); }
+    .tab-counter-badge { background: var(--accent); color: var(--bg-surface); padding: 1px 6px; border-radius: 10px; font-size: 0.6rem; font-weight: bold; margin-left: 2px; }
 
+    /* SECURITY PIN SHIELD GATEWAY CURTAIN */
     #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--bg-surface); z-index:999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; }
     .security-card-box { background:var(--bg-card); padding:30px; border-radius:12px; border:1px solid var(--border); width:100%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.05); }
-    .floating-bag-cta { position: absolute; bottom: 20px; right: 20px; background: var(--accent); color: var(--bg-surface); padding: 14px 22px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50; display: none; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
     .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border); padding: 12px; border-radius: 10px; margin-bottom: 8px; }
+    .supplier-pill { background: var(--bg-active); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
   </style>
 </head>
 <body>
 
-  <!-- THE MASTER PROTECTION SECURITY ENTRY GATEWAY CURTAIN LAYER -->
-  <div id="studio-security-shield-curtain">
-    <div class="security-card-box">
-      <h2 style="font-family:serif; letter-spacing:1px; margin-bottom:6px; text-transform:uppercase;">Studio Security</h2>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Verification sequence required for workspace decryption.</p>
-      <input type="password" id="gateway-pin-field" class="native-input" placeholder="Enter Access Password Key" style="text-align:center; margin-bottom:14px; letter-spacing:4px;">
-      <div style="display:flex; gap:10px;">
-        <button class="action-btn" style="background:var(--border); color:var(--accent); flex:1;" onclick="globalNavigation.dismissSecurityCurtain()">Cancel</button>
-        <button class="action-btn" style="background:var(--accent); color:var(--bg-surface); flex:2;" onclick="security.verifyPINAttempt()">Unlock Framework</button>
+  <div class="phone-shell">
+    
+    <!-- 🔒 PRIVILEGED GATEWAY LOCK SHIELD BLOCK -->
+    <div id="studio-security-shield-curtain">
+      <div class="security-card-box">
+        <h3 style="font-family:serif; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase;">Operator Gateway</h3>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px;">Provide encrypted authorization sequence credentials.</p>
+        <div class="form-group">
+          <input type="password" id="gateway-pin-field" class="native-input" placeholder="••••" style="text-align:center; font-size:1.6rem; letter-spacing:8px; padding:10px;">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+          <button type="button" class="action-btn" style="background:var(--bg-active);" onclick="globalNavigation.dismissSecurityCurtain()">Cancel</button>
+          <button type="button" class="action-btn" style="background:var(--accent); color:#fff;" onclick="security.verifyPINAttempt()">Verify</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="phone-shell">
-    <!-- CORE SYSTEM INTEGRATED HEADER LAYOUT -->
+    <!-- CORE SYSTEM INTEGRATED HEADER LAYOUT WITH TOP HAMBURGER MENU -->
     <header class="app-header">
       <div class="brand-title-container">
         <span class="brand-title-main" id="dynamic-header-title">Besoins</span>
         <span class="brand-title-sub" id="dynamic-header-subtitle">Fashion & More</span>
       </div>
-      <button class="header-lock-status" id="master-panel-action-trigger" onclick="globalNavigation.handleHeaderActionButton()">⚙️ Owner Admin Panel</button>
+      
+      <button class="hamburger-icon-trigger" onclick="globalNavigation.toggleHeaderDropdownMenu(event)">☰</button>
+      
+      <div class="header-dropdown-menu" id="header-hamburger-dropdown-list">
+        <button class="dropdown-menu-item" id="dropdown-action-portal-gate" onclick="globalNavigation.handleDropdownAdminClick()">⚙️ Owner Admin Panel</button>
+        <button class="dropdown-menu-item" style="color: var(--text-muted);" onclick="security.triggerPasswordResetOption()">Reset Secure PIN</button>
+      </div>
     </header>
 
-    <!-- CUSTOMER CATALOG FILTER CONTROLS (AUTO-HIDDEN IN OPERATION TRACKS) -->
+    <!-- CUSTOMER CATALOG FILTER CONTROLS -->
     <nav class="catalog-navigation-bar" id="public-navigation-filter-row">
       <div class="filter-scroller" id="client-category-scroller">
         <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
@@ -156,16 +179,17 @@
     <!-- CORE INTERACTIVE APPARATUS DECK ARCHITECTURE -->
     <div class="view-deck">
       
-      <!-- ===================================================================
-           🛒 VIEW DECK 1: PUBLIC WHITE-LABELED CUSTOMER STOREFRONT
-           =================================================================== -->
+      <!-- 🛒 VIEW DECK 1: PUBLIC MAIN STOREFRONT TIMELINE GRID -->
       <section id="frame-customer-storefront" class="global-view-wrapper active-frame">
         <div id="customer-cards-anchor" class="feed-container"></div>
       </section>
 
-      <!-- ===================================================================
-           📥 VIEW DECK 2: OPERATIONAL WORKSPACE REVIEWS STREAM
-           =================================================================== -->
+      <!-- ❤️ VIEW DECK 2: CUSTOMER MY SELECTION LIST -->
+      <section id="frame-customer-selections" class="global-view-wrapper">
+        <div id="customer-selections-anchor" class="feed-container"></div>
+      </section>
+
+      <!-- 📥 VIEW DECK 3: OPERATIONAL WORKSPACE REVIEWS STREAM -->
       <section id="pane-feed" class="global-view-wrapper">
         <div class="export-panel-container">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -190,22 +214,20 @@
         <div id="feed-cards-anchor" class="feed-container" style="margin-top: 16px;"></div>
       </section>
 
-      <!-- ===================================================================
-           ➕ VIEW DECK 3: RAW UNORGANIZED CHAT INGESTER STREAM
-           =================================================================== -->
+      <!-- ➕ VIEW DECK 4: RAW UNORGANIZED CHAT INGESTER STREAM -->
       <section id="pane-intake" class="global-view-wrapper">
         <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
-          <div class="intake-meta-row">
-            <div>
+          <div class="intake-meta-row" style="display:grid; grid-template-columns: 1fr; gap:10px;">
+            <div class="form-group">
               <label class="form-label">Sourcing Supplier Factory</label>
-              <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
                 <select id="intake-supplier-select" style="flex:1; height:46px;"></select>
-                <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
+                <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0; flex-shrink:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
               </div>
             </div>
-            <div>
+            <div class="form-group">
               <label class="form-label">Default Markup Margin</label>
-              <select id="intake-margin-preset" style="height:46px;">
+              <select id="intake-margin-preset" style="height:46px; width: 100%;">
                 <option value="1.25">Standard (+25%)</option>
                 <option value="1.20">High Ticket (+20%)</option>
                 <option value="1.30">Premium (+30%)</option>
@@ -214,17 +236,14 @@
           </div>
           <div class="form-group">
             <label class="form-label">Raw Sourced Message Content Block</label>
-            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats... Keyword clean triggers execute automatically."></textarea>
+            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats..." style="width: 100%; resize: none;"></textarea>
           </div>
           <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
         </form>
       </section>
 
-    </div>
+    </div> <!-- Close view-deck -->
 
-    <!-- ===================================================================
-         ⚙️ SYSTEM DRAWERS AND FULL SCREEN INTERFACES
-         =================================================================== -->
     <!-- SECURE MASTER CURATOR DRAWER INTERFACE PANEL -->
     <section class="fullscreen-overlay" id="curation-drawer">
       <div class="overlay-header">
@@ -241,7 +260,7 @@
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
           </div>
 
-          <div class="form-group" style="margin-bottom:12px;">
+          <div class="form-group">
             <label class="form-label">Customer Display Title Heading</label>
             <input type="text" id="curate-title" class="native-input" required>
           </div>
@@ -251,7 +270,7 @@
             <div><label class="form-label">Listed Retail Price (₹)</label><input type="number" id="curate-consumer-price" class="native-input"></div>
           </div>
 
-          <div class="form-group" style="margin-bottom:16px; border:1px solid var(--border); padding:12px; border-radius:8px; background:rgba(0,0,0,0.01);">
+          <div class="form-group" style="border:1px solid var(--border); padding:12px; border-radius:8px; background:rgba(0,0,0,0.01);">
             <label class="form-label" style="font-weight:700;">Approved Regional Pincode Shipping Matrices</label>
             <div style="display:flex; gap:8px; margin-bottom:8px;">
               <input type="text" id="matrix-pincode-input" class="native-input" placeholder="Pincode" style="padding:8px; height:36px;">
@@ -264,12 +283,12 @@
             </table>
           </div>
 
-          <div class="form-group" style="margin-bottom:12px;">
+          <div class="form-group">
             <label class="form-label">Clean White-Labeled Client Description</label>
             <textarea id="curate-description" rows="4"></textarea>
           </div>
 
-          <div class="form-group" style="margin-bottom:12px;">
+          <div class="form-group">
             <label class="form-label">Technical Product Specifications Dictionary</label>
             <table class="matrix-editor-table">
               <thead><tr><th>Spec Key</th><th>Value Mapping</th><th style="width:40px;"></th></tr></thead>
@@ -278,16 +297,16 @@
             <div class="add-matrix-row-trigger" onclick="admin.appendBlankAttributeRow()">+ Append Specification Field</div>
           </div>
 
-          <div class="intake-meta-row">
-            <div><label class="form-label">Category Chip Tab</label><input type="text" id="curate-category" class="native-input"></div>
-            <div><label class="form-label">Marketing Collection</label><input type="text" id="curate-collection" class="native-input"></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group"><label class="form-label">Category Chip Tab</label><input type="text" id="curate-category" class="native-input"></div>
+            <div class="form-group"><label class="form-label">Marketing Collection</label><input type="text" id="curate-collection" class="native-input"></div>
           </div>
-          <div class="intake-meta-row">
-            <div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
               <label class="form-label">Pipeline Workflow Stage</label>
               <select id="curate-status" style="height:44px;"><option value="Imported">Imported</option><option value="Reviewing">Reviewing</option><option value="Ready">Ready to Share</option></select>
             </div>
-            <div>
+            <div class="form-group">
               <label class="form-label">Triage Decision Control</label>
               <select id="curate-decision" style="height:44px;"><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Rejected">Rejected</option></select>
             </div>
@@ -320,46 +339,56 @@
       </div>
     </section>
 
-    <!-- CUSTOMER DYNAMIC CHECKOUT SELECTIONS MODULE BAR -->
-    <button class="floating-bag-cta" id="floating-bag-trigger" onclick="catalog.checkoutBagIntent()">Inquire Selected Items (0)</button>
+    <!-- 🛒 UNIFIED PUBLIC CUSTOMER APPLICATION SYSTEM NAVIGATION TABBAR -->
+    <nav class="bottom-tabs" id="public-customer-navigation-bar" style="grid-template-columns: repeat(4, 1fr); width: 100%;">
+      <div class="tab-item tab-active" id="cust-nav-shop" onclick="catalog.switchClientActiveTab('shop')">🛍️ Shop</div>
+      <div class="tab-item" id="cust-nav-list" onclick="catalog.switchClientActiveTab('list')">❤️ Selection <span class="tab-counter-badge" id="badge-selection-count">0</span></div>
+      <div class="tab-item" id="cust-nav-instagram" onclick="window.open('https://instagram.com/besoins.in', '_blank')">📸 Instagram</div>
+      <div class="tab-item" id="cust-nav-whatsapp" onclick="window.open('https://wa.me/919029515185', '_blank')">💬 WhatsApp</div>
+    </nav>
 
-    <!-- PRIVILEGED SECURE NAVIGATION FRAME SYSTEMBAR (AUTO-HIDDEN FROM VIEWERS) -->
-    <nav class="bottom-tabs" id="privileged-studio-tabs-bar">
+    <!-- 🔒 PRIVILEGED OWNER SECURE OPERATIONS NAVIGATION BAR -->
+    <nav class="bottom-tabs" id="privileged-studio-tabs-bar" style="display: none; grid-template-columns: 1fr 1fr;">
       <div class="tab-item tab-active" id="nav-feed" onclick="admin.navigate('feed')">📥 Workspace Deck</div>
       <div class="tab-item" id="nav-intake" onclick="admin.navigate('intake')">➕ Stream Ingest</div>
     </nav>
-  </div>
+  </div> <!-- Close phone-shell -->
 
   <!-- THEATER IMAGE VIEWER VIEWPORT LAYER -->
-  <div id="gallery-theater-overlay">
-    <button class="theater-close-btn" onclick="theater.dismiss()">×</button>
-    <div id="theater-zoom-viewport"><img id="theater-zoom-image" src="" alt="Zoom Window"></div>
+  <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 200; display: none; justify-content: center; align-items: center; touch-action: none;">
+    <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 210; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
+    <div id="theater-zoom-viewport" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden;"><img id="theater-zoom-image" src="" alt="Zoom Window" style="max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; transition: transform 0.05s ease-out;"></div>
   </div>
 
-  <!-- ===================================================================
-       ⚙️ SYSTEM CONTROL ENGINES & SHARED RUNTIME DATA ROUTINES
-       =================================================================== -->
   <script>
-    // GLOBAL ARCHITECTURAL ROUTING ENGINE CONTROLLER
     const globalNavigation = {
-      activeContext: 'customer', // Alternatives: 'customer', 'studio'
+      activeContext: 'customer',
 
-      handleHeaderActionButton() {
+      toggleHeaderDropdownMenu(e) {
+        e.stopPropagation();
+        const dropdown = document.getElementById('header-hamburger-dropdown-list');
+        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+      },
+
+      closeHeaderDropdownMenu() {
+        const drop = document.getElementById('header-hamburger-dropdown-list');
+        if (drop) drop.style.display = 'none';
+      },
+
+      handleDropdownAdminClick() {
+        this.closeHeaderDropdownMenu();
         if (this.activeContext === 'studio') {
-          // If already in admin zone, lock it down and immediately return to customer layout
           this.activeContext = 'customer';
-          document.getElementById('master-panel-action-trigger').innerText = "⚙️ Owner Admin Panel";
+          document.getElementById('dropdown-action-portal-gate').innerText = "⚙️ Owner Admin Panel";
           document.getElementById('privileged-studio-tabs-bar').style.display = 'none';
+          document.getElementById('public-customer-navigation-bar').style.display = 'grid';
           document.getElementById('public-navigation-filter-row').style.display = 'flex';
           
           document.getElementById('dynamic-header-title').innerText = "Besoins";
           document.getElementById('dynamic-header-subtitle').innerText = "Fashion & More";
 
-          document.querySelectorAll('.global-view-wrapper').forEach(v => v.classList.remove('active-frame'));
-          document.getElementById('frame-customer-storefront').classList.add('active-frame');
-          catalog.loadTimelineData();
+          catalog.switchClientActiveTab('shop');
         } else {
-          // Trigger the password challenge sheet layer
           document.getElementById('gateway-pin-field').value = '';
           document.getElementById('studio-security-shield-curtain').style.display = 'flex';
         }
@@ -372,8 +401,9 @@
       activateStudioWorkspace() {
         this.activeContext = 'studio';
         this.dismissSecurityCurtain();
-        document.getElementById('master-panel-action-trigger').innerText = "🔒 Exit Studio";
+        document.getElementById('dropdown-action-portal-gate').innerText = "🔒 Exit Studio Panel";
         document.getElementById('privileged-studio-tabs-bar').style.display = 'grid';
+        document.getElementById('public-customer-navigation-bar').style.display = 'none';
         document.getElementById('public-navigation-filter-row').style.display = 'none';
 
         document.getElementById('dynamic-header-title').innerText = "Studio Panel";
@@ -382,6 +412,8 @@
         admin.start();
       }
     };
+
+    document.addEventListener('click', () => globalNavigation.closeHeaderDropdownMenu());
 
     const security = {
       vaultKey: 'Besoins_Master_Secure_PIN_V5',
@@ -403,7 +435,6 @@
       }
     };
 
-    // SHARED CENTRAL INTERNET-FREE CORE DATA LAYER
     const DB = {
       instance: null,
       init() {
@@ -418,71 +449,11 @@
           };
           req.onsuccess = (e) => { 
             this.instance = e.target.result; 
-            this.seedDemoCatalogProducts().then(() => resolve());
+            resolve();
           };
           req.onerror = (e) => reject(e.target.error);
         });
       },
-
-      // SEED LOGIC: GENERATES HIGH-END DEMO EXAMPLES ON RAW MEMORY INITIALIZATION
-      async seedDemoCatalogProducts() {
-        const trans = this.instance.transaction('drafts', 'readonly');
-        const countReq = trans.objectStore('drafts').count();
-        
-        return new Promise((resolve) => {
-          countReq.onsuccess = async () => {
-            if (countReq.result === 0) {
-              // Safe pre-seeded high fidelity abstract geometric media structures
-              const demoImg1 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'><rect width='100%' height='100%' fill='%23c8c9cc'/><text x='50%' y='50%' font-family='serif' font-size='20' fill='%23222' text-anchor='middle'>Raw Concrete Texture Drop</text></svg>";
-              const demoImg2 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'><rect width='100%' height='100%' fill='%23b8b9bc'/><text x='50%' y='50%' font-family='serif' font-size='20' fill='%23222' text-anchor='middle'>Structured Heavy Overshirt</text></svg>";
-              const demoImg3 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'><rect width='100%' height='100%' fill='%23f0f1f2'/><text x='50%' y='50%' font-family='serif' font-size='20' fill='%23222' text-anchor='middle'>Asymmetric Brutalist Cloak</text></svg>";
-
-              const demoItems = [
-                {
-                  id: 'drf_demo_1', supplierId: 'sup_1', title: 'Brutalist Raw Tunic',
-                  description: 'Heavyweight organic cotton jersey variant tailored with structured shoulders and dropped geometric perimeter margins. Built for clean lines.',
-                  basePrice: 1200, consumerPrice: 1500, status: 'Ready', decision: 'Accepted',
-                  category: 'tunics', collection: 'concrete-drop', has_images: true,
-                  pincode_rates: { "395007": 0, "400001": 80, "110001": 120 },
-                  customAttributes: { "fabric": "100% Cotton Twill", "weight": "380 GSM Heavy", "sizing": "Oversized Fit" },
-                  updatedAt: new Date().toISOString()
-                },
-                {
-                  id: 'drf_demo_2', supplierId: 'sup_1', title: 'Structured Cargo Deck Coat',
-                  description: 'Raw elements proofing jacket constructed with twin-needle canvas layers, asymmetric hardware zippers, and raw reinforced stitching accents.',
-                  basePrice: 3200, consumerPrice: 4000, status: 'Ready', decision: 'Accepted',
-                  category: 'outerwear', collection: 'concrete-drop', has_images: true,
-                  pincode_rates: { "395007": 0, "395001": 40 },
-                  customAttributes: { "fabric": "Waxed Canvas Heavy", "hardware": "Matte Iron Rivets", "pockets": "Modular Dual Utility" },
-                  updatedAt: new Date().toISOString()
-                },
-                {
-                  id: 'drf_demo_3', supplierId: 'sup_2', title: 'Asymmetric Bleached Lounge Pant',
-                  description: 'Mineral-washed flowing technical weave profile introducing wide-leg geometry parameters and dual raw seam hems.',
-                  basePrice: 1800, consumerPrice: 2250, status: 'Ready', decision: 'Accepted',
-                  category: 'trousers', collection: 'minimalist-lounge', has_images: true,
-                  pincode_rates: { "395007": 0, "400001": 50 },
-                  customAttributes: { "fabric": "Linen Viscose Matrix", "wash": "Acid Bleached Stone", "fit": "Relaxed Straight" },
-                  updatedAt: new Date().toISOString()
-                }
-              ];
-
-              const rwTrans = this.instance.transaction(['drafts', 'media_blocks'], 'readwrite');
-              const dStore = rwTrans.objectStore('drafts');
-              const mStore = rwTrans.objectStore('media_blocks');
-
-              for(const item of demoItems) {
-                dStore.put(item);
-              }
-              mStore.put({ draftId: 'drf_demo_1', images: [demoImg1] });
-              mStore.put({ draftId: 'drf_demo_2', images: [demoImg2] });
-              mStore.put({ draftId: 'drf_demo_3', images: [demoImg3] });
-            }
-            resolve();
-          };
-        });
-      },
-
       async operation(store, mode, method, payload = null) {
         if (!this.instance) await this.init();
         return new Promise((resolve, reject) => {
@@ -537,9 +508,6 @@
       }
     };
 
-    // ===================================================================
-    // 🛒 ARCHITECTURE CLIENT LAYOUT ENGINE (CUSTOMER CODES)
-    // ===================================================================
     const theater = {
       scale: 1, lastScale: 1, startDistance: 0, active: false,
       init() {
@@ -566,14 +534,24 @@
     };
 
     const catalog = {
-      allItems: [], selectedCategory: 'all', likedIDs: [], cachedPincode: '',
+      allItems: [], selectedCategory: 'all', likedIDs: [], cachedPincode: '', activeClientTab: 'shop', staticLikesDatabase: {},
 
       async boot() {
         theater.init();
         this.likedIDs = JSON.parse(localStorage.getItem('Besoins_Likes_Cache') || '[]');
         this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
+        this.initializeMockLikesMatrix();
         await DB.init();
         await this.loadTimelineData();
+      },
+
+      initializeMockLikesMatrix() {
+        let saved = localStorage.getItem('Besoins_Public_Likes_Matrix');
+        if(saved) { this.staticLikesDatabase = JSON.parse(saved); } 
+        else {
+          this.staticLikesDatabase = { 'drf_demo_1': 142, 'drf_demo_2': 98 };
+          localStorage.setItem('Besoins_Public_Likes_Matrix', JSON.stringify(this.staticLikesDatabase));
+        }
       },
 
       async loadTimelineData() {
@@ -582,12 +560,29 @@
         const request = trans.objectStore('drafts').getAll();
         
         request.onsuccess = async () => {
-          const data = request.result || [];
-          this.allItems = data.filter(d => d.status === 'Ready'); 
+          this.allItems = (request.result || []).filter(d => d.status === 'Ready'); 
           this.buildCategoryFiltersUI();
           await this.renderFeedTimeline();
           this.updateBagFloatingCTAState();
         };
+      },
+
+      switchClientActiveTab(target) {
+        this.activeClientTab = target;
+        document.querySelectorAll('#public-customer-navigation-bar .tab-item').forEach(el => el.classList.remove('tab-active'));
+        document.querySelectorAll('.global-view-wrapper').forEach(v => v.classList.remove('active-frame'));
+
+        if(target === 'shop') {
+          document.getElementById('cust-nav-shop').classList.add('tab-active');
+          document.getElementById('frame-customer-storefront').classList.add('active-frame');
+          document.getElementById('public-navigation-filter-row').style.display = 'flex';
+          this.renderFeedTimeline();
+        } else if(target === 'list') {
+          document.getElementById('cust-nav-list').classList.add('tab-active');
+          document.getElementById('frame-customer-selections').classList.add('active-frame');
+          document.getElementById('public-navigation-filter-row').style.display = 'none';
+          this.renderSelectionsTabTimeline();
+        }
       },
 
       buildCategoryFiltersUI() {
@@ -599,7 +594,6 @@
         });
 
         container.innerHTML = `<div class="chip ${this.selectedCategory === 'all' ? 'chip-active' : ''}" onclick="catalog.filterCategory('all', this)">All Collections</div>`;
-        
         categories.forEach(cat => {
           const div = document.createElement('div');
           div.className = `chip ${this.selectedCategory === cat ? 'chip-active' : ''}`;
@@ -619,27 +613,46 @@
       async renderFeedTimeline() {
         const anchor = document.getElementById('customer-cards-anchor');
         if (!anchor) return;
-
         const filtered = this.allItems.filter(item => {
           if (this.selectedCategory === 'all') return true;
-          const catMatch = item.category && item.category.toLowerCase().trim() === this.selectedCategory;
-          const colMatch = item.collection && item.collection.toLowerCase().trim() === this.selectedCategory;
-          return catMatch || colMatch;
+          return (item.category && item.category.toLowerCase().trim() === this.selectedCategory) ||
+                 (item.collection && item.collection.toLowerCase().trim() === this.selectedCategory);
         });
+        await this.compileCardsHTMLIntoAnchor(filtered, anchor, true);
+      },
 
-        anchor.innerHTML = '';
-        if (filtered.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Collection processing updates.</h3><p>Check back shortly.</p></div>`;
+      async renderSelectionsTabTimeline() {
+        const anchor = document.getElementById('customer-selections-anchor');
+        if (!anchor) return;
+        const selectedItems = this.allItems.filter(item => this.likedIDs.includes(item.id));
+        
+        if(selectedItems.length === 0) {
+          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
+          return;
+        }
+        await this.compileCardsHTMLIntoAnchor(selectedItems, anchor, false);
+        
+        const ctaRow = document.createElement('div');
+        ctaRow.style.padding = '10px 0';
+        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800; height:50px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
+        anchor.appendChild(ctaRow);
+      },
+
+      async compileCardsHTMLIntoAnchor(itemsList, anchorNode, appendInputsAndActions = true) {
+        anchorNode.innerHTML = '';
+        if (itemsList.length === 0) {
+          anchorNode.innerHTML = `<div class="empty-state"><h3>Collection updates processing.</h3><p>Check back shortly.</p></div>`;
           return;
         }
 
-        filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        itemsList.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-        for (const d of filtered) {
+        for (const d of itemsList) {
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div');
           card.className = 'feed-card';
           const isFav = this.likedIDs.includes(d.id);
+          const currentCount = this.staticLikesDatabase[d.id] || 0;
 
           let chipsHtml = '';
           for (const [key, value] of Object.entries(d.customAttributes)) {
@@ -650,7 +663,6 @@
           if (d.has_images) {
             const trans = DB.instance.transaction('media_blocks', 'readonly');
             const mediaReq = trans.objectStore('media_blocks').get(d.id);
-            
             await new Promise((res) => {
               mediaReq.onsuccess = () => {
                 const block = mediaReq.result;
@@ -667,40 +679,50 @@
           let guessPillsHtml = '';
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
-            guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.65rem; color:var(--text-muted);">Quick Selection:</span>` +
+            guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
               matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
+          }
+
+          let interactiveWorkflowBlocks = '';
+          if (appendInputsAndActions) {
+            interactiveWorkflowBlocks = `
+              <div class="pincode-widget">
+                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area (Shipping &amp; ETA)</label>
+                <div class="pincode-row-inputs">
+                  <input type="text" class="pincode-input" id="input-pin-${d.id}" value="${this.cachedPincode}" placeholder="6-digit Pincode" onfocus="this.classList.remove('pulse-alert')">
+                  <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${d.id}')">Log Location</button>
+                </div>
+                ${guessPillsHtml}
+                <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
+              </div>
+
+              <button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800; margin-top:4px;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">
+                💬 Check Dispatch &amp; Stock Availability
+              </button>
+            `;
           }
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="catalog.handleLikeTap('${d.id}', this)">♥</div>
+            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="catalog.handleLikeTap('${d.id}', this, ${appendInputsAndActions})">
+              ❤️ <span class="likes-value">${currentCount}</span>
+            </div>
             <div class="brand-pill">Exclusive Catalog</div>
             <div class="feed-card-body">
               <h3>${d.title}</h3>
               <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
-            <div class="feed-card-pricing" id="price-box-${d.id}">
+            <div class="feed-card-pricing">
               <div style="display:flex; align-items:baseline; gap:6px;">
                  <span class="price-tag">₹${d.consumerPrice || '0'}</span>
                  <span class="shipping-extra-tag">+ Shipping Extra</span>
               </div>
             </div>
-            
-            <div class="pincode-widget">
-              <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area</label>
-              <div class="pincode-row-inputs">
-                <input type="text" class="pincode-input" id="input-pin-${d.id}" value="${this.cachedPincode}" placeholder="6-digit Pincode">
-                <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${d.id}')">Verify</button>
-              </div>
-              ${guessPillsHtml}
-              <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
-            </div>
-
-            <button type="button" class="action-btn" style="background:var(--accent); color:var(--bg-surface); width:100%; font-weight:800;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">💬 Order via WhatsApp</button>
+            ${interactiveWorkflowBlocks}
           `;
-          anchor.appendChild(card);
-          if(this.cachedPincode) this.verifyPincodeTrigger(d.id); 
+          anchorNode.appendChild(card);
+          if(this.cachedPincode && appendInputsAndActions) this.verifyPincodeTrigger(d.id); 
         }
       },
 
@@ -712,81 +734,82 @@
       async verifyPincodeTrigger(id) {
         const code = document.getElementById(`input-pin-${id}`).value.trim();
         const feedback = document.getElementById(`feedback-pin-${id}`);
-        const priceBox = document.getElementById(`price-box-${id}`);
         if(!code || code.length < 5) return;
-
-        const d = this.allItems.find(item => item.id === id);
-        if(!d) return;
 
         localStorage.setItem('Besoins_Active_Pincode', code);
         this.cachedPincode = code;
-        if(feedback) feedback.style.display = "block";
-
-        const table = d.pincode_rates || {};
-        if (table[code] !== undefined) {
-          const fee = parseFloat(table[code]) || 0;
-          if(feedback) {
-            feedback.className = "pincode-feedback feedback-verified";
-            feedback.innerText = `✓ Standard Route Verified: Shipping ₹${fee}`;
-          }
-          if(priceBox) priceBox.innerHTML = `<span class="price-tag">₹${(parseFloat(d.consumerPrice) || 0) + fee} Total</span> <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">(Inc. Shipping)</span>`;
-        } else {
-          if(feedback) {
-            feedback.className = "pincode-feedback feedback-pending";
-            feedback.innerText = "⏳ Custom rate requested. Proceed to checkout to verify route ETA.";
-          }
-          if(priceBox) priceBox.innerHTML = `<div style="display:flex; align-items:baseline; gap:6px;"><span class="price-tag">₹${d.consumerPrice}</span><span class="shipping-extra-tag">+ Shipping Extra</span></div>`;
-          
-          let requests = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
-          if(!requests[id]) requests[id] = [];
-          if(!requests[id].includes(code)) requests[id].push(code);
-          localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(requests));
+        if(feedback) {
+          feedback.style.display = "block";
+          feedback.className = "pincode-feedback feedback-pending";
+          feedback.innerHTML = `⏳ Route logged. We will verify shipping timeline parameters with our factory supplier and update you within 24 hours via WhatsApp.`;
         }
+
+        let requests = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
+        if(!requests[id]) requests[id] = [];
+        if(!requests[id].includes(code)) requests[id].push(code);
+        localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(requests));
       },
 
-      handleLikeTap(id, element) {
-        if(this.likedIDs.includes(id)) { this.likedIDs = this.likedIDs.filter(x => x !== id); element.classList.remove('is-active-favorite'); } 
-        else { this.likedIDs.push(id); element.classList.add('is-active-favorite'); }
+      handleLikeTap(id, element, refreshCurrentTimelineView) {
+        if(!this.staticLikesDatabase[id]) this.staticLikesDatabase[id] = 100;
+        
+        if(this.likedIDs.includes(id)) { 
+          this.likedIDs = this.likedIDs.filter(x => x !== id); 
+          element.classList.remove('is-active-favorite');
+          this.staticLikesDatabase[id]--;
+        } else { 
+          this.likedIDs.push(id); 
+          element.classList.add('is-active-favorite');
+          this.staticLikesDatabase[id]++;
+        }
+        
         localStorage.setItem('Besoins_Likes_Cache', JSON.stringify(this.likedIDs));
+        localStorage.setItem('Besoins_Public_Likes_Matrix', JSON.stringify(this.staticLikesDatabase));
+        element.querySelector('.likes-value').innerText = this.staticLikesDatabase[id];
         this.updateBagFloatingCTAState();
+
+        if(!refreshCurrentTimelineView) {
+          this.renderSelectionsTabTimeline();
+        }
       },
 
       updateBagFloatingCTAState() {
-        const cta = document.getElementById('floating-bag-trigger');
-        if (!cta) return;
-        if(this.likedIDs.length > 0) { 
-          cta.innerText = `Inquire Selected Items (${this.likedIDs.length})`; 
-          cta.style.display = 'block'; 
-        } else { 
-          cta.style.display = 'none'; 
-        }
+        const badge = document.getElementById('badge-selection-count');
+        if(badge) badge.innerText = this.likedIDs.length;
       },
 
       triggerDirectWhatsAppInquiry(id) {
+        const inputField = document.getElementById(`input-pin-${id}`);
+        const code = inputField ? inputField.value.trim() : '';
+
+        if(!code || code.length < 5) {
+          if(inputField) {
+            inputField.classList.add('pulse-alert');
+            inputField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            inputField.focus();
+          }
+          return alert("Please specify your delivery location pincode first to run availability sequences.");
+        }
+
         const d = this.allItems.find(x => x.id === id); if(!d) return;
-        let text = `Hi BESOINS! I am interested in ordering this design variant:\n\n📌 *Product:* ${d.title}\n🆔 *ID:* \`${d.id}\`\n💰 *Price:* ₹${d.consumerPrice} + Shipping\n`;
-        if (this.cachedPincode) text += `📍 *Delivery Pincode:* ${this.cachedPincode}\n`;
+        let text = `Hi BESOINS! I want to run a dispatch availability confirmation sequence for this variant:\n\n📌 *Product Name:* ${d.title}\n🆔 *Reference ID:* \`${d.id}\`\n📍 *Target Route Pincode:* ${code}\n\n⏳ *Status:* Location logged. Please check custom dispatch slot timeline and factory supplier shipping fees for me.`;
         window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
       },
 
       async checkoutBagIntent() {
         if(this.likedIDs.length === 0) return;
-        let text = `Hi BESOINS! I have curated my selection line queue:\n`;
-        if(this.cachedPincode) text += `📍 *Shipping Location Pincode:* ${this.cachedPincode}\n`;
+        let text = `Hi BESOINS! I have compiled my selection lines list queue:\n`;
+        if(this.cachedPincode) text += `📍 *Global Target Route Pincode:* ${this.cachedPincode}\n`;
         text += `\n-----------------------\n`;
         for (const id of this.likedIDs) {
           const d = this.allItems.find(x => x.id === id);
-          if (d) text += `▪️ *${d.title}* (ID: \`${d.id}\`) - ₹${d.consumerPrice}\n`;
+          if (d) text += `▪️ *${d.title}* (ID: \`${d.id}\`) - Base Rate: ₹${d.consumerPrice}\n`;
         }
-        text += `\nPlease check custom availability and dispatch slots for me. Thanks!`;
+        text += `\nPlease verify custom factory shipping timelines and stock availability parameters for these selections. Thanks!`;
         window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
       }
     };
 
-
-    // ===================================================================
-    // 📥 OPERATIONAL BACK-END PANEL ENGINE (STUDIO CODES)
-    // ===================================================================
     const admin = {
       currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, temporaryImagesCache: [],
 
@@ -900,12 +923,12 @@
       navigate(target) {
         this.activeViewName = target; 
         document.getElementById('frame-customer-storefront').classList.remove('active-frame');
+        document.getElementById('frame-customer-selections').classList.remove('active-frame');
         document.getElementById('pane-feed').classList.remove('global-view-wrapper', 'active-frame');
         document.getElementById('pane-intake').classList.remove('global-view-wrapper', 'active-frame');
         
         document.getElementById('pane-feed').classList.add('global-view-wrapper');
         document.getElementById('pane-intake').classList.add('global-view-wrapper');
-        
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
         
         if (target === 'feed') { 
@@ -954,13 +977,13 @@
             const mediaBlock = await DB.operation('media_blocks', 'readonly', 'get', d.id);
             if (mediaBlock && mediaBlock.images && mediaBlock.images.length > 0) {
               const imgs = mediaBlock.images.map(src => `<img src="${src}" alt="Pattern">`).join('');
-              mediaGalleryHtml = `<div class="card-media-gallery" style="display:flex; gap:6px; overflow-x:auto;">${imgs}</div>`;
+              mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
             }
           }
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div class="feed-card-header"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
             <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
             <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
             <div class="feed-quick-actions">
@@ -982,7 +1005,7 @@
       },
 
       async fastSkipItem(id) {
-        if(!confirm("Purge asset block context permanently?")) return;
+        if(!confirm("Purge asset slot permanently?")) return;
         await DB.operation('drafts', 'readwrite', 'delete', id); await DB.operation('media_blocks', 'readwrite', 'delete', id);
         
         let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
@@ -1076,7 +1099,10 @@
       hideCuratorDrawer() { this.activeDraftRecord = null; this.temporaryImagesCache = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
-    window.addEventListener('DOMContentLoaded', () => catalog.boot());
+    window.addEventListener('DOMContentLoaded', () => {
+      catalog.boot();
+      document.getElementById('privileged-studio-tabs-bar').style.display = 'none';
+    });
   </script>
 </body>
 </html>
