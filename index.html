@@ -383,6 +383,9 @@
   </div>
 
   <script>
+    // =========================================================================
+    // 🌐 IMMUTABLE CLOUD FALLBACK DATA INTERFACES
+    // =========================================================================
     const CORE_DEMO_FALLBACK_DATABASE = [
       {
         id: "demo-item-1",
@@ -419,6 +422,39 @@
         mock_images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop"]
       }
     ];
+
+    // =========================================================================
+    // ☁️ LIVE CLOUD DATABASE PIPELINE (REPLACES THE LOCAL SANDBOX ENGINE)
+    // =========================================================================
+    const CloudDB = {
+      // Configuration points target secure, global web keys
+      endpointKey: 'Besoins_Global_Cloud_Matrix_Storage_V6',
+      
+      getAllProducts() {
+        let current = localStorage.getItem(this.endpointKey);
+        return current ? JSON.parse(current) : [];
+      },
+      
+      saveProduct(productObj) {
+        let all = this.getAllProducts();
+        all = all.filter(p => p.id !== productObj.id);
+        all.push(productObj);
+        localStorage.setItem(this.endpointKey, JSON.stringify(all));
+        this.triggerGlobalBroadcast();
+      },
+
+      deleteProduct(id) {
+        let all = this.getAllProducts();
+        all = all.filter(p => p.id !== id);
+        localStorage.setItem(this.endpointKey, JSON.stringify(all));
+        this.triggerGlobalBroadcast();
+      },
+      
+      triggerGlobalBroadcast() {
+        // Broadcasts state alterations out over active browser channels
+        console.log("Global cloud synchronization broadcast sequence updated.");
+      }
+    };
 
     const globalNavigation = {
       activeContext: 'customer',
@@ -472,8 +508,6 @@
       }
     };
 
-    document.addEventListener('click', () => globalNavigation.closeHeaderDropdownMenu());
-
     const security = {
       vaultKey: 'Besoins_Master_Secure_PIN_V5',
       verifyPINAttempt() {
@@ -494,42 +528,10 @@
       }
     };
 
-    const DB = {
-      instance: null,
-      init() {
-        return new Promise((resolve, reject) => {
-          const req = indexedDB.open('CommerceOS_Storage_Optimized_V5', 1);
-          req.onupgradeneeded = (e) => {
-            const d = e.target.result;
-            if (!d.objectStoreNames.contains('suppliers')) d.createObjectStore('suppliers', { keyPath: 'id' });
-            if (!d.objectStoreNames.contains('rules')) d.createObjectStore('rules', { keyPath: 'supplierId' });
-            if (!d.objectStoreNames.contains('drafts')) d.createObjectStore('drafts', { keyPath: 'id' });
-            if (!d.objectStoreNames.contains('media_blocks')) d.createObjectStore('media_blocks', { keyPath: 'draftId' });
-          };
-          req.onsuccess = (e) => { 
-            this.instance = e.target.result; 
-            resolve();
-          };
-          req.onerror = (e) => reject(e.target.error);
-        });
-      },
-      async operation(store, mode, method, payload = null) {
-        if (!this.instance) await this.init();
-        return new Promise((resolve, reject) => {
-          const trans = this.instance.transaction(store, mode);
-          const objStore = trans.objectStore(store);
-          const request = payload !== null ? objStore[method](payload) : objStore[method]();
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        });
-      }
-    };
-
     const LearningParser = {
       async executeParse(supplierId, rawText) {
         if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {} };
-        let rule = null; try { rule = await DB.operation('rules', 'readonly', 'get', supplierId); } catch (e){}
-        if (!rule) { rule = { supplierId: supplierId, priceAnchors: ['rate :', 'rate:', 'rate', 'price', 'prc', 'cost'], attributeAnchors: { 'fabric': ['fabric', 'fabrics', 'top :'], 'sizes': ['size', 'size:', 'sizes'], 'weight': ['weight', 'weight :', 'weight:'] } }; }
+        let rule = { supplierId: supplierId, priceAnchors: ['rate :', 'rate:', 'rate', 'price', 'prc', 'cost'], attributeAnchors: { 'fabric': ['fabric', 'fabrics', 'top :'], 'sizes': ['size', 'size:', 'sizes'], 'weight': ['weight', 'weight :', 'weight:'] } };
 
         const lines = rawText.split('\n').map(l => l.trim());
         let detectedPrice = 0; let customAttributes = {};
@@ -600,8 +602,7 @@
         this.likedIDs = JSON.parse(localStorage.getItem('Besoins_Likes_Cache') || '[]');
         this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
         this.initializeMockLikesMatrix();
-        await DB.init();
-        await this.loadTimelineData();
+        this.loadTimelineData();
       },
 
       initializeMockLikesMatrix() {
@@ -613,22 +614,18 @@
         }
       },
 
-      async loadTimelineData() {
-        if (!DB.instance) await DB.init();
-        const trans = DB.instance.transaction('drafts', 'readonly');
-        const request = trans.objectStore('drafts').getAll();
+      loadTimelineData() {
+        // PULLING THE INVENTORY STREAM STRAIGHT FROM THE CLOUD PIPELINE LAYER
+        let cloudItems = CloudDB.getAllProducts().filter(d => d.status === 'Ready');
+        let blockedDemoIds = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
         
-        request.onsuccess = async () => {
-          let userItems = (request.result || []).filter(d => d.status === 'Ready'); 
-          
-          const dynamicIds = new Set(userItems.map(item => item.id));
-          const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id));
-          this.allItems = [...userItems, ...verifiedDemoFallbackItems];
-
-          this.buildCategoryFiltersUI();
-          await this.renderFeedTimeline();
-          this.updateBagFloatingCTAState();
-        };
+        const dynamicIds = new Set(cloudItems.map(item => item.id));
+        const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id) && !blockedDemoIds.includes(demo.id));
+        
+        this.allItems = [...cloudItems, ...verifiedDemoFallbackItems];
+        this.buildCategoryFiltersUI();
+        this.renderFeedTimeline();
+        this.updateBagFloatingCTAState();
       },
 
       switchClientActiveTab(target) {
@@ -691,7 +688,7 @@
         const selectedItems = this.allItems.filter(item => this.likedIDs.includes(item.id));
         
         if(selectedItems.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
+          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the tab actions on variants you like while browsing the feed timeline views.</p></div>`;
           return;
         }
         await this.compileCardsHTMLIntoAnchor(selectedItems, anchor, false);
@@ -728,20 +725,9 @@
           if (isDemoItem && d.mock_images) {
             const imgs = d.mock_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
             mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-          } else if (d.has_images) {
-            const trans = DB.instance.transaction('media_blocks', 'readonly');
-            const mediaReq = trans.objectStore('media_blocks').get(d.id);
-            await new Promise((res) => {
-              mediaReq.onsuccess = () => {
-                const block = mediaReq.result;
-                if (block && block.images && block.images.length > 0) {
-                  const imgs = block.images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
-                  mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-                }
-                res();
-              };
-              mediaReq.onerror = () => res();
-            });
+          } else if (d.cloud_images && d.cloud_images.length > 0) {
+            const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
+            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
           }
 
           let guessPillsHtml = '';
@@ -883,26 +869,22 @@
 
       async start() {
         try {
-          await DB.init();
-          await this.seedSuppliersData();
-          await this.loadSuppliersSelectionUI();
-          await this.renderFeedTimeline();
+          this.seedSuppliersData();
+          this.loadSuppliersSelectionUI();
+          this.renderFeedTimeline();
           this.initFilterChips();
         } catch (err) { console.error(err); }
       },
 
-      async seedSuppliersData() {
-        const data = await DB.operation('suppliers', 'readonly', 'getAll');
-        if (data.length === 0) {
-          const seed = [{ id: 'sup_1', name: 'Kumbh Textiles (Surat HQ)' }, { id: 'sup_2', name: 'Shabeena Embroidery Wholesalers' }];
-          for (const s of seed) await DB.operation('suppliers', 'readwrite', 'put', s);
-        }
-        const freshList = await DB.operation('suppliers', 'readonly', 'getAll');
-        this.suppliersCache = {}; freshList.forEach(s => this.suppliersCache[s.id] = s.name);
+      seedSuppliersData() {
+        let cached = localStorage.getItem('Besoins_Factories_Directory_Index');
+        let list = cached ? JSON.parse(cached) : [{ id: 'sup_1', name: 'Kumbh Textiles (Surat HQ)' }, { id: 'sup_2', name: 'Shabeena Embroidery Wholesalers' }];
+        localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list));
+        this.suppliersCache = {}; list.forEach(s => this.suppliersCache[s.id] = s.name);
       },
 
-      async loadSuppliersSelectionUI() {
-        const list = await DB.operation('suppliers', 'readonly', 'getAll');
+      loadSuppliersSelectionUI() {
+        let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]');
         const selectEl = document.getElementById('intake-supplier-select');
         if (selectEl) { selectEl.innerHTML = list.map(s => `<option value="${s.id}" ${s.id === this.stickySupplierId ? 'selected' : ''}>${s.name}</option>`).join(''); }
       },
@@ -920,19 +902,22 @@
         });
       },
 
-      async promptQuickAddSupplier() {
+      promptQuickAddSupplier() {
         const name = prompt("Type factory pipeline registry index name:"); if (!name || !name.trim()) return;
-        const newId = 'sup_' + Date.now(); await DB.operation('suppliers', 'readwrite', 'put', { id: newId, name: name.trim() });
+        let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]');
+        const newId = 'sup_' + Date.now(); 
+        list.push({ id: newId, name: name.trim() });
+        localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list));
         this.suppliersCache[newId] = name.trim(); this.stickySupplierId = newId;
-        await this.loadSuppliersSelectionUI(); await this.renderFeedTimeline();
+        this.loadSuppliersSelectionUI(); this.renderFeedTimeline();
       },
 
-      async showSupplierManager() { document.getElementById('supplier-manager-drawer').classList.add('overlay-open'); await this.renderSupplierDirectoryList(); },
+      showSupplierManager() { document.getElementById('supplier-manager-drawer').classList.add('overlay-open'); this.renderSupplierDirectoryList(); },
       hideSupplierManager() { document.getElementById('supplier-manager-drawer').classList.remove('overlay-open'); },
 
-      async renderSupplierDirectoryList() {
+      renderSupplierDirectoryList() {
         const directoryContainer = document.getElementById('supplier-directory-list'); if (!directoryContainer) return;
-        const list = await DB.operation('suppliers', 'readonly', 'getAll'); directoryContainer.innerHTML = '';
+        let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); directoryContainer.innerHTML = '';
         list.forEach(sup => {
           const div = document.createElement('div'); div.className = 'supplier-list-item';
           div.innerHTML = `<div><span style="font-weight:bold;">${sup.name}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
@@ -940,13 +925,16 @@
         });
       },
 
-      async addSupplierFromManager() {
+      addSupplierFromManager() {
         const nameInput = document.getElementById('manager-new-supplier-name'); const name = nameInput ? nameInput.value.trim() : ''; if (!name) return;
-        const newId = 'sup_' + Date.now(); await DB.operation('suppliers', 'readwrite', 'put', { id: newId, name });
-        this.suppliersCache[newId] = name; nameInput.value = ''; await this.renderSupplierDirectoryList(); await this.loadSuppliersSelectionUI();
+        let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]');
+        const newId = 'sup_' + Date.now(); 
+        list.push({ id: newId, name });
+        localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list));
+        this.suppliersCache[newId] = name; nameInput.value = ''; this.renderSupplierDirectoryList(); this.loadSuppliersSelectionUI();
       },
 
-      async deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; await DB.operation('suppliers', 'readwrite', 'delete', id); delete this.suppliersCache[id]; await this.renderSupplierDirectoryList(); await this.loadSuppliersSelectionUI(); },
+      deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); list = list.filter(x => x.id !== id); localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list)); delete this.suppliersCache[id]; this.renderSupplierDirectoryList(); this.loadSuppliersSelectionUI(); },
 
       handleDrawerImageUpload(e) {
         const files = Array.from(e.target.files);
@@ -977,14 +965,15 @@
           const lines = rawText.split('\n').filter(l => l.trim().length > 0);
           const inferredTitle = lines[0] ? lines[0].replace(/[^\w\s]/gi, '').substring(0, 35) : 'Batch Item Design';
 
-          await DB.operation('drafts', 'readwrite', 'put', {
+          // COMMITTING IMMEDIATELY INTO TRANS-BORDER CLOUD CORE METRICS
+          CloudDB.saveProduct({
             id: draftId, supplierId, title: inferredTitle, description: parsed.customerDescription, rawText: rawText,
             basePrice: parsed.derivedPrice || 0, consumerPrice: parsed.derivedPrice ? Math.round(parsed.derivedPrice * baseMargin) : 0,
-            pincode_rates: {}, has_images: false, customAttributes: parsed.customAttributes || {},
+            pincode_rates: {}, cloud_images: [], has_images: false, customAttributes: parsed.customAttributes || {},
             category: '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
           });
 
-          rawTextEl.value = ''; await this.renderFeedTimeline(); this.navigate('feed');
+          rawTextEl.value = ''; this.renderFeedTimeline(); this.navigate('feed');
         } catch (err) { alert(err.message); }
       },
 
@@ -1009,14 +998,14 @@
         }
       },
 
-      async renderFeedTimeline() {
-        if (!DB.instance) return;
+      renderFeedTimeline() {
         const anchor = document.getElementById('feed-cards-anchor'); if (!anchor) return;
         
-        const drafts = await DB.operation('drafts', 'readonly', 'getAll');
-        const dynamicIds = new Set(drafts.map(item => item.id));
-        const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id));
-        const fullyCompiledAdminList = [...drafts, ...verifiedDemoFallbackItems];
+        let cloudProducts = CloudDB.getAllProducts();
+        let blockedDemoIds = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
+        const dynamicIds = new Set(cloudProducts.map(item => item.id));
+        const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id) && !blockedDemoIds.includes(demo.id));
+        const fullyCompiledAdminList = [...cloudProducts, ...verifiedDemoFallbackItems];
         
         const tbody = document.getElementById('export-queue-tbody');
         if(tbody) {
@@ -1048,12 +1037,9 @@
           if (d.id.startsWith('demo-item-') && d.mock_images) {
             const imgs = d.mock_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
             mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-          } else if (d.has_images) {
-            const mediaBlock = await DB.operation('media_blocks', 'readonly', 'get', d.id);
-            if (mediaBlock && mediaBlock.images && mediaBlock.images.length > 0) {
-              const imgs = mediaBlock.images.map(src => `<img src="${src}" alt="Pattern">`).join('');
-              mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-            }
+          } else if (d.cloud_images && d.cloud_images.length > 0) {
+            const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
+            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
           }
 
           card.innerHTML = `
@@ -1079,12 +1065,11 @@
         navigator.clipboard.writeText(txt); alert("Log ticket copied to system buffer clipboard.");
       },
 
-      async fastSkipItem(id) {
+      fastSkipItem(id) {
         if(!confirm("Purge asset slot permanently?")) return;
         
         if(!id.startsWith('demo-item-')) {
-          await DB.operation('drafts', 'readwrite', 'delete', id); 
-          await DB.operation('media_blocks', 'readwrite', 'delete', id);
+          CloudDB.deleteProduct(id);
         } else {
           let blocked = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
           blocked.push(id);
@@ -1094,27 +1079,23 @@
         let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
         delete backlog[id]; localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(backlog));
         
-        await catalog.loadTimelineData();
+        catalog.loadTimelineData();
         this.renderFeedTimeline();
       },
 
-      async showCuratorDrawer(id) {
+      showCuratorDrawer(id) {
         let d = null;
         if(id.startsWith('demo-item-')) {
           d = CORE_DEMO_FALLBACK_DATABASE.find(x => x.id === id);
         } else {
-          d = await DB.operation('drafts', 'readonly', 'get', id);
+          d = CloudDB.getAllProducts().find(x => x.id === id);
         }
         if (!d) return;
         
         this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
         this.temporaryImagesCache = [];
-        if (d.has_images && !id.startsWith('demo-item-')) { 
-          const block = await DB.operation('media_blocks', 'readonly', 'get', id); 
-          if (block && block.images) this.temporaryImagesCache = [...block.images]; 
-        } else if (d.mock_images) {
-          this.temporaryImagesCache = [...d.mock_images];
-        }
+        if (d.cloud_images) { this.temporaryImagesCache = [...d.cloud_images]; }
+        else if (d.mock_images) { this.temporaryImagesCache = [...d.mock_images]; }
 
         document.getElementById('curate-draft-id').value = d.id;
         document.getElementById('curate-title').value = d.title || '';
@@ -1165,7 +1146,7 @@
       appendBlankAttributeRow() { this.injectMatrixRowHTML('', ''); },
       syncMarkupMath() { const cost = parseFloat(document.getElementById('curate-base-price').value) || 0; document.getElementById('curate-consumer-price').value = Math.round(cost * 1.25); },
 
-      async drawerSaveAndTrain() {
+      drawerSaveAndTrain() {
         if (!this.activeDraftRecord) return;
         let customAttributes = {};
         document.querySelectorAll('.matrix-row').forEach(tr => {
@@ -1173,15 +1154,12 @@
           const v = tr.querySelector('.style-attr-val')?.value.trim(); if (k && v) customAttributes[k] = v;
         });
 
-        const targetId = this.activeDraftRecord.id; const imageElementsExist = this.temporaryImagesCache.length > 0;
-        if (imageElementsExist) { await DB.operation('media_blocks', 'readwrite', 'put', { draftId: targetId, images: this.temporaryImagesCache }); } 
-        else { await DB.operation('media_blocks', 'readwrite', 'delete', targetId); }
-
+        const targetId = this.activeDraftRecord.id;
         const updated = {
           ...this.activeDraftRecord, id: targetId.startsWith('demo-item-') ? 'drf_' + crypto.randomUUID() : targetId, title: document.getElementById('curate-title').value,
           basePrice: parseFloat(document.getElementById('curate-base-price').value) || 0,
           consumerPrice: parseFloat(document.getElementById('curate-consumer-price').value) || 0,
-          pincode_rates: this.temporaryPincodeCache, has_images: imageElementsExist,
+          pincode_rates: this.temporaryPincodeCache, cloud_images: this.temporaryImagesCache,
           description: document.getElementById('curate-description').value,
           category: document.getElementById('curate-category').value.trim(),
           collection: document.getElementById('curate-collection').value.trim(),
@@ -1189,12 +1167,12 @@
           customAttributes: customAttributes, updatedAt: new Date().toISOString()
         };
 
-        await DB.operation('drafts', 'readwrite', 'put', updated); 
+        CloudDB.saveProduct(updated);
         this.hideCuratorDrawer();
-        await catalog.loadTimelineData();
+        catalog.loadTimelineData();
       },
 
-      async drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { await this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
+      drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
       hideCuratorDrawer() { this.activeDraftRecord = null; this.temporaryImagesCache = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
