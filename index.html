@@ -458,7 +458,6 @@
         let all = this.getAllProducts();
         const targetItem = all.find(p => p.id === id);
         
-        // 🗑️ Trigger Drive Folder Purge Route instantly before clearing local index records
         if (targetItem && targetItem.googleFolderId) {
           try {
             await fetch(this.googleAppsScriptUrl, {
@@ -733,7 +732,7 @@
         anchor.appendChild(ctaRow);
       },
 
-      // ⚡ GOOGLE DRIVE LINK PARSING TRANSFORM ENGINE
+      // ⚡ UNBLOCKED GOOGLE HIGH-RES RENDERING STREAM ENGINE
       convertDriveLinkToDirectStream(url) {
         if (!url || !url.includes('drive.google.com')) return url;
         let fileId = '';
@@ -742,7 +741,8 @@
         } else if (url.includes('id=')) {
           fileId = url.split('id=')[1].split('&')[0];
         }
-        return fileId ? `https://docs.google.com/uc?export=download&id=${fileId}` : url;
+        // Bypasses cookie policies completely using the open thumbnail proxy node
+        return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : url;
       },
 
       async compileCardsHTMLIntoAnchor(itemsList, anchorNode, appendInputsAndActions = true) {
@@ -772,7 +772,6 @@
             let galleryElements = '';
             d.cloud_images.forEach(link => {
               let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
-              // Differentiate image stream files from video assets automatically
               if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
                 galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
               } else {
@@ -992,7 +991,6 @@
 
       deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); list = list.filter(x => x.id !== id); localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list)); delete this.suppliersCache[id]; this.renderSupplierDirectoryList(); this.loadSuppliersSelectionUI(); },
 
-      // 🔄 Process Local Binary Streams into Base64 formats for transfer loops
       handleDeviceMediaFileSelection(e) {
         const files = Array.from(e.target.files);
         const previewAnchor = document.getElementById('drawer-media-preview-anchor');
@@ -1008,7 +1006,6 @@
               localPreviewUrl: event.target.result
             });
             
-            // Render quick visual preview node inside the layout
             const element = file.type.startsWith('video/') 
               ? document.createElement('video') 
               : document.createElement('img');
@@ -1182,12 +1179,11 @@
         document.getElementById('curate-decision').value = d.decision;
         document.getElementById('curate-raw-text').value = d.rawText || '';
 
-        // Render any existing historical asset lines inside the tracking preview block
         if (d.cloud_images) {
           const previewAnchor = document.getElementById('drawer-media-preview-anchor');
           d.cloud_images.forEach(lnk => {
             let cleanLnk = catalog.convertDriveLinkToDirectStream(lnk);
-            const thumb = lnk.toLowerCase().includes('.mp4') || lnk.toLowerCase().includes('.mov') 
+            const thumb = lnk.toLowerCase().includes('.mp4') || lnk.toLowerCase().includes('.mov') || lnk.toLowerCase().includes('.webm')
               ? document.createElement('video') 
               : document.createElement('img');
             thumb.src = cleanLnk;
@@ -1250,7 +1246,6 @@
         let finalCloudImagesArray = this.activeDraftRecord.cloud_images || [];
         let detectedGoogleFolderId = this.activeDraftRecord.googleFolderId || '';
 
-        // 🚀 ROUTE DOCK A: Execute live background stream upload loops to Google Drive if new binary items are buffered
         if (this.selectedFilesBuffer.length > 0) {
           const uploaderLabel = document.getElementById('uploader-feedback-label');
           uploaderLabel.innerText = "⚡ Uploading media layers to Google Drive... Please wait.";
