@@ -61,10 +61,11 @@
     /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS - OUTLINES STRIPPED COMPLETELY */
     .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; }
     
-    /* GALLERY VIEWPORT CONFIGURATION SETUP */
+    /* GALLERY VIEWPORT CONFIGURATION SETUP FOR IMAGES AND VIDEOS */
     .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 320px; max-height: 320px; position: relative; }
     .card-media-gallery::-webkit-scrollbar { display: none; }
-    .card-media-gallery img { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; cursor: zoom-in; display: block; }
+    .card-media-gallery img, .card-media-gallery video { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; display: block; }
+    .card-media-gallery img { cursor: zoom-in; }
     
     .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
     .feed-card-body h3::first-letter { text-transform: uppercase; }
@@ -121,7 +122,7 @@
     .overlay-body { flex: 1; overflow-y: auto; padding: 20px 16px; width: 100%; }
     .editor-actions-bar { padding: 18px 16px; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.4); display: grid; grid-template-columns: 1fr 2fr; gap: 14px; flex-shrink: 0; width: 100%; }
     
-    .drawer-media-uploader { background: var(--bg-card); border: 2px dashed #c7c7cc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; position: relative; }
+    .drawer-media-uploader { background: var(--bg-card); border: 2px dashed #c7c7cc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; }
     .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; width: 100%; }
     .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; background:#edeef0; border-radius: 10px; }
     .matrix-editor-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
@@ -145,9 +146,6 @@
     .security-card-box { background: #ffffff; padding: 36px 24px; border-radius: 28px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
     .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
     .supplier-pill { background: #e5e5ea; padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #48484a; }
-    
-    /* UPLOAD PROGRESS SPINNER SHIELD SYSTEM */
-    .media-loading-shield { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 16px; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent); gap: 8px; }
   </style>
 </head>
 <body>
@@ -269,18 +267,9 @@
         <form id="curate-form" onsubmit="event.preventDefault();">
           <input type="hidden" id="curate-draft-id">
           
-          <div class="drawer-media-uploader">
-            <div id="media-uploader-trigger-area" onclick="document.getElementById('drawer-hidden-file-input').click();" style="width:100%; height:100%;">
-              <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Upload Variant Texture Imagery</span>
-            </div>
-            <input type="file" id="drawer-hidden-file-input" accept="image/*" multiple style="display:none;" onchange="admin.handleDrawerImageUpload(event)">
-            
-            <!-- ⚡ LIVE PIPELINE LOADING MASK LAYER -->
-            <div id="uploader-progress-shield" class="media-loading-shield">
-              <span style="font-size:1.4rem; animation: pulse 1s infinite;">⏳</span>
-              <span>Transmitting vector to CDN Node...</span>
-            </div>
-            
+          <div class="drawer-media-uploader" onclick="document.getElementById('drawer-hidden-file-input').click();">
+            <span id="uploader-feedback-label" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Select Images / Videos to Sync with Google Drive</span>
+            <input type="file" id="drawer-hidden-file-input" accept="image/*,video/*" multiple style="display:none;" onchange="admin.handleDeviceMediaFileSelection(event)">
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
           </div>
 
@@ -369,7 +358,6 @@
         <svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/></svg>
       </div>
       <div class="tab-item" id="cust-nav-list" onclick="catalog.switchClientActiveTab('list')">
-        <!-- 🔴 NATIVE iOS ABSOLUTE BADGE ATTACHED OVER SHOULDER MATRIX OUTLINE -->
         <span class="tab-counter-badge" id="badge-selection-count">0</span>
         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       </div>
@@ -412,35 +400,18 @@
         collection: "Festival Edit",
         pincode_rates: { "395001": 80, "395003": 80, "400001": 120 },
         has_images: true,
-        customAttributes: { "fabric": "Pure Organza Silk", "sizes": "M, L, XL", "weight": "420 grams" },
-        updatedAt: new Date().toISOString(),
-        cloud_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"]
-      },
-      {
-        id: "demo-item-2",
-        supplierId: "sup_2",
-        title: "Shabeena Lakhnavi Georgette Ensemble",
-        description: "Intricate traditional lucknowi micro-embroidery across premium flowing base threads. Clean unbranded client description template.",
-        basePrice: 2200,
-        consumerPrice: 2750,
-        status: "Ready",
-        decision: "Accepted",
-        category: "Georgette",
-        collection: "Luxury Lines",
-        pincode_rates: { "395001": 0, "110001": 150 },
-        has_images: true,
-        customAttributes: { "fabric": "Premium Georgette", "sizes": "Free Size", "work": "Handmade Chikankari" },
-        updatedAt: new Date().toISOString(),
-        cloud_images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop"]
+        cloud_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"],
+        updatedAt: new Date().toISOString()
       }
     ];
 
     // =========================================================================
-    // ☁️ LIVE PRODUCTION WEB NETWORK CLOUD DATABASE ENDPOINT CONFIGURATION
+    // ☁️ LIVE DUAL CLOUD BRIDGE CONFIGURATIONS
     // =========================================================================
     const CloudDB = {
       endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
       masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
+      googleAppsScriptUrl: 'https://script.google.com/macros/s/AKfycbxHSRJwUt8B1s9m9zN2Zr63k_FcYt5ChCaTSO9NoYI7m8iHcB8qlXM_jKOsfWzE1Qs/exec',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
       
       getAllProducts() {
@@ -485,6 +456,24 @@
 
       async deleteProduct(id) {
         let all = this.getAllProducts();
+        const targetItem = all.find(p => p.id === id);
+        
+        // 🗑️ Trigger Drive Folder Purge Route instantly before clearing local index records
+        if (targetItem && targetItem.googleFolderId) {
+          try {
+            await fetch(this.googleAppsScriptUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: "purgeProductFolder",
+                folderId: targetItem.googleFolderId
+              })
+            });
+            console.log("Google Drive storage subfolder purge signal transmitted.");
+          } catch (e) { console.warn(e); }
+        }
+
         all = all.filter(p => p.id !== id);
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
@@ -654,7 +643,7 @@
         let saved = localStorage.getItem('Besoins_Public_Likes_Matrix');
         if(saved) { this.staticLikesDatabase = JSON.parse(saved); } 
         else {
-          this.staticLikesDatabase = { 'demo-item-1': 246, 'demo-item-2': 189 };
+          this.staticLikesDatabase = { 'demo-item-1': 246 };
           localStorage.setItem('Besoins_Public_Likes_Matrix', JSON.stringify(this.staticLikesDatabase));
         }
       },
@@ -733,7 +722,7 @@
         const selectedItems = this.allItems.filter(item => this.likedIDs.includes(item.id));
         
         if(selectedItems.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
+          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
           return;
         }
         await this.compileCardsHTMLIntoAnchor(selectedItems, anchor, false);
@@ -742,6 +731,18 @@
         ctaRow.style.padding = '10px 0';
         ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; height:54px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
         anchor.appendChild(ctaRow);
+      },
+
+      // ⚡ GOOGLE DRIVE LINK PARSING TRANSFORM ENGINE
+      convertDriveLinkToDirectStream(url) {
+        if (!url || !url.includes('drive.google.com')) return url;
+        let fileId = '';
+        if (url.includes('/d/')) {
+          fileId = url.split('/d/')[1].split('/')[0];
+        } else if (url.includes('id=')) {
+          fileId = url.split('id=')[1].split('&')[0];
+        }
+        return fileId ? `https://docs.google.com/uc?export=download&id=${fileId}` : url;
       },
 
       async compileCardsHTMLIntoAnchor(itemsList, anchorNode, appendInputsAndActions = true) {
@@ -768,8 +769,17 @@
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
-            const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
-            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
+            let galleryElements = '';
+            d.cloud_images.forEach(link => {
+              let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
+              // Differentiate image stream files from video assets automatically
+              if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
+                galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
+              } else {
+                galleryElements += `<img src="${cleanLink}" alt="Variant" onclick="theater.launch('${cleanLink}')">`;
+              }
+            });
+            mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
           }
 
           let guessPillsHtml = '';
@@ -907,7 +917,11 @@
     };
 
     const admin = {
-      currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, temporaryImagesCache: [],
+      currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, selectedFilesBuffer: [],
+
+      keyToHex(str) {
+        return Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+      },
 
       start() {
         try {
@@ -978,43 +992,32 @@
 
       deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); list = list.filter(x => x.id !== id); localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list)); delete this.suppliersCache[id]; this.renderSupplierDirectoryList(); this.loadSuppliersSelectionUI(); },
 
-      // ⚡ UNRESTRICTED CORE ANONYMOUS BULK MEDIA PROCESSING ENGINE LAYER
-      async handleDrawerImageUpload(e) {
+      // 🔄 Process Local Binary Streams into Base64 formats for transfer loops
+      handleDeviceMediaFileSelection(e) {
         const files = Array.from(e.target.files);
-        if (files.length === 0) return;
-
-        const loader = document.getElementById('uploader-progress-shield');
-        if (loader) loader.style.display = 'flex';
-
-        for (const file of files) {
-          const formData = new FormData();
-          formData.append('image', file); // Maps directly to public image parsing fields
-
-          try {
-            // Pipes binary assets out to a stable anonymous data transmission queue
-            const res = await fetch('https://api.imgbb.com/1/upload?key=6d66c30be628cc4259b3bbff75d658c1', {
-              method: 'POST',
-              body: formData
+        const previewAnchor = document.getElementById('drawer-media-preview-anchor');
+        
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64Data = event.target.result.split(',')[1];
+            this.selectedFilesBuffer.push({
+              filename: file.name,
+              mimeType: file.type,
+              base64Data: base64Data,
+              localPreviewUrl: event.target.result
             });
-            const data = await res.json();
-            if (data && data.data && data.data.url) {
-              this.temporaryImagesCache.push(data.data.url);
-              this.renderDrawerImagesPreviewUI();
-            }
-          } catch (err) {
-            console.error("Vector media transfer failure node triggered:", err);
-          }
-        }
-
-        if (loader) loader.style.display = 'none';
-      },
-
-      renderDrawerImagesPreviewUI() {
-        const anchor = document.getElementById('drawer-media-preview-anchor'); if (!anchor) return; anchor.innerHTML = '';
-        this.temporaryImagesCache.forEach((imgSrc, idx) => {
-          const img = document.createElement('img'); img.src = imgSrc; img.className = 'drawer-preview-thumb';
-          img.onclick = (e) => { e.stopPropagation(); admin.temporaryImagesCache.splice(idx, 1); admin.renderDrawerImagesPreviewUI(); };
-          anchor.appendChild(img);
+            
+            // Render quick visual preview node inside the layout
+            const element = file.type.startsWith('video/') 
+              ? document.createElement('video') 
+              : document.createElement('img');
+            element.src = event.target.result;
+            element.className = 'drawer-preview-thumb';
+            if (element.tagName === 'VIDEO') { element.muted = true; element.autoplay = true; element.loop = true; }
+            previewAnchor.appendChild(element);
+          };
+          reader.readAsDataURL(file);
         });
       },
 
@@ -1084,7 +1087,7 @@
               tbody.appendChild(tr);
             }
           }
-          if(!hasRows) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes fully verified clear.</td></tr>`;
+          if(!hasRows) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes verified clear.</td></tr>`;
         }
 
         const filtered = fullyCompiledAdminList.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
@@ -1099,8 +1102,16 @@
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
-            const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
-            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
+            let galleryElements = '';
+            d.cloud_images.forEach(link => {
+              let cleanLink = catalog.convertDriveLinkToDirectStream(link.trim());
+              if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
+                galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
+              } else {
+                galleryElements += `<img src="${cleanLink}" alt="Pattern">`;
+              }
+            });
+            mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
           }
 
           card.innerHTML = `
@@ -1127,7 +1138,7 @@
       },
 
       async fastSkipItem(id) {
-        if(!confirm("Purge asset slot permanently?")) return;
+        if(!confirm("Purge asset slot configuration and its associated Google Drive directory permanently?")) return;
         
         if(!id.startsWith('demo-item-')) {
           await CloudDB.deleteProduct(id);
@@ -1155,8 +1166,10 @@
         if (!d) return;
         
         this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
-        this.temporaryImagesCache = [];
-        if (d.cloud_images) { this.temporaryImagesCache = [...d.cloud_images]; }
+        this.selectedFilesBuffer = [];
+        
+        document.getElementById('drawer-media-preview-anchor').innerHTML = '';
+        document.getElementById('uploader-feedback-label').innerText = "📸 Select Images / Videos to Sync with Google Drive";
 
         document.getElementById('curate-draft-id').value = d.id;
         document.getElementById('curate-title').value = d.title || '';
@@ -1169,7 +1182,22 @@
         document.getElementById('curate-decision').value = d.decision;
         document.getElementById('curate-raw-text').value = d.rawText || '';
 
-        this.renderDrawerPincodeMatrixUI(); this.renderDrawerImagesPreviewUI();
+        // Render any existing historical asset lines inside the tracking preview block
+        if (d.cloud_images) {
+          const previewAnchor = document.getElementById('drawer-media-preview-anchor');
+          d.cloud_images.forEach(lnk => {
+            let cleanLnk = catalog.convertDriveLinkToDirectStream(lnk);
+            const thumb = lnk.toLowerCase().includes('.mp4') || lnk.toLowerCase().includes('.mov') 
+              ? document.createElement('video') 
+              : document.createElement('img');
+            thumb.src = cleanLnk;
+            thumb.className = 'drawer-preview-thumb';
+            if(thumb.tagName === 'VIDEO') { thumb.muted = true; thumb.autoplay = true; thumb.loop = true; }
+            previewAnchor.appendChild(thumb);
+          });
+        }
+
+        this.renderDrawerPincodeMatrixUI();
 
         const tbody = document.getElementById('drawer-attributes-tbody'); tbody.innerHTML = '';
         if (d.customAttributes) { for (const [key, val] of Object.entries(d.customAttributes)) { this.injectMatrixRowHTML(key, val); } }
@@ -1209,6 +1237,7 @@
 
       async drawerSaveAndTrain() {
         if (!this.activeDraftRecord) return;
+        
         let customAttributes = {};
         document.querySelectorAll('.matrix-row').forEach(tr => {
           const k = tr.querySelector('.style-attr-key')?.value.trim().toLowerCase();
@@ -1216,16 +1245,64 @@
         });
 
         const targetId = this.activeDraftRecord.id;
+        const normalizedProductId = targetId.startsWith('demo-item-') ? 'drf_' + crypto.randomUUID() : targetId;
+        
+        let finalCloudImagesArray = this.activeDraftRecord.cloud_images || [];
+        let detectedGoogleFolderId = this.activeDraftRecord.googleFolderId || '';
+
+        // 🚀 ROUTE DOCK A: Execute live background stream upload loops to Google Drive if new binary items are buffered
+        if (this.selectedFilesBuffer.length > 0) {
+          const uploaderLabel = document.getElementById('uploader-feedback-label');
+          uploaderLabel.innerText = "⚡ Uploading media layers to Google Drive... Please wait.";
+          
+          try {
+            const payload = {
+              action: "uploadProductMedia",
+              productId: normalizedProductId,
+              files: this.selectedFilesBuffer.map(f => ({
+                filename: f.filename,
+                mimeType: f.mimeType,
+                base64Data: f.base64Data
+              }))
+            };
+
+            const response = await fetch(CloudDB.googleAppsScriptUrl, {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            
+            const responseData = await response.json();
+            if (responseData.status === "success") {
+              finalCloudImagesArray = [...finalCloudImagesArray, ...responseData.links];
+              detectedGoogleFolderId = responseData.folderId;
+              console.log("Google Drive assets synchronization complete.");
+            } else {
+              throw new Error(responseData.message);
+            }
+          } catch (uploadError) {
+            alert("Google Drive Pipeline Block Alert: " + uploadError.toString());
+            uploaderLabel.innerText = "❌ Upload Failed. Retry.";
+            return;
+          }
+        }
+
         const updated = {
-          ...this.activeDraftRecord, id: targetId.startsWith('demo-item-') ? 'drf_' + crypto.randomUUID() : targetId, title: document.getElementById('curate-title').value,
+          ...this.activeDraftRecord, 
+          id: normalizedProductId, 
+          title: document.getElementById('curate-title').value,
           basePrice: parseFloat(document.getElementById('curate-base-price').value) || 0,
           consumerPrice: parseFloat(document.getElementById('curate-consumer-price').value) || 0,
-          pincode_rates: this.temporaryPincodeCache, cloud_images: this.temporaryImagesCache,
+          pincode_rates: this.temporaryPincodeCache, 
+          cloud_images: finalCloudImagesArray, 
+          has_images: finalCloudImagesArray.length > 0,
+          googleFolderId: detectedGoogleFolderId,
           description: document.getElementById('curate-description').value,
           category: document.getElementById('curate-category').value.trim(),
           collection: document.getElementById('curate-collection').value.trim(),
-          status: document.getElementById('curate-status').value, decision: document.getElementById('curate-decision').value,
-          customAttributes: customAttributes, updatedAt: new Date().toISOString()
+          status: document.getElementById('curate-status').value, 
+          decision: document.getElementById('curate-decision').value,
+          customAttributes: customAttributes, 
+          updatedAt: new Date().toISOString()
         };
 
         await CloudDB.saveProduct(updated);
@@ -1233,8 +1310,8 @@
         await catalog.loadTimelineData();
       },
 
-      async drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { await this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
-      hideCuratorDrawer() { this.activeDraftRecord = null; this.temporaryImagesCache = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
+      drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
+      hideCuratorDrawer() { this.activeDraftRecord = null; this.selectedFilesBuffer = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
     // =========================================================================
@@ -1245,13 +1322,11 @@
         navigator.serviceWorker.register('/sw.js')
           .then((reg) => {
             reg.update(); 
-            
             reg.onupdatefound = () => {
               const workingCoreUnit = reg.installing;
               if (workingCoreUnit) {
                 workingCoreUnit.onstatechange = () => {
                   if (workingCoreUnit.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log("New server production deployment cache detected. Updating background panels seamlessly.");
                     window.location.reload();
                   }
                 };
