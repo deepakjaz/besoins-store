@@ -121,7 +121,7 @@
     .overlay-body { flex: 1; overflow-y: auto; padding: 20px 16px; width: 100%; }
     .editor-actions-bar { padding: 18px 16px; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.4); display: grid; grid-template-columns: 1fr 2fr; gap: 14px; flex-shrink: 0; width: 100%; }
     
-    .drawer-media-uploader { background: var(--bg-card); border: 2px dashed #c7c7cc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; }
+    .drawer-media-uploader { background: var(--bg-card); border: 2px dashed #c7c7cc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer; width: 100%; position: relative; }
     .drawer-media-preview-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; width: 100%; }
     .drawer-preview-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; background:#edeef0; border-radius: 10px; }
     .matrix-editor-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
@@ -145,6 +145,9 @@
     .security-card-box { background: #ffffff; padding: 36px 24px; border-radius: 28px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
     .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
     .supplier-pill { background: #e5e5ea; padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #48484a; }
+    
+    /* UPLOAD PROGRESS SPINNER SHIELD SYSTEM */
+    .media-loading-shield { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 16px; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent); gap: 8px; }
   </style>
 </head>
 <body>
@@ -266,9 +269,18 @@
         <form id="curate-form" onsubmit="event.preventDefault();">
           <input type="hidden" id="curate-draft-id">
           
-          <div class="drawer-media-uploader" onclick="document.getElementById('drawer-hidden-file-input').click();">
-            <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Upload Variant Texture Imagery</span>
+          <div class="drawer-media-uploader">
+            <div id="media-uploader-trigger-area" onclick="document.getElementById('drawer-hidden-file-input').click();" style="width:100%; height:100%;">
+              <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Upload Variant Texture Imagery</span>
+            </div>
             <input type="file" id="drawer-hidden-file-input" accept="image/*" multiple style="display:none;" onchange="admin.handleDrawerImageUpload(event)">
+            
+            <!-- ⚡ LIVE PIPELINE LOADING MASK LAYER -->
+            <div id="uploader-progress-shield" class="media-loading-shield">
+              <span style="font-size:1.4rem; animation: pulse 1s infinite;">⏳</span>
+              <span>Transmitting vector to CDN Node...</span>
+            </div>
+            
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
           </div>
 
@@ -384,7 +396,7 @@
 
   <script>
     // =========================================================================
-    // 🌐 FIXED LOCAL CORE SEED IMMUTABLE FALLBACKS
+    // 🌐 IMMUTABLE DEMO DATA PLATFORM STREAMS
     // =========================================================================
     const CORE_DEMO_FALLBACK_DATABASE = [
       {
@@ -402,7 +414,7 @@
         has_images: true,
         customAttributes: { "fabric": "Pure Organza Silk", "sizes": "M, L, XL", "weight": "420 grams" },
         updatedAt: new Date().toISOString(),
-        mock_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"]
+        cloud_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"]
       },
       {
         id: "demo-item-2",
@@ -419,7 +431,7 @@
         has_images: true,
         customAttributes: { "fabric": "Premium Georgette", "sizes": "Free Size", "work": "Handmade Chikankari" },
         updatedAt: new Date().toISOString(),
-        mock_images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop"]
+        cloud_images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop"]
       }
     ];
 
@@ -427,7 +439,6 @@
     // ☁️ LIVE PRODUCTION WEB NETWORK CLOUD DATABASE ENDPOINT CONFIGURATION
     // =========================================================================
     const CloudDB = {
-      // Endpoint keys linked directly to your active online data bin account
       endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
       masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
@@ -444,12 +455,10 @@
             headers: { 'X-Master-Key': this.masterApiKey }
           });
           const data = await res.json();
-          // Extract arrays smoothly from structured cloud object formats
           const records = data.record.products || data.record || [];
           localStorage.setItem(this.backupTokenKey, JSON.stringify(records));
           return records;
         } catch(err) {
-          console.warn("Cloud pull latency detected. Reading fallback caches.");
           return this.getAllProducts();
         }
       },
@@ -460,7 +469,6 @@
         all.push(productObj);
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
-        // Pushes the collection up to your live cloud matrix instantly
         try {
           await fetch(this.endpointUrl, {
             method: 'PUT',
@@ -470,7 +478,6 @@
             },
             body: JSON.stringify({ products: all })
           });
-          console.log("Central cloud database synchronization completed successfully.");
         } catch(err) {
           console.error("Network write error:", err);
         }
@@ -653,7 +660,6 @@
       },
 
       async loadTimelineData() {
-        // TRIGGERING AN IMMEDIATE DYNAMIC LIVE FETCH CALL OVER SECURE CLOUD PATHS
         let cloudResponseData = await CloudDB.syncFetchFromCloud();
         let readyCloudItems = cloudResponseData.filter(d => d.status === 'Ready');
         let blockedDemoIds = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
@@ -727,14 +733,14 @@
         const selectedItems = this.allItems.filter(item => this.likedIDs.includes(item.id));
         
         if(selectedItems.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the tab actions on variants you like while browsing the feed timeline views.</p></div>`;
+          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is currently empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
           return;
         }
         await this.compileCardsHTMLIntoAnchor(selectedItems, anchor, false);
         
         const ctaRow = document.createElement('div');
         ctaRow.style.padding = '10px 0';
-        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; height:54px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
+        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width;100%; font-weight:800; height:54px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
         anchor.appendChild(ctaRow);
       },
 
@@ -761,10 +767,7 @@
           }
 
           let mediaGalleryHtml = '';
-          if (isDemoItem && d.mock_images) {
-            const imgs = d.mock_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
-            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-          } else if (d.cloud_images && d.cloud_images.length > 0) {
+          if (d.cloud_images && d.cloud_images.length > 0) {
             const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Variant" onclick="theater.launch('${src}')">`).join('');
             mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
           }
@@ -906,11 +909,11 @@
     const admin = {
       currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, temporaryImagesCache: [],
 
-      async start() {
+      start() {
         try {
           this.seedSuppliersData();
           this.loadSuppliersSelectionUI();
-          await this.renderFeedTimeline();
+          this.renderFeedTimeline();
           this.initFilterChips();
         } catch (err) { console.error(err); }
       },
@@ -975,12 +978,36 @@
 
       deleteSupplierFromManager(id) { if (!confirm("Delete sourcing factory slot completely?")) return; let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); list = list.filter(x => x.id !== id); localStorage.setItem('Besoins_Factories_Directory_Index', JSON.stringify(list)); delete this.suppliersCache[id]; this.renderSupplierDirectoryList(); this.loadSuppliersSelectionUI(); },
 
-      handleDrawerImageUpload(e) {
+      // ⚡ IMMERSIVE BACKGROUND PARALLEL ANONYMOUS POSTIMAGES VECTOR PROCESSING LAYER
+      async handleDrawerImageUpload(e) {
         const files = Array.from(e.target.files);
-        files.forEach(file => {
-          const reader = new FileReader(); reader.onload = (event) => { this.temporaryImagesCache.push(event.target.result); this.renderDrawerImagesPreviewUI(); };
-          reader.readAsDataURL(file);
-        });
+        if (files.length === 0) return;
+
+        const loader = document.getElementById('uploader-progress-shield');
+        if (loader) loader.style.display = 'flex';
+
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', 'ml_default'); 
+
+          try {
+            // Fires asynchronous file vector transfer to an anonymous multi-upload server queue
+            const res = await fetch('https://api.cloudinary.com/v1_1/demo/image/upload', {
+              method: 'POST',
+              body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+              this.temporaryImagesCache.push(data.secure_url);
+              this.renderDrawerImagesPreviewUI();
+            }
+          } catch (err) {
+            console.error("Vector media transfer failure node triggered:", err);
+          }
+        }
+
+        if (loader) loader.style.display = 'none';
       },
 
       renderDrawerImagesPreviewUI() {
@@ -1072,10 +1099,7 @@
           let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
 
           let mediaGalleryHtml = '';
-          if (d.id.startsWith('demo-item-') && d.mock_images) {
-            const imgs = d.mock_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
-            mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
-          } else if (d.cloud_images && d.cloud_images.length > 0) {
+          if (d.cloud_images && d.cloud_images.length > 0) {
             const imgs = d.cloud_images.map(src => `<img src="${src}" alt="Pattern">`).join('');
             mediaGalleryHtml = `<div class="card-media-gallery">${imgs}</div>`;
           }
@@ -1134,7 +1158,6 @@
         this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
         this.temporaryImagesCache = [];
         if (d.cloud_images) { this.temporaryImagesCache = [...d.cloud_images]; }
-        else if (d.mock_images) { this.temporaryImagesCache = [...d.mock_images]; }
 
         document.getElementById('curate-draft-id').value = d.id;
         document.getElementById('curate-title').value = d.title || '';
