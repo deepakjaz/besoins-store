@@ -427,14 +427,31 @@
     // ☁️ LIVE PRODUCTION WEB NETWORK CLOUD DATABASE ENDPOINT CONFIGURATION
     // =========================================================================
     const CloudDB = {
-      // Endpoint keys target central global data records over public API environments
-      endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', // Swap this out for your live secure production API path
+      // Endpoint keys linked directly to your active online data bin account
+      endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
+      masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
       
       getAllProducts() {
-        // Dynamic Network Call implementation layer
         let networkSnapshot = localStorage.getItem(this.backupTokenKey);
         return networkSnapshot ? JSON.parse(networkSnapshot) : [];
+      },
+      
+      async syncFetchFromCloud() {
+        try {
+          const res = await fetch(this.endpointUrl + '/latest', {
+            method: 'GET',
+            headers: { 'X-Master-Key': this.masterApiKey }
+          });
+          const data = await res.json();
+          // Extract arrays smoothly from structured cloud object formats
+          const records = data.record.products || data.record || [];
+          localStorage.setItem(this.backupTokenKey, JSON.stringify(records));
+          return records;
+        } catch(err) {
+          console.warn("Cloud pull latency detected. Reading fallback caches.");
+          return this.getAllProducts();
+        }
       },
       
       async saveProduct(productObj) {
@@ -443,16 +460,19 @@
         all.push(productObj);
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
-        // Pushes the payload update immediately up to the live network cloud stream
+        // Pushes the collection up to your live cloud matrix instantly
         try {
           await fetch(this.endpointUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(all)
+            method: 'PUT',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Master-Key': this.masterApiKey
+            },
+            body: JSON.stringify({ products: all })
           });
           console.log("Central cloud database synchronization completed successfully.");
         } catch(err) {
-          console.warn("Cloud connection latency detected. Local backup synchronization holding dynamic data pipelines secure.");
+          console.error("Network write error:", err);
         }
       },
 
@@ -463,9 +483,12 @@
         
         try {
           await fetch(this.endpointUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(all)
+            method: 'PUT',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Master-Key': this.masterApiKey
+            },
+            body: JSON.stringify({ products: all })
           });
         } catch(err) {}
       }
@@ -612,12 +635,12 @@
     const catalog = {
       allItems: [], selectedCategory: 'all', likedIDs: [], cachedPincode: '', activeClientTab: 'shop', staticLikesDatabase: {},
 
-      boot() {
+      async boot() {
         theater.init();
         this.likedIDs = JSON.parse(localStorage.getItem('Besoins_Likes_Cache') || '[]');
         this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
         this.initializeMockLikesMatrix();
-        this.loadTimelineData();
+        await this.loadTimelineData();
       },
 
       initializeMockLikesMatrix() {
@@ -629,15 +652,16 @@
         }
       },
 
-      loadTimelineData() {
-        // FETCHING THE DATA CORES LIVE FROM THE ONLINE API SYSTEM CHANNELS
-        let cloudItems = CloudDB.getAllProducts().filter(d => d.status === 'Ready');
+      async loadTimelineData() {
+        // TRIGGERING AN IMMEDIATE DYNAMIC LIVE FETCH CALL OVER SECURE CLOUD PATHS
+        let cloudResponseData = await CloudDB.syncFetchFromCloud();
+        let readyCloudItems = cloudResponseData.filter(d => d.status === 'Ready');
         let blockedDemoIds = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
         
-        const dynamicIds = new Set(cloudItems.map(item => item.id));
+        const dynamicIds = new Set(readyCloudItems.map(item => item.id));
         const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id) && !blockedDemoIds.includes(demo.id));
         
-        this.allItems = [...cloudItems, ...verifiedDemoFallbackItems];
+        this.allItems = [...readyCloudItems, ...verifiedDemoFallbackItems];
         this.buildCategoryFiltersUI();
         this.renderFeedTimeline();
         this.updateBagFloatingCTAState();
@@ -882,11 +906,11 @@
     const admin = {
       currentFilter: 'all', activeDraftRecord: null, stickySupplierId: 'sup_1', suppliersCache: {}, activeViewName: 'feed', temporaryPincodeCache: {}, temporaryImagesCache: [],
 
-      start() {
+      async start() {
         try {
           this.seedSuppliersData();
           this.loadSuppliersSelectionUI();
-          this.renderFeedTimeline();
+          await this.renderFeedTimeline();
           this.initFilterChips();
         } catch (err) { console.error(err); }
       },
@@ -980,14 +1004,14 @@
           const lines = rawText.split('\n').filter(l => l.trim().length > 0);
           const inferredTitle = lines[0] ? lines[0].replace(/[^\w\s]/gi, '').substring(0, 35) : 'Batch Item Design';
 
-          CloudDB.saveProduct({
+          await CloudDB.saveProduct({
             id: draftId, supplierId, title: inferredTitle, description: parsed.customerDescription, rawText: rawText,
             basePrice: parsed.derivedPrice || 0, consumerPrice: parsed.derivedPrice ? Math.round(parsed.derivedPrice * baseMargin) : 0,
             pincode_rates: {}, cloud_images: [], has_images: false, customAttributes: parsed.customAttributes || {},
             category: '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
           });
 
-          rawTextEl.value = ''; this.renderFeedTimeline(); this.navigate('feed');
+          rawTextEl.value = ''; await this.renderFeedTimeline(); this.navigate('feed');
         } catch (err) { alert(err.message); }
       },
 
@@ -1012,10 +1036,10 @@
         }
       },
 
-      renderFeedTimeline() {
+      async renderFeedTimeline() {
         const anchor = document.getElementById('feed-cards-anchor'); if (!anchor) return;
         
-        let cloudProducts = CloudDB.getAllProducts();
+        let cloudProducts = await CloudDB.syncFetchFromCloud();
         let blockedDemoIds = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
         const dynamicIds = new Set(cloudProducts.map(item => item.id));
         const verifiedDemoFallbackItems = CORE_DEMO_FALLBACK_DATABASE.filter(demo => !dynamicIds.has(demo.id) && !blockedDemoIds.includes(demo.id));
@@ -1079,11 +1103,11 @@
         navigator.clipboard.writeText(txt); alert("Log ticket copied to system buffer clipboard.");
       },
 
-      fastSkipItem(id) {
+      async fastSkipItem(id) {
         if(!confirm("Purge asset slot permanently?")) return;
         
         if(!id.startsWith('demo-item-')) {
-          CloudDB.deleteProduct(id);
+          await CloudDB.deleteProduct(id);
         } else {
           let blocked = JSON.parse(localStorage.getItem('Besoins_Blocked_Demo_IDs') || '[]');
           blocked.push(id);
@@ -1093,16 +1117,17 @@
         let backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
         delete backlog[id]; localStorage.setItem('Besoins_Pending_Pincodes', JSON.stringify(backlog));
         
-        catalog.loadTimelineData();
-        this.renderFeedTimeline();
+        await catalog.loadTimelineData();
+        await this.renderFeedTimeline();
       },
 
-      showCuratorDrawer(id) {
+      async showCuratorDrawer(id) {
         let d = null;
         if(id.startsWith('demo-item-')) {
           d = CORE_DEMO_FALLBACK_DATABASE.find(x => x.id === id);
         } else {
-          d = CloudDB.getAllProducts().find(x => x.id === id);
+          let cloudSnapshotData = await CloudDB.syncFetchFromCloud();
+          d = cloudSnapshotData.find(x => x.id === id);
         }
         if (!d) return;
         
@@ -1160,7 +1185,7 @@
       appendBlankAttributeRow() { this.injectMatrixRowHTML('', ''); },
       syncMarkupMath() { const cost = parseFloat(document.getElementById('curate-base-price').value) || 0; document.getElementById('curate-consumer-price').value = Math.round(cost * 1.25); },
 
-      drawerSaveAndTrain() {
+      async drawerSaveAndTrain() {
         if (!this.activeDraftRecord) return;
         let customAttributes = {};
         document.querySelectorAll('.matrix-row').forEach(tr => {
@@ -1181,12 +1206,12 @@
           customAttributes: customAttributes, updatedAt: new Date().toISOString()
         };
 
-        CloudDB.saveProduct(updated);
+        await CloudDB.saveProduct(updated);
         this.hideCuratorDrawer();
-        catalog.loadTimelineData();
+        await catalog.loadTimelineData();
       },
 
-      drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
+      async drawerRejectSkip() { if(confirm("Purge asset slot configuration?")) { await this.fastSkipItem(this.activeDraftRecord.id); this.hideCuratorDrawer(); } },
       hideCuratorDrawer() { this.activeDraftRecord = null; this.temporaryImagesCache = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
@@ -1197,7 +1222,7 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
           .then((reg) => {
-            reg.update(); // Forces system core validation parameters on runtime instantiation
+            reg.update(); 
             
             reg.onupdatefound = () => {
               const workingCoreUnit = reg.installing;
