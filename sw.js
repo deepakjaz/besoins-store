@@ -1,4 +1,4 @@
-const CACHE_NAME = 'besoins-cache-v2'; // Change this string (e.g., to v2) when you update the app code!
+const CACHE_NAME = 'besoins-cache-v3'; // Change this string (e.g., to v2) when you update the app code!
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
