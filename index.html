@@ -67,11 +67,6 @@
     .card-media-gallery img, .card-media-gallery video { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; display: block; }
     .card-media-gallery img { cursor: zoom-in; }
     
-    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
-    .feed-card-body h3::first-letter { text-transform: uppercase; }
-    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
-    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .attribute-chip { background: rgba(0, 0, 0, 0.04); color: var(--text-primary); font-size: 0.7rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
     .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
     .shipping-extra-tag { font-size: 0.75rem; color: var(--warning); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -383,6 +378,17 @@
   </div>
 
   <script>
+    // Add near the top of the <script> block
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     // =========================================================================
     // 🌐 FIXED LOCAL CORE SEED IMMUTABLE FALLBACKS
     // =========================================================================
@@ -409,10 +415,12 @@
     // ☁️ LIVE DUAL CLOUD BRIDGE CONFIGURATIONS
     // =========================================================================
     const CloudDB = {
-      endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
-      masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
-      googleAppsScriptUrl: 'https://script.google.com/macros/s/AKfycbxHSRJwUt8B1s9m9zN2Zr63k_FcYt5ChCaTSO9NoYI7m8iHcB8qlXM_jKOsfWzE1Qs/exec',
+      // Endpoints route directly to Vercel free hidden serverless backend proxy controllers
+      endpointUrl: '/api/products',
+      authUrl: '/api/auth',
+      googleDriveUrl: '/api/drive',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
+      sessionStorageKey: 'Besoins_Active_Session_Token_V7',
       
       getAllProducts() {
         let networkSnapshot = localStorage.getItem(this.backupTokenKey);
@@ -421,12 +429,10 @@
       
       async syncFetchFromCloud() {
         try {
-          const res = await fetch(this.endpointUrl + '/latest', {
-            method: 'GET',
-            headers: { 'X-Master-Key': this.masterApiKey }
+          const res = await fetch(this.endpointUrl, {
+            method: 'GET'
           });
-          const data = await res.json();
-          const records = data.record.products || data.record || [];
+          const records = await res.json();
           localStorage.setItem(this.backupTokenKey, JSON.stringify(records));
           return records;
         } catch(err) {
@@ -435,35 +441,45 @@
       },
       
       async saveProduct(productObj) {
-        let all = this.getAllProducts();
+        // Safe read-modify-write synchronization correction framework
+        let currentCloudSnapshot = await this.syncFetchFromCloud();
+        let all = currentCloudSnapshot.length ? currentCloudSnapshot : this.getAllProducts();
+        
         all = all.filter(p => p.id !== productObj.id);
         all.push(productObj);
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
+        const token = sessionStorage.getItem(this.sessionStorageKey) || '';
         try {
-          await fetch(this.endpointUrl, {
+          const response = await fetch(this.endpointUrl, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Master-Key': this.masterApiKey
+              'X-Besoins-Auth': token
             },
             body: JSON.stringify({ products: all })
           });
+          if (!response.ok) throw new Error('Write access assertion rejected by serverless layer guards.');
+          console.log("Central cloud database synchronization completed successfully.");
         } catch(err) {
           console.error("Network write error:", err);
         }
       },
 
       async deleteProduct(id) {
-        let all = this.getAllProducts();
+        let currentCloudSnapshot = await this.syncFetchFromCloud();
+        let all = currentCloudSnapshot.length ? currentCloudSnapshot : this.getAllProducts();
         const targetItem = all.find(p => p.id === id);
+        const token = sessionStorage.getItem(this.sessionStorageKey) || '';
         
         if (targetItem && targetItem.googleFolderId) {
           try {
-            await fetch(this.googleAppsScriptUrl, {
+            await fetch(this.googleDriveUrl, {
               method: 'POST',
-              mode: 'no-cors',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'X-Besoins-Auth': token
+              },
               body: JSON.stringify({
                 action: "purgeProductFolder",
                 folderId: targetItem.googleFolderId
@@ -481,7 +497,7 @@
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Master-Key': this.masterApiKey
+              'X-Besoins-Auth': token
             },
             body: JSON.stringify({ products: all })
           });
@@ -542,22 +558,27 @@
     };
 
     const security = {
-      vaultKey: 'Besoins_Master_Secure_PIN_V5',
-      verifyPINAttempt() {
-        const pin = document.getElementById('gateway-pin-field').value.trim();
-        const master = localStorage.getItem(this.vaultKey) || '1156'; 
-        if (pin === master) {
-          globalNavigation.activateStudioWorkspace();
-        } else { alert("Decryption verification argument mismatch error."); }
+      async verifyPINAttempt() {
+        const pinValue = document.getElementById('gateway-pin-field').value.trim();
+        try {
+          const res = await fetch(CloudDB.authUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: pinValue })
+          });
+          const data = await res.json();
+          if (data.success) {
+            sessionStorage.setItem(CloudDB.sessionStorageKey, data.token);
+            globalNavigation.activateStudioWorkspace();
+          } else {
+            alert(data.message || "Decryption verification argument mismatch error.");
+          }
+        } catch (err) {
+          alert("Serverless authentication engine connection latency block.");
+        }
       },
       triggerPasswordResetOption() {
-        const old = prompt("Specify the active running operational password credentials:");
-        const master = localStorage.getItem(this.vaultKey) || '1156';
-        if (old !== master) return alert("Current credential loop check signature verified as invalid.");
-        const fresh = prompt("Type your new personal replacement master workspace PIN:");
-        if (!fresh || fresh.trim().length < 2) return alert("New credentials size metrics bound threshold anomaly.");
-        localStorage.setItem(this.vaultKey, fresh.trim());
-        alert("Master security encryption passphrase updated successfully.");
+        alert("PIN values must be configured within your safe Vercel cloud environment panel variables dashboard.");
       }
     };
 
@@ -741,7 +762,6 @@
         } else if (url.includes('id=')) {
           fileId = url.split('id=')[1].split('&')[0];
         }
-        // Bypasses cookie policies completely using the open thumbnail proxy node
         return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : url;
       },
 
@@ -764,7 +784,7 @@
 
           let chipsHtml = '';
           for (const [key, value] of Object.entries(d.customAttributes)) {
-            if (value) chipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
+            if (value) chipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`;
           }
 
           let mediaGalleryHtml = '';
@@ -785,7 +805,7 @@
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
             guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
-              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
+              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${escapeHtml(p)}')">${escapeHtml(p)}</span>`).join('') + `</div>`;
           }
 
           let interactiveWorkflowBlocks = '';
@@ -814,8 +834,8 @@
             </div>
             <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
-              <h3>${d.title}</h3>
-              <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
+              <h3>${escapeHtml(d.title)}</h3>
+              <p>${escapeHtml(d.description || '').replace(/\n/g, '<br>')}</p>
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
             <div class="feed-card-pricing">
@@ -975,7 +995,7 @@
         let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); directoryContainer.innerHTML = '';
         list.forEach(sup => {
           const div = document.createElement('div'); div.className = 'supplier-list-item';
-          div.innerHTML = `<div><span style="font-weight:bold;">${sup.name}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
+          div.innerHTML = `<div><span style="font-weight:bold;">${escapeHtml(sup.name)}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
           directoryContainer.appendChild(div);
         });
       },
@@ -1080,7 +1100,7 @@
             const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
-              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
+              tr.innerHTML = `<td><b>${escapeHtml(this.suppliersCache[match.supplierId] || 'Factory')}</b></td><td>${escapeHtml(match.title)}</td><td><span style="color:var(--warning); font-weight:bold;">${escapeHtml(pinCodes.join(', '))}</span></td>`;
               tbody.appendChild(tr);
             }
           }
@@ -1095,7 +1115,7 @@
         for (const d of filtered) {
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div'); card.className = 'feed-card'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
-          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
@@ -1113,8 +1133,8 @@
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
-            <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${escapeHtml(name)}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${escapeHtml(d.status)}</span></div>
+            <div class="feed-card-body"><h3>${escapeHtml(d.title)}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(d.description)}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
             <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
             <div class="feed-quick-actions">
               <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${d.id}')">Purge</button>
@@ -1250,6 +1270,7 @@
           const uploaderLabel = document.getElementById('uploader-feedback-label');
           uploaderLabel.innerText = "⚡ Uploading media layers to Google Drive... Please wait.";
           
+          const token = sessionStorage.getItem(CloudDB.sessionStorageKey) || '';
           try {
             const payload = {
               action: "uploadProductMedia",
@@ -1261,8 +1282,12 @@
               }))
             };
 
-            const response = await fetch(CloudDB.googleAppsScriptUrl, {
+            const response = await fetch(CloudDB.googleDriveUrl, {
               method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'X-Besoins-Auth': token
+              },
               body: JSON.stringify(payload)
             });
             
