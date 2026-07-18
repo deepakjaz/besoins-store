@@ -67,6 +67,11 @@
     .card-media-gallery img, .card-media-gallery video { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; display: block; }
     .card-media-gallery img { cursor: zoom-in; }
     
+    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
+    .feed-card-body h3::first-letter { text-transform: uppercase; }
+    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .attribute-chip { background: rgba(0, 0, 0, 0.04); color: var(--text-primary); font-size: 0.7rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
     .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
     .shipping-extra-tag { font-size: 0.75rem; color: var(--warning); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -125,6 +130,10 @@
     .matrix-editor-table td { padding: 6px 0; }
     .remove-matrix-row-btn { background: none; border: none; color: var(--danger); font-size: 1.4rem; cursor: pointer; padding: 0 8px; }
     .add-matrix-row-trigger { background: rgba(0,0,0,0.03); padding: 14px; border-radius: 12px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; width: 100%; }
+
+    /* Media Preview Wrapper with Delete Icon Overlay */
+    .drawer-preview-wrapper { position: relative; width: 100%; aspect-ratio: 1; }
+    .remove-thumb-badge { position: absolute; top: 4px; right: 4px; background: rgba(255, 59, 48, 0.95); color: #ffffff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); z-index: 10; }
 
     /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
     .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(85px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.03); }
@@ -378,17 +387,6 @@
   </div>
 
   <script>
-    // Add near the top of the <script> block
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     // =========================================================================
     // 🌐 FIXED LOCAL CORE SEED IMMUTABLE FALLBACKS
     // =========================================================================
@@ -415,12 +413,10 @@
     // ☁️ LIVE DUAL CLOUD BRIDGE CONFIGURATIONS
     // =========================================================================
     const CloudDB = {
-      // Endpoints route directly to Vercel free hidden serverless backend proxy controllers
-      endpointUrl: '/api/products',
-      authUrl: '/api/auth',
-      googleDriveUrl: '/api/drive',
+      endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
+      masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
+      googleAppsScriptUrl: 'https://script.google.com/macros/s/AKfycbxHSRJwUt8B1s9m9zN2Zr63k_FcYt5ChCaTSO9NoYI7m8iHcB8qlXM_jKOsfWzE1Qs/exec',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
-      sessionStorageKey: 'Besoins_Active_Session_Token_V7',
       
       getAllProducts() {
         let networkSnapshot = localStorage.getItem(this.backupTokenKey);
@@ -429,10 +425,12 @@
       
       async syncFetchFromCloud() {
         try {
-          const res = await fetch(this.endpointUrl, {
-            method: 'GET'
+          const res = await fetch(this.endpointUrl + '/latest', {
+            method: 'GET',
+            headers: { 'X-Master-Key': this.masterApiKey }
           });
-          const records = await res.json();
+          const data = await res.json();
+          const records = data.record.products || data.record || [];
           localStorage.setItem(this.backupTokenKey, JSON.stringify(records));
           return records;
         } catch(err) {
@@ -441,45 +439,35 @@
       },
       
       async saveProduct(productObj) {
-        // Safe read-modify-write synchronization correction framework
-        let currentCloudSnapshot = await this.syncFetchFromCloud();
-        let all = currentCloudSnapshot.length ? currentCloudSnapshot : this.getAllProducts();
-        
+        let all = this.getAllProducts();
         all = all.filter(p => p.id !== productObj.id);
         all.push(productObj);
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
-        const token = sessionStorage.getItem(this.sessionStorageKey) || '';
         try {
-          const response = await fetch(this.endpointUrl, {
+          await fetch(this.endpointUrl, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Besoins-Auth': token
+              'X-Master-Key': this.masterApiKey
             },
             body: JSON.stringify({ products: all })
           });
-          if (!response.ok) throw new Error('Write access assertion rejected by serverless layer guards.');
-          console.log("Central cloud database synchronization completed successfully.");
         } catch(err) {
           console.error("Network write error:", err);
         }
       },
 
       async deleteProduct(id) {
-        let currentCloudSnapshot = await this.syncFetchFromCloud();
-        let all = currentCloudSnapshot.length ? currentCloudSnapshot : this.getAllProducts();
+        let all = this.getAllProducts();
         const targetItem = all.find(p => p.id === id);
-        const token = sessionStorage.getItem(this.sessionStorageKey) || '';
         
         if (targetItem && targetItem.googleFolderId) {
           try {
-            await fetch(this.googleDriveUrl, {
+            await fetch(this.googleAppsScriptUrl, {
               method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'X-Besoins-Auth': token
-              },
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 action: "purgeProductFolder",
                 folderId: targetItem.googleFolderId
@@ -497,7 +485,7 @@
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Besoins-Auth': token
+              'X-Master-Key': this.masterApiKey
             },
             body: JSON.stringify({ products: all })
           });
@@ -558,27 +546,22 @@
     };
 
     const security = {
-      async verifyPINAttempt() {
-        const pinValue = document.getElementById('gateway-pin-field').value.trim();
-        try {
-          const res = await fetch(CloudDB.authUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pin: pinValue })
-          });
-          const data = await res.json();
-          if (data.success) {
-            sessionStorage.setItem(CloudDB.sessionStorageKey, data.token);
-            globalNavigation.activateStudioWorkspace();
-          } else {
-            alert(data.message || "Decryption verification argument mismatch error.");
-          }
-        } catch (err) {
-          alert("Serverless authentication engine connection latency block.");
-        }
+      vaultKey: 'Besoins_Master_Secure_PIN_V5',
+      verifyPINAttempt() {
+        const pin = document.getElementById('gateway-pin-field').value.trim();
+        const master = localStorage.getItem(this.vaultKey) || '1156'; 
+        if (pin === master) {
+          globalNavigation.activateStudioWorkspace();
+        } else { alert("Decryption verification argument mismatch error."); }
       },
       triggerPasswordResetOption() {
-        alert("PIN values must be configured within your safe Vercel cloud environment panel variables dashboard.");
+        const old = prompt("Specify the active running operational password credentials:");
+        const master = localStorage.getItem(this.vaultKey) || '1156';
+        if (old !== master) return alert("Current credential loop check signature verified as invalid.");
+        const fresh = prompt("Type your new personal replacement master workspace PIN:");
+        if (!fresh || fresh.trim().length < 2) return alert("New credentials size metrics bound threshold anomaly.");
+        localStorage.setItem(this.vaultKey, fresh.trim());
+        alert("Master security encryption passphrase updated successfully.");
       }
     };
 
@@ -762,6 +745,7 @@
         } else if (url.includes('id=')) {
           fileId = url.split('id=')[1].split('&')[0];
         }
+        // Bypasses cookie policies completely using the open thumbnail proxy node
         return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : url;
       },
 
@@ -784,7 +768,7 @@
 
           let chipsHtml = '';
           for (const [key, value] of Object.entries(d.customAttributes)) {
-            if (value) chipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`;
+            if (value) chipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
           }
 
           let mediaGalleryHtml = '';
@@ -805,7 +789,7 @@
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
             guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
-              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${escapeHtml(p)}')">${escapeHtml(p)}</span>`).join('') + `</div>`;
+              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
           }
 
           let interactiveWorkflowBlocks = '';
@@ -834,8 +818,8 @@
             </div>
             <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
-              <h3>${escapeHtml(d.title)}</h3>
-              <p>${escapeHtml(d.description || '').replace(/\n/g, '<br>')}</p>
+              <h3>${d.title}</h3>
+              <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
             <div class="feed-card-pricing">
@@ -995,7 +979,7 @@
         let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); directoryContainer.innerHTML = '';
         list.forEach(sup => {
           const div = document.createElement('div'); div.className = 'supplier-list-item';
-          div.innerHTML = `<div><span style="font-weight:bold;">${escapeHtml(sup.name)}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
+          div.innerHTML = `<div><span style="font-weight:bold;">${sup.name}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
           directoryContainer.appendChild(div);
         });
       },
@@ -1013,29 +997,88 @@
 
       handleDeviceMediaFileSelection(e) {
         const files = Array.from(e.target.files);
-        const previewAnchor = document.getElementById('drawer-media-preview-anchor');
         
         files.forEach(file => {
           const reader = new FileReader();
           reader.onload = (event) => {
             const base64Data = event.target.result.split(',')[1];
+            const localFileId = 'file_' + Math.random().toString(36).substr(2, 9);
+            
             this.selectedFilesBuffer.push({
+              localId: localFileId,
               filename: file.name,
               mimeType: file.type,
-              base64Data: base64Data,
-              localPreviewUrl: event.target.result
+              base64Data: base64Data
             });
-            
-            const element = file.type.startsWith('video/') 
-              ? document.createElement('video') 
-              : document.createElement('img');
-            element.src = event.target.result;
-            element.className = 'drawer-preview-thumb';
-            if (element.tagName === 'VIDEO') { element.muted = true; element.autoplay = true; element.loop = true; }
-            previewAnchor.appendChild(element);
+            this.renderLocalMediaPreviewsUI();
           };
           reader.readAsDataURL(file);
         });
+        e.target.value = '';
+      },
+
+      renderLocalMediaPreviewsUI() {
+        const previewAnchor = document.getElementById('drawer-media-preview-anchor');
+        if (!previewAnchor) return;
+        previewAnchor.innerHTML = '';
+        
+        if (this.activeDraftRecord && this.activeDraftRecord.cloud_images) {
+          this.activeDraftRecord.cloud_images.forEach((lnk, index) => {
+            let cleanLnk = catalog.convertDriveLinkToDirectStream(lnk);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'drawer-preview-wrapper';
+            
+            const thumb = lnk.toLowerCase().includes('.mp4') || lnk.toLowerCase().includes('.mov') || lnk.toLowerCase().includes('.webm')
+              ? document.createElement('video') 
+              : document.createElement('img');
+            thumb.src = cleanLnk;
+            thumb.className = 'drawer-preview-thumb';
+            if(thumb.tagName === 'VIDEO') { thumb.muted = true; thumb.autoplay = true; thumb.loop = true; }
+            
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'remove-thumb-badge';
+            delBtn.innerText = '×';
+            delBtn.onclick = () => this.removeCloudImageFromDraftSlot(index);
+            
+            wrapper.appendChild(thumb);
+            wrapper.appendChild(delBtn);
+            previewAnchor.appendChild(wrapper);
+          });
+        }
+
+        this.selectedFilesBuffer.forEach(fileItem => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'drawer-preview-wrapper';
+          
+          const thumb = fileItem.mimeType.startsWith('video/') 
+            ? document.createElement('video') 
+            : document.createElement('img');
+          thumb.src = `data:${fileItem.mimeType};base64,${fileItem.base64Data}`;
+          thumb.className = 'drawer-preview-thumb';
+          if (thumb.tagName === 'VIDEO') { thumb.muted = true; thumb.autoplay = true; thumb.loop = true; }
+          
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'remove-thumb-badge';
+          delBtn.innerText = '×';
+          delBtn.onclick = () => this.removeStagedLocalFileSlot(fileItem.localId);
+          
+          wrapper.appendChild(thumb);
+          wrapper.appendChild(delBtn);
+          previewAnchor.appendChild(wrapper);
+        });
+      },
+
+      removeStagedLocalFileSlot(localId) {
+        this.selectedFilesBuffer = this.selectedFilesBuffer.filter(f => f.localId !== localId);
+        this.renderLocalMediaPreviewsUI();
+      },
+
+      removeCloudImageFromDraftSlot(index) {
+        if (!confirm("Remove this existing asset reference from catalog window slot?")) return;
+        this.activeDraftRecord.cloud_images.splice(index, 1);
+        this.renderLocalMediaPreviewsUI();
       },
 
       async handleIntakeSubmit(e) {
@@ -1100,7 +1143,7 @@
             const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
-              tr.innerHTML = `<td><b>${escapeHtml(this.suppliersCache[match.supplierId] || 'Factory')}</b></td><td>${escapeHtml(match.title)}</td><td><span style="color:var(--warning); font-weight:bold;">${escapeHtml(pinCodes.join(', '))}</span></td>`;
+              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
               tbody.appendChild(tr);
             }
           }
@@ -1115,7 +1158,7 @@
         for (const d of filtered) {
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div'); card.className = 'feed-card'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
-          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
@@ -1133,8 +1176,8 @@
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${escapeHtml(name)}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${escapeHtml(d.status)}</span></div>
-            <div class="feed-card-body"><h3>${escapeHtml(d.title)}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(d.description)}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
+            <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
             <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
             <div class="feed-quick-actions">
               <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${d.id}')">Purge</button>
@@ -1184,9 +1227,6 @@
         
         this.activeDraftRecord = d; this.temporaryPincodeCache = { ...(d.pincode_rates || {}) };
         this.selectedFilesBuffer = [];
-        
-        document.getElementById('drawer-media-preview-anchor').innerHTML = '';
-        document.getElementById('uploader-feedback-label').innerText = "📸 Select Images / Videos to Sync with Google Drive";
 
         document.getElementById('curate-draft-id').value = d.id;
         document.getElementById('curate-title').value = d.title || '';
@@ -1199,20 +1239,7 @@
         document.getElementById('curate-decision').value = d.decision;
         document.getElementById('curate-raw-text').value = d.rawText || '';
 
-        if (d.cloud_images) {
-          const previewAnchor = document.getElementById('drawer-media-preview-anchor');
-          d.cloud_images.forEach(lnk => {
-            let cleanLnk = catalog.convertDriveLinkToDirectStream(lnk);
-            const thumb = lnk.toLowerCase().includes('.mp4') || lnk.toLowerCase().includes('.mov') || lnk.toLowerCase().includes('.webm')
-              ? document.createElement('video') 
-              : document.createElement('img');
-            thumb.src = cleanLnk;
-            thumb.className = 'drawer-preview-thumb';
-            if(thumb.tagName === 'VIDEO') { thumb.muted = true; thumb.autoplay = true; thumb.loop = true; }
-            previewAnchor.appendChild(thumb);
-          });
-        }
-
+        this.renderLocalMediaPreviewsUI();
         this.renderDrawerPincodeMatrixUI();
 
         const tbody = document.getElementById('drawer-attributes-tbody'); tbody.innerHTML = '';
@@ -1270,7 +1297,6 @@
           const uploaderLabel = document.getElementById('uploader-feedback-label');
           uploaderLabel.innerText = "⚡ Uploading media layers to Google Drive... Please wait.";
           
-          const token = sessionStorage.getItem(CloudDB.sessionStorageKey) || '';
           try {
             const payload = {
               action: "uploadProductMedia",
@@ -1282,12 +1308,8 @@
               }))
             };
 
-            const response = await fetch(CloudDB.googleDriveUrl, {
+            const response = await fetch(CloudDB.googleAppsScriptUrl, {
               method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'X-Besoins-Auth': token
-              },
               body: JSON.stringify(payload)
             });
             
