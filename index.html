@@ -59,7 +59,7 @@
     .feed-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
     
     /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS */
-    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; cursor: pointer; }
+    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; cursor: pointer; }
     
     /* GALLERY VIEWPORT CONFIGURATION SETUP FOR IMAGES AND VIDEOS */
     .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 320px; max-height: 320px; position: relative; }
@@ -67,10 +67,11 @@
     .card-media-gallery img, .card-media-gallery video { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; display: block; }
     .card-media-gallery img { cursor: zoom-in; }
     
+    .feed-card-body { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; }
     .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
     .feed-card-body h3::first-letter { text-transform: uppercase; }
-    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
-    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 4px; white-space: pre-wrap; }
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .attribute-chip { background: rgba(0, 0, 0, 0.04); color: var(--text-primary); font-size: 0.7rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
     .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
@@ -80,7 +81,7 @@
     .action-btn { padding: 16px; border-radius: 16px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; transition: background 0.2s ease, transform 0.1s ease; }
     .action-btn:active { transform: scale(0.97); }
     
-    .pincode-widget { margin-top: 8px; padding-top: 16px; border-top: 1px dashed #e5e5ea; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .pincode-widget { margin-top: 4px; padding-top: 12px; border-top: 1px dashed #e5e5ea; display: flex; flex-direction: column; gap: 8px; width: 100%; }
     .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
     .pincode-input { flex: 1; min-width: 0; padding: 14px 16px; background: #f2f2f7; border: 1px solid rgba(0,0,0,0.08); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; transition: all 0.2s ease; }
     .pincode-input.pulse-alert { background: rgba(255, 149, 0, 0.08); box-shadow: 0 0 0 2px var(--warning); }
@@ -110,10 +111,11 @@
     .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; margin-top: 4px; }
     .btn-reject { background: #ffe5e5; color: var(--danger); }
     .btn-edit-curate { background: var(--bg-active); color: var(--accent); }
+    
     .export-panel-container { background: var(--bg-card); border-radius: 20px; padding: 18px; margin-bottom: 24px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.02); }
-    .export-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
-    .export-table th { text-align: left; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid #f2f2f7; }
-    .export-table td { padding: 12px 0; border-bottom: 1px solid #f2f2f7; }
+    .export-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; table-layout: fixed; }
+    .export-table th, .export-table td { padding: 12px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
+    .export-table th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; }
 
     /* FULLSCREEN SLIDING APPLE DRAWER OVERLAY ASSIGNMENTS */
     .fullscreen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 300; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -137,7 +139,8 @@
 
     /* 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY MATRIX */
     .lightbox-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 400; display: none; justify-content: center; align-items: center; padding: 24px; }
-    .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 80%; overflow-y: auto; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; gap: 16px; }
+    .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 85%; overflow-y: auto; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; }
+    .lightbox-content-card::-webkit-scrollbar { display: none; }
 
     /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
     .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(85px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.03); }
@@ -227,7 +230,7 @@
           </div>
           <table class="export-table">
             <thead>
-              <tr><th>Sourced From</th><th>Item Heading</th><th>Folder Ref ID</th><th>Pincodes Logged</th></tr>
+              <tr><th style="width:25%;">Sourced From</th><th style="width:25%;">Item Heading</th><th style="width:30%;">Folder Ref ID</th><th style="width:20%; text-align:right;">Pincodes</th></tr>
             </thead>
             <tbody id="export-queue-tbody"></tbody>
           </table>
@@ -774,7 +777,6 @@
           const card = document.createElement('div');
           card.className = 'feed-card';
           
-          // Wire up the full card overlay trigger for premium lightbox experience
           card.setAttribute('onclick', `catalog.openProductLightbox('${d.id}')`);
           
           const isFav = this.likedIDs.includes(d.id);
@@ -834,7 +836,7 @@
             <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
               <h3>${d.title}</h3>
-              <p>${(d.description || '').split('\n')[0]}...</p> <!-- Short truncation for feed cleanly -->
+              <p>${(d.description || '').split('\n')[0]}...</p>
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
             <div class="feed-card-pricing">
@@ -1205,7 +1207,16 @@
             const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
-              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><code>${match.googleFolderId || 'No Vault Link'}</code></td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
+              let folderDisplay = match.googleFolderId 
+                ? `<a href="https://drive.google.com/drive/folders/${match.googleFolderId}" target="_blank" style="color:var(--info); font-family:monospace; font-size:0.75rem; text-decoration:underline; word-break:break-all;">${match.googleFolderId}</a>`
+                : '<span style="color:var(--text-muted); font-size:0.75rem;">No Vault Link</span>';
+                
+              tr.innerHTML = `
+                <td style="width: 25%;"><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td>
+                <td style="width: 25%; font-weight: 600;">${match.title}</td>
+                <td style="width: 30%;">${folderDisplay}</td>
+                <td style="width: 20%; text-align: right;"><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>
+              `;
               tbody.appendChild(tr);
             }
           }
@@ -1236,11 +1247,15 @@
             mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
           }
 
+          let linkElement = d.googleFolderId
+            ? `<a href="https://drive.google.com/drive/folders/${d.googleFolderId}" target="_blank" style="font-size:0.65rem; font-family:monospace; color:var(--info); background:#e5e5ea; padding:4px 8px; border-radius:6px; text-decoration:underline;" onclick="event.stopPropagation()">Vault Link</a>`
+            : `<span style="font-size:0.65rem; font-family:monospace; background:#f2f2f7; color:var(--text-muted); padding:4px 8px; border-radius:6px;">No Vault Link</span>`;
+
           card.innerHTML = `
             ${mediaGalleryHtml}
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span class="supplier-pill">From: ${name}</span>
-              <span style="font-size:0.65rem; font-family:monospace; background:#e5e5ea; padding:2px 6px; border-radius:4px;">ID: ${d.googleFolderId || 'None'}</span>
+              ${linkElement}
             </div>
             <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
             <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
