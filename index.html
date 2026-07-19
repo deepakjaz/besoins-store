@@ -58,8 +58,8 @@
     .global-view-wrapper { display: none; width: 100%; } .global-view-wrapper.active-frame { display: block; }
     .feed-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
     
-    /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS - OUTLINES STRIPPED COMPLETELY */
-    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; }
+    /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS */
+    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; cursor: pointer; }
     
     /* GALLERY VIEWPORT CONFIGURATION SETUP FOR IMAGES AND VIDEOS */
     .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 320px; max-height: 320px; position: relative; }
@@ -82,7 +82,7 @@
     
     .pincode-widget { margin-top: 8px; padding-top: 16px; border-top: 1px dashed #e5e5ea; display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
-    .pincode-input { flex: 1; min-width: 0; padding: 14px 16px; background: #f2f2f7; border: none; color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; transition: all 0.2s ease; }
+    .pincode-input { flex: 1; min-width: 0; padding: 14px 16px; background: #f2f2f7; border: 1px solid rgba(0,0,0,0.08); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; transition: all 0.2s ease; }
     .pincode-input.pulse-alert { background: rgba(255, 149, 0, 0.08); box-shadow: 0 0 0 2px var(--warning); }
     .pincode-btn { padding: 0 20px; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.75rem; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
     .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 12px 16px; border-radius: 12px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.4; }
@@ -106,7 +106,7 @@
     /* 🛠========= SECURE WORKSPACE BACKEND UI ELEMENTS ========= */
     .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 16px; }
     .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
-    .native-input, select, textarea { width: 100%; padding: 14px 16px; border: none; background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
+    .native-input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.08); background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
     .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; margin-top: 4px; }
     .btn-reject { background: #ffe5e5; color: var(--danger); }
     .btn-edit-curate { background: var(--bg-active); color: var(--accent); }
@@ -134,6 +134,10 @@
     /* Media Preview Wrapper with Delete Icon Overlay */
     .drawer-preview-wrapper { position: relative; width: 100%; aspect-ratio: 1; }
     .remove-thumb-badge { position: absolute; top: 4px; right: 4px; background: rgba(255, 59, 48, 0.95); color: #ffffff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); z-index: 10; }
+
+    /* 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY MATRIX */
+    .lightbox-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 400; display: none; justify-content: center; align-items: center; padding: 24px; }
+    .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 80%; overflow-y: auto; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; gap: 16px; }
 
     /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
     .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(85px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.03); }
@@ -168,6 +172,14 @@
           <button type="button" class="action-btn" style="background:#e5e5ea; color:#1c1c1e;" onclick="globalNavigation.dismissSecurityCurtain()">Cancel</button>
           <button type="button" class="action-btn" style="background:var(--accent); color:#fff;" onclick="security.verifyPINAttempt()">Verify</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY SHELL FRAME -->
+    <div id="product-detail-lightbox" class="lightbox-modal-overlay" onclick="catalog.closeProductLightbox(event)">
+      <div class="lightbox-content-card" onclick="event.stopPropagation()">
+        <div id="lightbox-render-anchor"></div>
+        <button type="button" class="action-btn" style="background:#e5e5ea; color:#1c1c1e; width:100%; font-weight:700;" onclick="catalog.dismissLightboxUI()">← Close Details</button>
       </div>
     </div>
 
@@ -215,7 +227,7 @@
           </div>
           <table class="export-table">
             <thead>
-              <tr><th>Sourced From</th><th>Item Heading</th><th>Pincodes Logged</th></tr>
+              <tr><th>Sourced From</th><th>Item Heading</th><th>Folder Ref ID</th><th>Pincodes Logged</th></tr>
             </thead>
             <tbody id="export-queue-tbody"></tbody>
           </table>
@@ -405,6 +417,7 @@
         pincode_rates: { "395001": 80, "395003": 80, "400001": 120 },
         has_images: true,
         cloud_images: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop", "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop"],
+        googleFolderId: "drf_demo_vault_01",
         updatedAt: new Date().toISOString()
       }
     ];
@@ -736,7 +749,6 @@
         anchor.appendChild(ctaRow);
       },
 
-      // ⚡ UNBLOCKED GOOGLE HIGH-RES RENDERING STREAM ENGINE
       convertDriveLinkToDirectStream(url) {
         if (!url || !url.includes('drive.google.com')) return url;
         let fileId = '';
@@ -745,7 +757,6 @@
         } else if (url.includes('id=')) {
           fileId = url.split('id=')[1].split('&')[0];
         }
-        // Bypasses cookie policies completely using the open thumbnail proxy node
         return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : url;
       },
 
@@ -762,6 +773,10 @@
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div');
           card.className = 'feed-card';
+          
+          // Wire up the full card overlay trigger for premium lightbox experience
+          card.setAttribute('onclick', `catalog.openProductLightbox('${d.id}')`);
+          
           const isFav = this.likedIDs.includes(d.id);
           const currentCount = this.staticLikesDatabase[d.id] || 0;
           const isDemoItem = d.id.startsWith('demo-item-');
@@ -779,7 +794,7 @@
               if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
                 galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
               } else {
-                galleryElements += `<img src="${cleanLink}" alt="Variant" onclick="theater.launch('${cleanLink}')">`;
+                galleryElements += `<img src="${cleanLink}" alt="Variant" onclick="event.stopPropagation(); theater.launch('${cleanLink}')">`;
               }
             });
             mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
@@ -788,14 +803,14 @@
           let guessPillsHtml = '';
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
-            guessPillsHtml = `<div class="guess-pill-container"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
+            guessPillsHtml = `<div class="guess-pill-container" onclick="event.stopPropagation()"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
               matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
           }
 
           let interactiveWorkflowBlocks = '';
           if (appendInputsAndActions) {
             interactiveWorkflowBlocks = `
-              <div class="pincode-widget">
+              <div class="pincode-widget" onclick="event.stopPropagation()">
                 <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area (Shipping &amp; ETA)</label>
                 <div class="pincode-row-inputs">
                   <input type="text" class="pincode-input" id="input-pin-${d.id}" value="${this.cachedPincode}" placeholder="6-digit Pincode" onfocus="this.classList.remove('pulse-alert')">
@@ -805,7 +820,7 @@
                 <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
               </div>
 
-              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="catalog.triggerDirectWhatsAppInquiry('${d.id}')">
+              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${d.id}')">
                 💬 Check Dispatch &amp; Stock Availability
               </button>
             `;
@@ -813,13 +828,13 @@
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="catalog.handleLikeTap('${d.id}', this, ${appendInputsAndActions})">
+            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${d.id}', this, ${appendInputsAndActions})">
               ❤️ <span class="likes-value">${currentCount}</span>
             </div>
             <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
               <h3>${d.title}</h3>
-              <p>${(d.description || '').replace(/\n/g, '<br>')}</p>
+              <p>${(d.description || '').split('\n')[0]}...</p> <!-- Short truncation for feed cleanly -->
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
             <div class="feed-card-pricing">
@@ -832,6 +847,53 @@
           `;
           anchorNode.appendChild(card);
           if(this.cachedPincode && appendInputsAndActions) this.verifyPincodeTrigger(d.id); 
+        }
+      },
+
+      openProductLightbox(id) {
+        const d = this.allItems.find(x => x.id === id);
+        if (!d) return;
+        
+        const anchor = document.getElementById('lightbox-render-anchor');
+        const overlay = document.getElementById('product-detail-lightbox');
+        
+        let attributeChipsHtml = '';
+        for (const [key, value] of Object.entries(d.customAttributes || {})) {
+          if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
+        }
+
+        let mediaGalleryHtml = '';
+        if (d.cloud_images && d.cloud_images.length > 0) {
+          let galleryElements = '';
+          d.cloud_images.forEach(link => {
+            let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
+            if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
+              galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline style="width:100%; border-radius:16px; margin-bottom:8px;"></video>`;
+            } else {
+              galleryElements += `<img src="${cleanLink}" alt="Zoom" style="width:100%; border-radius:16px; margin-bottom:8px;" onclick="theater.launch('${cleanLink}')">`;
+            }
+          });
+          mediaGalleryHtml = `<div style="width:100%; max-height:300px; overflow-y:auto; margin-bottom:12px; scrollbar-width:none;">${galleryElements}</div>`;
+        }
+
+        anchor.innerHTML = `
+          ${mediaGalleryHtml}
+          <div style="font-family:serif; font-size:1.4rem; font-weight:500; color:var(--accent); text-transform:capitalize;">${d.title}</div>
+          <div style="font-size:0.85rem; color:#48484a; line-height:1.5; margin:12px 0; white-space:pre-wrap;">${d.description}</div>
+          <div class="dynamic-attributes-container" style="margin-bottom:16px;">${attributeChipsHtml}</div>
+          <div style="font-family:serif; font-size:1.6rem; font-weight:700; color:var(--accent); margin-bottom:8px;">₹${d.consumerPrice}</div>
+        `;
+        
+        overlay.style.display = 'flex';
+      },
+
+      dismissLightboxUI() {
+        document.getElementById('product-detail-lightbox').style.display = 'none';
+      },
+
+      closeProductLightbox(e) {
+        if (e.target.id === 'product-detail-lightbox') {
+          this.dismissLightboxUI();
         }
       },
 
@@ -1096,7 +1158,7 @@
           await CloudDB.saveProduct({
             id: draftId, supplierId, title: inferredTitle, description: parsed.customerDescription, rawText: rawText,
             basePrice: parsed.derivedPrice || 0, consumerPrice: parsed.derivedPrice ? Math.round(parsed.derivedPrice * baseMargin) : 0,
-            pincode_rates: {}, cloud_images: [], has_images: false, customAttributes: parsed.customAttributes || {},
+            pincode_rates: {}, cloud_images: [], has_images: false, googleFolderId: '', customAttributes: parsed.customAttributes || {},
             category: '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
           });
 
@@ -1143,11 +1205,11 @@
             const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
-              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
+              tr.innerHTML = `<td><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td><td>${match.title}</td><td><code>${match.googleFolderId || 'No Vault Link'}</code></td><td><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>`;
               tbody.appendChild(tr);
             }
           }
-          if(!hasRows) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes verified clear.</td></tr>`;
+          if(!hasRows) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes verified clear.</td></tr>`;
         }
 
         const filtered = fullyCompiledAdminList.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
@@ -1176,7 +1238,10 @@
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div style="display:flex; justify-content:space-between; align-items:center;"><span class="supplier-pill">From: ${name}</span><span class="chip" style="font-size:0.6rem; font-weight:bold;">${d.status}</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="supplier-pill">From: ${name}</span>
+              <span style="font-size:0.65rem; font-family:monospace; background:#e5e5ea; padding:2px 6px; border-radius:4px;">ID: ${d.googleFolderId || 'None'}</span>
+            </div>
             <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
             <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
             <div class="feed-quick-actions">
@@ -1356,9 +1421,6 @@
       hideCuratorDrawer() { this.activeDraftRecord = null; this.selectedFilesBuffer = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
-    // =========================================================================
-    // ⚙️ ZERO-FRICTION SW CACHE BUSTER TRANSPARENT BACKGROUND REGISTER
-    // =========================================================================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
