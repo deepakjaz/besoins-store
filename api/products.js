@@ -1,77 +1,65 @@
-import crypto from 'crypto';
-
-// Global Token Validator Helper Function
-function isSessionSignatureValid(token) {
-  if (!token) return false;
-  try {
-    const decodedRawString = Buffer.from(token, 'base64').toString('utf8');
-    const [payload, incomingHash] = decodedRawString.split('.');
-    if (!payload || !incomingHash) return false;
-
-    // Verify cryptographic tamper seals
-    const serverSignatureSecret = process.env.JSONBIN_MASTER_KEY || 'besoins_local_fallback_salt';
-    const computedCheckHash = crypto.createHmac('sha256', serverSignatureSecret).update(payload).digest('hex');
-    if (computedCheckHash !== incomingHash) return false; // Seal broken! Rejection returned.
-
-    // Evaluate explicit time window expiration boundaries
-    const [marker, expirationEpochString] = payload.split(':');
-    const targetExpirationTime = parseInt(expirationEpochString, 10);
-    
-    if (Date.now() > targetExpirationTime) {
-      return false; // Token expired! Rejection returned.
-    }
-    return true; // Token completely safe and authorized.
-  } catch (e) {
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
-  const targetJsonBinBoxUrl = 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd';
-  const hiddenSecretApiKey = process.env.JSONBIN_MASTER_KEY;
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // READ OPERATIONAL GRID ROUTE (Public View Access Allowed)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  const JSONBIN_ENDPOINT = 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd';
+  const MASTER_KEY = process.env.JSONBIN_MASTER_KEY;
+
+  // GET: Fetch product catalog (Public read allowed for customer catalog)
   if (req.method === 'GET') {
     try {
-      const response = await fetch(`${targetJsonBinBoxUrl}/latest`, {
+      const response = await fetch(`${JSONBIN_ENDPOINT}/latest`, {
         method: 'GET',
-        headers: { 'X-Master-Key': hiddenSecretApiKey }
+        headers: {
+          'X-Master-Key': MASTER_KEY
+        }
       });
+
+      if (!response.ok) throw new Error(`JSONBin error: ${response.statusText}`);
+
       const data = await response.json();
-      const cleanArrayRecordsOutput = data.record.products || data.record || [];
-      return res.status(200).json(cleanArrayRecordsOutput);
+      const products = data.record.products || data.record || [];
+
+      return res.status(200).json({ products });
     } catch (err) {
-      return res.status(500).json({ message: 'Error establishing core collection data connections.' });
+      return res.status(500).json({ success: false, message: err.message });
     }
   }
 
-  // WRITE OPERATIONAL MUTATION ROUTE (Strict Token Validation Applied)
+  // PUT: Save/Update products (Requires session token validation)
   if (req.method === 'PUT') {
-    const clientPassedAuthHeaderToken = req.headers['x-besoins-auth'];
-
-    // Enforce strict token verification checks before pushing data writes to the cloud box
-    if (!isSessionSignatureValid(clientPassedAuthHeaderToken)) {
-      return res.status(403).json({ 
-        message: 'Transaction unauthorized. Session token expired or signature validation tampered.' 
-      });
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: Session token required for write actions.' });
     }
 
     try {
-      const cloudSyncWriteResponse = await fetch(targetJsonBinBoxUrl, {
+      const { products } = req.body || {};
+      if (!Array.isArray(products)) {
+        return res.status(400).json({ success: false, message: 'Invalid payload: products array expected.' });
+      }
+
+      const response = await fetch(JSONBIN_ENDPOINT, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-Master-Key': hiddenSecretApiKey
+          'X-Master-Key': MASTER_KEY
         },
-        body: JSON.stringify({ products: req.body.products })
+        body: JSON.stringify({ products })
       });
 
-      if (!cloudSyncWriteResponse.ok) throw new Error();
-      return res.status(200).json({ success: true });
+      if (!response.ok) throw new Error(`JSONBin write error: ${response.statusText}`);
+
+      return res.status(200).json({ success: true, message: 'Products synchronized successfully.' });
     } catch (err) {
-      return res.status(500).json({ message: 'Cloud database matrix synchronization state error.' });
+      return res.status(500).json({ success: false, message: err.message });
     }
   }
 
-  return res.status(405).json({ message: 'Method Not Allowed' });
+  return res.status(405).json({ success: false, message: 'Method not allowed' });
 }
