@@ -403,6 +403,19 @@
 
   <script>
     // =========================================================================
+    // 🛡️ XSS PROTECTION ESCAPE UTILITY
+    // =========================================================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // =========================================================================
     // 🌐 FIXED LOCAL CORE SEED IMMUTABLE FALLBACKS
     // =========================================================================
     const CORE_DEMO_FALLBACK_DATABASE = [
@@ -426,12 +439,11 @@
     ];
 
     // =========================================================================
-    // ☁️ LIVE DUAL CLOUD BRIDGE CONFIGURATIONS
+    // ☁️ LIVE SERVERLESS VERCEL API BRIDGE CONFIGURATIONS
     // =========================================================================
     const CloudDB = {
-      endpointUrl: 'https://api.jsonbin.io/v3/b/6a5a0fc0f5f4af5e299c00dd', 
-      masterApiKey: '$2a$10$awtuwwRNPgcfajKg/yW2T.Ls0lNsn56Tt7gAQfJ57FXxhooHnEXqq',
-      googleAppsScriptUrl: 'https://script.google.com/macros/s/AKfycbxHSRJwUt8B1s9m9zN2Zr63k_FcYt5ChCaTSO9NoYI7m8iHcB8qlXM_jKOsfWzE1Qs/exec',
+      apiProductsUrl: '/api/products',
+      apiDriveUrl: '/api/drive',
       backupTokenKey: 'Besoins_Network_Sync_Channel_V7',
       
       getAllProducts() {
@@ -441,12 +453,10 @@
       
       async syncFetchFromCloud() {
         try {
-          const res = await fetch(this.endpointUrl + '/latest', {
-            method: 'GET',
-            headers: { 'X-Master-Key': this.masterApiKey }
-          });
+          const res = await fetch(this.apiProductsUrl, { method: 'GET' });
+          if (!res.ok) throw new Error("Fetch failed");
           const data = await res.json();
-          const records = data.record.products || data.record || [];
+          const records = data.products || data || [];
           localStorage.setItem(this.backupTokenKey, JSON.stringify(records));
           return records;
         } catch(err) {
@@ -461,11 +471,12 @@
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
         try {
-          await fetch(this.endpointUrl, {
+          const token = security.getActiveSessionToken();
+          await fetch(this.apiProductsUrl, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Master-Key': this.masterApiKey
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ products: all })
           });
@@ -477,13 +488,16 @@
       async deleteProduct(id) {
         let all = this.getAllProducts();
         const targetItem = all.find(p => p.id === id);
+        const token = security.getActiveSessionToken();
         
         if (targetItem && targetItem.googleFolderId) {
           try {
-            await fetch(this.googleAppsScriptUrl, {
+            await fetch(this.apiDriveUrl, {
               method: 'POST',
-              mode: 'no-cors',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
               body: JSON.stringify({
                 action: "purgeProductFolder",
                 folderId: targetItem.googleFolderId
@@ -497,11 +511,11 @@
         localStorage.setItem(this.backupTokenKey, JSON.stringify(all));
         
         try {
-          await fetch(this.endpointUrl, {
+          await fetch(this.apiProductsUrl, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
-              'X-Master-Key': this.masterApiKey
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ products: all })
           });
@@ -562,22 +576,38 @@
     };
 
     const security = {
-      vaultKey: 'Besoins_Master_Secure_PIN_V5',
-      verifyPINAttempt() {
-        const pin = document.getElementById('gateway-pin-field').value.trim();
-        const master = localStorage.getItem(this.vaultKey) || '1156'; 
-        if (pin === master) {
-          globalNavigation.activateStudioWorkspace();
-        } else { alert("Decryption verification argument mismatch error."); }
+      sessionToken: '',
+      
+      getActiveSessionToken() {
+        return this.sessionToken || sessionStorage.getItem('Besoins_Session_Token') || '';
       },
+
+      async verifyPINAttempt() {
+        const pin = document.getElementById('gateway-pin-field').value.trim();
+        if (!pin) return alert("Please enter gateway credentials.");
+        
+        try {
+          const res = await fetch('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin })
+          });
+          
+          const data = await res.json();
+          if (res.ok && data.success && data.token) {
+            this.sessionToken = data.token;
+            sessionStorage.setItem('Besoins_Session_Token', data.token);
+            globalNavigation.activateStudioWorkspace();
+          } else {
+            alert(data.message || "Decryption verification argument mismatch error.");
+          }
+        } catch (err) {
+          alert("Serverless verification error. Check connection.");
+        }
+      },
+
       triggerPasswordResetOption() {
-        const old = prompt("Specify the active running operational password credentials:");
-        const master = localStorage.getItem(this.vaultKey) || '1156';
-        if (old !== master) return alert("Current credential loop check signature verified as invalid.");
-        const fresh = prompt("Type your new personal replacement master workspace PIN:");
-        if (!fresh || fresh.trim().length < 2) return alert("New credentials size metrics bound threshold anomaly.");
-        localStorage.setItem(this.vaultKey, fresh.trim());
-        alert("Master security encryption passphrase updated successfully.");
+        alert("PIN changes are secured on server environment variables. Please update OWNER_GATEWAY_PIN on Vercel Dashboard.");
       }
     };
 
@@ -711,7 +741,7 @@
         categories.forEach(cat => {
           const div = document.createElement('div');
           div.className = `chip ${this.selectedCategory === cat ? 'chip-active' : ''}`;
-          div.innerText = cat;
+          div.innerText = escapeHtml(cat);
           div.onclick = () => this.filterCategory(cat, div);
           container.appendChild(div);
         });
@@ -777,7 +807,7 @@
           const card = document.createElement('div');
           card.className = 'feed-card';
           
-          card.setAttribute('onclick', `catalog.openProductLightbox('${d.id}')`);
+          card.setAttribute('onclick', `catalog.openProductLightbox('${escapeHtml(d.id)}')`);
           
           const isFav = this.likedIDs.includes(d.id);
           const currentCount = this.staticLikesDatabase[d.id] || 0;
@@ -785,7 +815,7 @@
 
           let chipsHtml = '';
           for (const [key, value] of Object.entries(d.customAttributes)) {
-            if (value) chipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
+            if (value) chipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`;
           }
 
           let mediaGalleryHtml = '';
@@ -794,9 +824,9 @@
             d.cloud_images.forEach(link => {
               let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
               if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-                galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
+                galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline></video>`;
               } else {
-                galleryElements += `<img src="${cleanLink}" alt="Variant" onclick="event.stopPropagation(); theater.launch('${cleanLink}')">`;
+                galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Variant" onclick="event.stopPropagation(); theater.launch('${escapeHtml(cleanLink)}')">`;
               }
             });
             mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
@@ -806,7 +836,7 @@
           const matrices = Object.keys(d.pincode_rates || {});
           if (matrices.length > 0) {
             guessPillsHtml = `<div class="guess-pill-container" onclick="event.stopPropagation()"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
-              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${d.id}', '${p}')">${p}</span>`).join('') + `</div>`;
+              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${escapeHtml(d.id)}', '${escapeHtml(p)}')">${escapeHtml(p)}</span>`).join('') + `</div>`;
           }
 
           let interactiveWorkflowBlocks = '';
@@ -815,14 +845,14 @@
               <div class="pincode-widget" onclick="event.stopPropagation()">
                 <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area (Shipping &amp; ETA)</label>
                 <div class="pincode-row-inputs">
-                  <input type="text" class="pincode-input" id="input-pin-${d.id}" value="${this.cachedPincode}" placeholder="6-digit Pincode" onfocus="this.classList.remove('pulse-alert')">
-                  <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${d.id}')">Log Location</button>
+                  <input type="text" class="pincode-input" id="input-pin-${escapeHtml(d.id)}" value="${escapeHtml(this.cachedPincode)}" placeholder="6-digit Pincode" onfocus="this.classList.remove('pulse-alert')">
+                  <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${escapeHtml(d.id)}')">Log Location</button>
                 </div>
                 ${guessPillsHtml}
-                <div id="feedback-pin-${d.id}" style="margin-top:4px; display:none;"></div>
+                <div id="feedback-pin-${escapeHtml(d.id)}" style="margin-top:4px; display:none;"></div>
               </div>
 
-              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${d.id}')">
+              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${escapeHtml(d.id)}')">
                 💬 Check Dispatch &amp; Stock Availability
               </button>
             `;
@@ -830,18 +860,18 @@
 
           card.innerHTML = `
             ${mediaGalleryHtml}
-            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${d.id}', this, ${appendInputsAndActions})">
+            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${escapeHtml(d.id)}', this, ${appendInputsAndActions})">
               ❤️ <span class="likes-value">${currentCount}</span>
             </div>
             <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
             <div class="feed-card-body">
-              <h3>${d.title}</h3>
-              <p>${(d.description || '').split('\n')[0]}...</p>
+              <h3>${escapeHtml(d.title)}</h3>
+              <p>${escapeHtml((d.description || '').split('\n')[0])}...</p>
               <div class="dynamic-attributes-container">${chipsHtml}</div>
             </div>
             <div class="feed-card-pricing">
               <div style="display:flex; align-items:baseline; gap:6px;">
-                 <span class="price-tag">₹${d.consumerPrice || '0'}</span>
+                 <span class="price-tag">₹${escapeHtml(d.consumerPrice || '0')}</span>
                  <span class="shipping-extra-tag">+ Shipping Extra</span>
               </div>
             </div>
@@ -861,7 +891,7 @@
         
         let attributeChipsHtml = '';
         for (const [key, value] of Object.entries(d.customAttributes || {})) {
-          if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`;
+          if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`;
         }
 
         let mediaGalleryHtml = '';
@@ -870,9 +900,9 @@
           d.cloud_images.forEach(link => {
             let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
             if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-              galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline style="width:100%; border-radius:16px; margin-bottom:8px;"></video>`;
+              galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline style="width:100%; border-radius:16px; margin-bottom:8px;"></video>`;
             } else {
-              galleryElements += `<img src="${cleanLink}" alt="Zoom" style="width:100%; border-radius:16px; margin-bottom:8px;" onclick="theater.launch('${cleanLink}')">`;
+              galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Zoom" style="width:100%; border-radius:16px; margin-bottom:8px;" onclick="theater.launch('${escapeHtml(cleanLink)}')">`;
             }
           });
           mediaGalleryHtml = `<div style="width:100%; max-height:300px; overflow-y:auto; margin-bottom:12px; scrollbar-width:none;">${galleryElements}</div>`;
@@ -880,10 +910,10 @@
 
         anchor.innerHTML = `
           ${mediaGalleryHtml}
-          <div style="font-family:serif; font-size:1.4rem; font-weight:500; color:var(--accent); text-transform:capitalize;">${d.title}</div>
-          <div style="font-size:0.85rem; color:#48484a; line-height:1.5; margin:12px 0; white-space:pre-wrap;">${d.description}</div>
+          <div style="font-family:serif; font-size:1.4rem; font-weight:500; color:var(--accent); text-transform:capitalize;">${escapeHtml(d.title)}</div>
+          <div style="font-size:0.85rem; color:#48484a; line-height:1.5; margin:12px 0; white-space:pre-wrap;">${escapeHtml(d.description)}</div>
           <div class="dynamic-attributes-container" style="margin-bottom:16px;">${attributeChipsHtml}</div>
-          <div style="font-family:serif; font-size:1.6rem; font-weight:700; color:var(--accent); margin-bottom:8px;">₹${d.consumerPrice}</div>
+          <div style="font-family:serif; font-size:1.6rem; font-weight:700; color:var(--accent); margin-bottom:8px;">₹${escapeHtml(d.consumerPrice)}</div>
         `;
         
         overlay.style.display = 'flex';
@@ -905,7 +935,9 @@
       },
 
       async verifyPincodeTrigger(id) {
-        const code = document.getElementById(`input-pin-${id}`).value.trim();
+        const inputEl = document.getElementById(`input-pin-${id}`);
+        if (!inputEl) return;
+        const code = inputEl.value.trim();
         const feedback = document.getElementById(`feedback-pin-${id}`);
         if(!code || code.length < 5) return;
 
@@ -1009,7 +1041,7 @@
       loadSuppliersSelectionUI() {
         let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]');
         const selectEl = document.getElementById('intake-supplier-select');
-        if (selectEl) { selectEl.innerHTML = list.map(s => `<option value="${s.id}" ${s.id === this.stickySupplierId ? 'selected' : ''}>${s.name}</option>`).join(''); }
+        if (selectEl) { selectEl.innerHTML = list.map(s => `<option value="${escapeHtml(s.id)}" ${s.id === this.stickySupplierId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join(''); }
       },
 
       initFilterChips() {
@@ -1043,7 +1075,7 @@
         let list = JSON.parse(localStorage.getItem('Besoins_Factories_Directory_Index') || '[]'); directoryContainer.innerHTML = '';
         list.forEach(sup => {
           const div = document.createElement('div'); div.className = 'supplier-list-item';
-          div.innerHTML = `<div><span style="font-weight:bold;">${sup.name}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${sup.id}')">Delete</button>`;
+          div.innerHTML = `<div><span style="font-weight:bold;">${escapeHtml(sup.name)}</span></div><button type="button" class="chip" style="background:#f2dede; color:var(--danger);" onclick="admin.deleteSupplierFromManager('${escapeHtml(sup.id)}')">Delete</button>`;
           directoryContainer.appendChild(div);
         });
       },
@@ -1208,14 +1240,14 @@
             if(match && pinCodes.length > 0) {
               hasRows = true; const tr = document.createElement('tr');
               let folderDisplay = match.googleFolderId 
-                ? `<a href="https://drive.google.com/drive/folders/${match.googleFolderId}" target="_blank" style="color:var(--info); font-family:monospace; font-size:0.75rem; text-decoration:underline; word-break:break-all;">${match.googleFolderId}</a>`
+                ? `<a href="https://drive.google.com/drive/folders/${escapeHtml(match.googleFolderId)}" target="_blank" style="color:var(--info); font-family:monospace; font-size:0.75rem; text-decoration:underline; word-break:break-all;">${escapeHtml(match.googleFolderId)}</a>`
                 : '<span style="color:var(--text-muted); font-size:0.75rem;">No Vault Link</span>';
                 
               tr.innerHTML = `
-                <td style="width: 25%;"><b>${this.suppliersCache[match.supplierId] || 'Factory'}</b></td>
-                <td style="width: 25%; font-weight: 600;">${match.title}</td>
+                <td style="width: 25%;"><b>${escapeHtml(this.suppliersCache[match.supplierId] || 'Factory')}</b></td>
+                <td style="width: 25%; font-weight: 600;">${escapeHtml(match.title)}</td>
                 <td style="width: 30%;">${folderDisplay}</td>
-                <td style="width: 20%; text-align: right;"><span style="color:var(--warning); font-weight:bold;">${pinCodes.join(', ')}</span></td>
+                <td style="width: 20%; text-align: right;"><span style="color:var(--warning); font-weight:bold;">${escapeHtml(pinCodes.join(', '))}</span></td>
               `;
               tbody.appendChild(tr);
             }
@@ -1231,7 +1263,7 @@
         for (const d of filtered) {
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div'); card.className = 'feed-card'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
-          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${key}: ${value}</span>`; }
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
@@ -1239,29 +1271,29 @@
             d.cloud_images.forEach(link => {
               let cleanLink = catalog.convertDriveLinkToDirectStream(link.trim());
               if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-                galleryElements += `<video src="${cleanLink}" autoplay loop muted playsinline></video>`;
+                galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline></video>`;
               } else {
-                galleryElements += `<img src="${cleanLink}" alt="Pattern">`;
+                galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Pattern">`;
               }
             });
             mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
           }
 
           let linkElement = d.googleFolderId
-            ? `<a href="https://drive.google.com/drive/folders/${d.googleFolderId}" target="_blank" style="font-size:0.65rem; font-family:monospace; color:var(--info); background:#e5e5ea; padding:4px 8px; border-radius:6px; text-decoration:underline;" onclick="event.stopPropagation()">Vault Link</a>`
+            ? `<a href="https://drive.google.com/drive/folders/${escapeHtml(d.googleFolderId)}" target="_blank" style="font-size:0.65rem; font-family:monospace; color:var(--info); background:#e5e5ea; padding:4px 8px; border-radius:6px; text-decoration:underline;" onclick="event.stopPropagation()">Vault Link</a>`
             : `<span style="font-size:0.65rem; font-family:monospace; background:#f2f2f7; color:var(--text-muted); padding:4px 8px; border-radius:6px;">No Vault Link</span>`;
 
           card.innerHTML = `
             ${mediaGalleryHtml}
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="supplier-pill">From: ${name}</span>
+              <span class="supplier-pill">From: ${escapeHtml(name)}</span>
               ${linkElement}
             </div>
-            <div class="feed-card-body"><h3>${d.title}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${d.description}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
-            <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${d.consumerPrice}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${d.basePrice}</span></div>
+            <div class="feed-card-body"><h3>${escapeHtml(d.title)}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(d.description)}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
+            <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${escapeHtml(d.consumerPrice)}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${escapeHtml(d.basePrice)}</span></div>
             <div class="feed-quick-actions">
-              <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${d.id}')">Purge</button>
-              <button type="button" class="action-btn btn-edit-curate" onclick="admin.showCuratorDrawer('${d.id}')">Curate</button>
+              <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${escapeHtml(d.id)}')">Purge</button>
+              <button type="button" class="action-btn btn-edit-curate" onclick="admin.showCuratorDrawer('${escapeHtml(d.id)}')">Curate</button>
             </div>
           `;
           anchor.appendChild(card);
@@ -1330,7 +1362,7 @@
       renderDrawerPincodeMatrixUI() {
         const tbody = document.getElementById('drawer-pincode-matrix-tbody'); tbody.innerHTML = '';
         for (const [pin, rate] of Object.entries(this.temporaryPincodeCache)) {
-          const tr = document.createElement('tr'); tr.innerHTML = `<td><b>${pin}</b></td><td>₹${rate}</td><td><button type="button" class="remove-matrix-row-btn" onclick="admin.deletePincodeOverrideRow('${pin}')">×</button></td>`;
+          const tr = document.createElement('tr'); tr.innerHTML = `<td><b>${escapeHtml(pin)}</b></td><td>₹${escapeHtml(rate)}</td><td><button type="button" class="remove-matrix-row-btn" onclick="admin.deletePincodeOverrideRow('${escapeHtml(pin)}')">×</button></td>`;
           tbody.appendChild(tr);
         }
       },
@@ -1351,7 +1383,7 @@
 
       injectMatrixRowHTML(key = '', val = '') {
         const tbody = document.getElementById('drawer-attributes-tbody'); const tr = document.createElement('tr'); tr.className = 'matrix-row';
-        tr.innerHTML = `<td><input type="text" class="native-input style-attr-key" style="padding:8px; background:#fff;" value="${key}"></td><td><input type="text" class="native-input style-attr-val" style="padding:8px; background:#fff;" value="${val}"></td><td><button type="button" class="remove-matrix-row-btn" onclick="this.closest('tr').remove()">×</button></td>`;
+        tr.innerHTML = `<td><input type="text" class="native-input style-attr-key" style="padding:8px; background:#fff;" value="${escapeHtml(key)}"></td><td><input type="text" class="native-input style-attr-val" style="padding:8px; background:#fff;" value="${escapeHtml(val)}"></td><td><button type="button" class="remove-matrix-row-btn" onclick="this.closest('tr').remove()">×</button></td>`;
         tbody.appendChild(tr);
       },
 
@@ -1378,6 +1410,7 @@
           uploaderLabel.innerText = "⚡ Uploading media layers to Google Drive... Please wait.";
           
           try {
+            const token = security.getActiveSessionToken();
             const payload = {
               action: "uploadProductMedia",
               productId: normalizedProductId,
@@ -1388,8 +1421,12 @@
               }))
             };
 
-            const response = await fetch(CloudDB.googleAppsScriptUrl, {
+            const response = await fetch(CloudDB.apiDriveUrl, {
               method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
               body: JSON.stringify(payload)
             });
             
@@ -1399,7 +1436,7 @@
               detectedGoogleFolderId = responseData.folderId;
               console.log("Google Drive assets synchronization complete.");
             } else {
-              throw new Error(responseData.message);
+              throw new Error(responseData.message || "Drive upload error");
             }
           } catch (uploadError) {
             alert("Google Drive Pipeline Block Alert: " + uploadError.toString());
