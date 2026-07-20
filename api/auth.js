@@ -1,67 +1,63 @@
-import crypto from 'crypto';
-
-// Server-side rolling memory map to track failed login counts by IP
-const bruteForceIpTracker = new Map();
+// In-memory failed attempt tracker for IP rate-limiting
+const failedAttempts = new Map();
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_PERIOD_MS = 15 * 60 * 1000; // 15 minutes lockout
 
 export default async function handler(req, res) {
-  // CORS block protection checks
+  // Set CORS headers for security
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown-node';
-  const currentTimeStamp = Date.now();
-  
-  // 1. IP-Based Rate Limiting Gate
-  if (bruteForceIpTracker.has(clientIp)) {
-    const log = bruteForceIpTracker.get(clientIp);
-    // If client failed 5+ times, enforce a hard 15-minute lockout cool-down window
-    if (log.count >= 5 && (currentTimeStamp - log.lastAttemptDate) < 15 * 60 * 1000) {
-      const remainingTime = Math.ceil((15 * 60 * 1000 - (currentTimeStamp - log.lastAttemptDate)) / 1000);
-      return res.status(429).json({ 
-        success: false, 
-        message: `Too many failed attempts. Brute-force block active. Try again in ${remainingTime} seconds.` 
-      });
-    }
-    // Automatically reset record tracking bounds if the 15-minute window has passed safely
-    if ((currentTimeStamp - log.lastAttemptDate) >= 15 * 60 * 1000) {
-      bruteForceIpTracker.delete(clientIp);
-    }
-  }
+  // Extract client IP address
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown-ip';
+  const now = Date.now();
 
-  const { pin } = req.body;
-  
-  // 2. Read PIN from Environment Variable (Fallback to emergency seed strictly if unassigned)
-  const masterSecretSystemPin = process.env.OWNER_GATEWAY_PIN || '1156';
+  // Rate Limiting Check
+  const ipData = failedAttempts.get(clientIp) || { count: 0, lockoutUntil: 0 };
 
-  if (!pin || pin !== masterSecretSystemPin) {
-    // Increment brute force counter logic variables
-    const activeLog = bruteForceIpTracker.get(clientIp) || { count: 0 };
-    bruteForceIpTracker.set(clientIp, {
-      count: activeLog.count + 1,
-      lastAttemptDate: currentTimeStamp
-    });
-
-    return res.status(401).json({ 
-      success: false, 
-      message: `Invalid access PIN credential signatures. Attempt ${activeLog.count + 1}/5 before IP lockout.` 
+  if (ipData.lockoutUntil > now) {
+    const remainingSeconds = Math.ceil((ipData.lockoutUntil - now) / 1000);
+    return res.status(429).json({
+      success: false,
+      message: `Too many failed attempts. Try again in ${remainingSeconds} seconds.`
     });
   }
 
-  // 3. Success: Clear tracking logs entirely for this clean IP
-  bruteForceIpTracker.delete(clientIp);
+  const { pin } = req.body || {};
+  const masterPin = process.env.OWNER_GATEWAY_PIN || '1156';
 
-  // 4. Generate short-lived secure session token signed with a hidden server secret timestamp key
-  const expirationEpochTime = currentTimeStamp + (4 * 60 * 60 * 1000); // Token strictly bounds valid lifecycle limits to 4 Hours
-  const rawTokenPayloadString = `besoins_session:${expirationEpochTime}`;
-  
-  // Create an encrypted token signature so devtools cannot fake or forge timestamps
-  const serverSignatureSecret = process.env.JSONBIN_MASTER_KEY || 'besoins_local_fallback_salt';
-  const hmacSignatureHash = crypto.createHmac('sha256', serverSignatureSecret).update(rawTokenPayloadString).digest('hex');
-  const secureSignedSessionToken = Buffer.from(`${rawTokenPayloadString}.${hmacSignatureHash}`).toString('base64');
+  if (pin && pin === masterPin) {
+    // Reset rate-limiting counter on success
+    failedAttempts.delete(clientIp);
 
-  return res.status(200).json({ 
-    success: true, 
-    token: secureSignedSessionToken 
-  });
+    // Generate session token tied to current operational state
+    const sessionToken = Buffer.from(`besoins_session_${Date.now()}_${Math.random()}`).toString('base64');
+
+    return res.status(200).json({
+      success: true,
+      token: sessionToken,
+      message: 'Gateway access granted.'
+    });
+  } else {
+    // Increment failed attempts
+    ipData.count += 1;
+    if (ipData.count >= MAX_FAILED_ATTEMPTS) {
+      ipData.lockoutUntil = now + LOCKOUT_PERIOD_MS;
+    }
+    failedAttempts.set(clientIp, ipData);
+
+    return res.status(401).json({
+      success: false,
+      message: `Invalid credentials. (${MAX_FAILED_ATTEMPTS - ipData.count} attempts remaining before lockout)`
+    });
+  }
 }
