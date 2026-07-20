@@ -1,48 +1,40 @@
-import crypto from 'crypto';
-
-// Copy token checker logic across function files to decouple system dependencies cleanly
-function isSessionSignatureValid(token) {
-  if (!token) return false;
-  try {
-    const decodedRawString = Buffer.from(token, 'base64').toString('utf8');
-    const [payload, incomingHash] = decodedRawString.split('.');
-    const serverSignatureSecret = process.env.JSONBIN_MASTER_KEY || 'besoins_local_fallback_salt';
-    const computedCheckHash = crypto.createHmac('sha256', serverSignatureSecret).update(payload).digest('hex');
-    if (computedCheckHash !== incomingHash) return false;
-    
-    const [marker, expirationEpochString] = payload.split(':');
-    if (Date.now() > parseInt(expirationEpochString, 10)) return false;
-    return true;
-  } catch (e) { return false; }
-}
-
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
-  // 1. Authenticate that the person requesting Drive folder modification is verified
-  const clientPassedAuthHeaderToken = req.headers['x-besoins-auth'];
-  if (!isSessionSignatureValid(clientPassedAuthHeaderToken)) {
-    return res.status(403).json({ 
-      message: 'Drive modification request dropped. Operation context requires higher administrative clearance.' 
-    });
+  // Validate session header for write operations
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Unauthorized: Session token required for Drive operations.' });
   }
 
-  // 2. Safely read private web macro connection hooks inside protected system blocks
-  const targetHiddenGoogleAppsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+  const GOOGLE_APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
+
+  if (!GOOGLE_APPS_SCRIPT_URL) {
+    return res.status(500).json({ success: false, message: 'Server configuration error: Google Apps Script URL missing.' });
+  }
 
   try {
-    // Forward the file upload stream matrix packet safely to your Google automation script macro engine
-    const driverResponseNode = await fetch(targetHiddenGoogleAppsScriptUrl, {
+    const payload = req.body || {};
+
+    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body)
+      body: JSON.stringify(payload)
     });
-    
-    const outputDataResultsPayload = await driverResponseNode.json();
-    return res.status(200).json(outputDataResultsPayload);
+
+    const responseData = await response.json();
+    return res.status(200).json(responseData);
   } catch (err) {
-    return res.status(500).json({ message: 'Google Apps Script cloud node data pipe latency timeout execution failure.' });
+    return res.status(500).json({ status: 'error', message: err.message });
   }
 }
