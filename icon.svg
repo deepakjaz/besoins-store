@@ -1,4 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="background:#e5e6e8;">
-  <path d="M260.5,88.2 C354.8,92.1 411.3,142.6 409.8,241.9 C408.2,341.2 322.7,422.3 228.4,418.4 C134.1,414.5 95.8,326.8 97.4,227.5 C99.0,128.2 166.2,84.3 260.5,88.2 Z" fill="#b8b9bc" />
-  <path d="M248.8,103.2 C338.2,106.8 418.5,130.6 422.1,223.4 C425.7,316.2 334.3,398.7 244.9,395.1 C155.5,391.5 106.3,322.4 102.7,229.6 C99.1,136.8 159.4,99.6 248.8,103.2 Z" fill="none" stroke="#222222" stroke-width="6" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background Base Canvas -->
+  <rect width="512" height="512" fill="#ffffff" />
+  
+  <!-- Light Grey Inner Organic Pebble Base -->
+  <path d="M 256,90 C 370,85 435,145 425,260 C 415,375 350,430 240,435 C 130,440 80,360 85,250 C 90,140 142,95 256,90 Z" fill="#e5e7e8" />
+  
+  <!-- Thin Dark Outline Ring -->
+  <path d="M 260,78 C 390,70 450,150 440,270 C 430,390 340,445 220,440 C 100,435 60,340 70,220 C 80,100 130,86 260,78 Z" fill="none" stroke="#222222" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Brand Title Typography: BESOINS -->
+  <text x="256" y="248" font-family="'Times New Roman', 'Didot', 'Georgia', serif" font-size="52" font-weight="bold" fill="#1c1c1e" text-anchor="middle" letter-spacing="4">BESOINS</text>
+  
+  <!-- Subtitle Typography: FASHION & MORE -->
+  <text x="256" y="292" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif" font-size="22" font-weight="600" fill="#2c2c2e" text-anchor="middle" letter-spacing="3">FASHION &amp; MORE</text>
 </svg>
