@@ -478,13 +478,13 @@
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
           </div>
 
-          <!-- ⚡ SPRINT C: ADAPTIVE AI PROMPT GENERATION ENGINE MODULE (WITH BUNDLED MEDIA LINKS) -->
+          <!-- ⚡ SPRINT C: DIRECT CANVA ASSET INGESTION & GEMINI SCRIPT MODULE -->
           <div style="background: rgba(0, 122, 255, 0.06); border: 1px solid rgba(0, 122, 255, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--info);">✨ AI Prompt Engine (Gemini &amp; Canva)</span>
-              <span style="font-size:0.6rem; background:var(--info); color:#fff; padding:2px 6px; border-radius:4px; font-weight:bold;">MEDIA BUNDLED</span>
+              <span style="font-size:0.6rem; background:var(--info); color:#fff; padding:2px 6px; border-radius:4px; font-weight:bold;">CANVA ASSET LINKED</span>
             </div>
-            <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:12px;">Bundles live Google Drive photo/video links alongside 30s lifestyle video scripts &amp; 9:16 Canva briefs.</p>
+            <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:12px;">Generates clean product prompts carrying direct Google Drive media URLs for automated Canva asset ingestion &amp; 30s video scripts.</p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
               <button type="button" class="chip" style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); color:var(--text-primary); padding:10px 6px; text-align:center;" onclick="PromptEngine.copyGemini30sVideoScript()">🎙️ Copy Gemini 30s Video</button>
               <button type="button" class="chip" style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); color:var(--text-primary); padding:10px 6px; text-align:center;" onclick="PromptEngine.copyCanvaMobileBrief()">🎨 Copy Canva Brief</button>
@@ -804,6 +804,9 @@
       }
     };
 
+    // =========================================================================
+    // 🧠 SMART DEALS-FILTERED INGESTION PARSER
+    // =========================================================================
     const LearningParser = {
       async executeParse(supplierId, rawText) {
         if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {}, inferredCategory: '' };
@@ -857,9 +860,10 @@
           descriptionLines.push(line);
         }
 
+        // Clean Title Detection (Filters out "Offer price" & deal tags)
         let inferredCategory = '';
         for (const rawLine of lines) {
-          const cleanCandidate = rawLine.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '').trim();
+          const cleanCandidate = rawLine.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '').replace(/[*_~`]/g, '').trim();
           const lower = cleanCandidate.toLowerCase();
           
           if (
@@ -887,13 +891,21 @@
     };
 
     // =========================================================================
-    // ⚡ SPRINT C: ADAPTIVE SEQUENTIAL LIFESTYLE PROMPT ENGINE (WITH MEDIA LINKS)
+    // ⚡ SPRINT C: ADAPTIVE PROMPT ENGINE & CANVA DIRECT ASSET LINKING
     // =========================================================================
     const PromptEngine = {
       MANDATORY_NEGATIVE_CONSTRAINT: "STRICT REQUIREMENT: Maintain 100% exact fabric, print, color, and embellishment specifications of the listed product. Do NOT introduce external clothing, alternative fabrics, or unmentioned design variations.",
 
       extractActiveSpecs() {
-        const title = document.getElementById('curate-title')?.value.trim() || 'Exclusive Design';
+        let rawTitle = document.getElementById('curate-title')?.value.trim() || 'Exclusive Design';
+        
+        // Clean Title: Strip out deal tags like "Offer price"
+        let cleanTitle = rawTitle.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '')
+          .replace(/[*_~`]/g, '')
+          .replace(/offer\s*price/gi, '')
+          .replace(/special\s*offer/gi, '')
+          .trim() || "Besoins Exclusive Design";
+
         const description = document.getElementById('curate-description')?.value.trim() || '';
         const category = document.getElementById('curate-category')?.value.trim() || '';
         
@@ -906,7 +918,7 @@
 
         const specsText = specsList.length > 0 ? specsList.join(', ') : 'Standard Quality Finish';
 
-        // Extract Cloud Image and Video URLs from Active Record
+        // Direct Google Drive Asset URLs
         let mediaUrlsBlock = "No uploaded media links attached.";
         if (admin.activeDraftRecord && admin.activeDraftRecord.cloud_images && admin.activeDraftRecord.cloud_images.length > 0) {
           mediaUrlsBlock = admin.activeDraftRecord.cloud_images.map((url, idx) => {
@@ -916,9 +928,8 @@
           }).join('\n');
         }
 
-        // Infer Real-World Human Lifestyle Scene Context
         let lifestyleContext = "walking confidently down an upscale city boutique street, natural daylight";
-        const combinedText = (title + ' ' + description + ' ' + category).toLowerCase();
+        const combinedText = (cleanTitle + ' ' + description + ' ' + category).toLowerCase();
 
         if (combinedText.includes('toran') || combinedText.includes('decor') || combinedText.includes('ganpati') || combinedText.includes('home')) {
           lifestyleContext = "opening an elegant wooden double door during a warm festive celebration, welcoming guests into a sunlit home";
@@ -930,16 +941,16 @@
           lifestyleContext = "gracefully turning in a luxury architectural courtyard, slow-motion fabric drapes caught in soft golden hour sunlight";
         }
 
-        return { title, description, specsText, lifestyleContext, mediaUrlsBlock };
+        return { cleanTitle, description, specsText, lifestyleContext, mediaUrlsBlock };
       },
 
       copyGemini30sVideoScript() {
-        const { title, description, specsText, lifestyleContext, mediaUrlsBlock } = this.extractActiveSpecs();
+        const { cleanTitle, description, specsText, lifestyleContext, mediaUrlsBlock } = this.extractActiveSpecs();
         const price = document.getElementById('curate-consumer-price')?.value || '1,500';
 
         const geminiPrompt = `30-SECOND UNIFIED COMMERCIAL VIDEO GENERATION DIRECTIVE:
 ------------------------------------------------------------------
-PRODUCT ITEM: "${title}"
+PRODUCT ITEM: "${cleanTitle}"
 SPECS: ${specsText}
 SUMMARY: ${description}
 PRICE: ₹${price}
@@ -956,7 +967,7 @@ The subject is in a real-world human environment: ${lifestyleContext}.
 • 00:20-00:30 (SCENE 3 - CALL TO ACTION): Full portrait candid shot walking towards camera, holding phone displaying WhatsApp order confirmation.
 
 EMBEDDED VOICEOVER NARRATION (SINGLE CONTINUOUS AUDIO VOICE & MUSIC SCORE):
-"Elevate your signature aesthetic with ${title}. Crafted featuring ${specsText}. Available exclusively at Besoins for ₹${price}. Tap WhatsApp to verify availability now."
+"Elevate your signature aesthetic with ${cleanTitle}. Crafted featuring ${specsText}. Available exclusively at Besoins for ₹${price}. Tap WhatsApp to verify availability now."
 
 AUDIO CONTINUITY RULE:
 Ensure 100% continuous background ambient score and a single consistent voiceover narrator throughout all 30 seconds without track cutting.
@@ -964,36 +975,34 @@ Ensure 100% continuous background ambient score and a single consistent voiceove
 ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
 
         navigator.clipboard.writeText(geminiPrompt);
-        alert("✨ 30s Gemini Commercial Script (with Media Links) copied to clipboard!");
+        alert("✨ 30s Gemini Script (with Media Links) copied to clipboard!");
       },
 
       copyCanvaMobileBrief() {
-        const { title, description, specsText, mediaUrlsBlock } = this.extractActiveSpecs();
+        const { cleanTitle, description, specsText, mediaUrlsBlock } = this.extractActiveSpecs();
         const price = document.getElementById('curate-consumer-price')?.value || '1,500';
 
-        let sanitizedTitle = title.replace(/\b(video|reel|story|motion|clip|footage|film)\b/gi, '').trim();
-        let sanitizedDesc = description.replace(/\b(video|reel|story|motion|clip|footage|film)\b/gi, '').trim();
-
-        const canvaBrief = `CANVA MOBILE PORTRAIT DESIGN BRIEF (1080x1920 / 9:16 RATIO):
+        const canvaBrief = `CANVA AUTOMATED ASSET GENERATION DIRECTIVE:
 ------------------------------------------------------------------
-FORMAT: Mobile Portrait Layout Card
-TITLE: ${sanitizedTitle}
-TECHNICAL ATTRIBUTES: ${specsText}
-HIGHLIGHTS: ${sanitizedDesc}
-RETAIL PRICE DISPLAY: ₹${price} + Shipping Extra
+TARGET FORMAT: Mobile Portrait Poster Layout Card (1080x1920)
+TITLE HEADING: ${cleanTitle}
+TECHNICAL SPECIFICATIONS: ${specsText}
+SUMMARY HIGHLIGHTS: ${description}
+PRICE DISPLAY: ₹${price} + Shipping Extra
 
-PRODUCT MEDIA ASSET LINKS:
+RAW IMAGE ASSETS FOR CANVA INGESTION (upload_asset_from_url):
 ${mediaUrlsBlock}
 
-VISUAL COMPOSITION:
-• Clean luxury glassmorphism dark aesthetic background.
-• Crisp high-contrast typography featuring "BESOINS EXCLUSIVE".
-• Bottom gradient overlay with price badge and WhatsApp CTA button.
+DESIGN INSTRUCTION FOR CANVA GENERATOR:
+• Use Canva API tool 'upload_asset_from_url' to ingest Asset 1 directly from Google Drive.
+• Place the exact ingested product image into the main image container on the layout card.
+• Do NOT generate alternative AI artwork, graphics, or draw fake products.
+• Style background elements using a luxury ambient aesthetic matching '${cleanTitle}'.
 
 ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
 
         navigator.clipboard.writeText(canvaBrief);
-        alert("🎨 Canva Mobile Portrait Brief (with Media Links) copied to clipboard!");
+        alert("🎨 Direct Canva Asset Prompt copied to clipboard!");
       }
     };
 
