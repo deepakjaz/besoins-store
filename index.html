@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>BESOINS - Official Platform Hub</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#222222">
+  <meta name="theme-color" content="#121214">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
@@ -13,8 +13,8 @@
        🎨 MODERIZED PREMIUM APPLE & TRANSLUCENT GLASS LAYER TOKENS
        ========================================================================= */
     :root {
-      --bg-primary: #e0e1e3;      /* Ultra Smooth Light Gray Base */
-      --bg-surface: rgba(245, 246, 248, 0.8);
+      --bg-primary: #121214;      /* Deep Midnight Dark Base */
+      --bg-surface: rgba(255, 255, 255, 0.75);
       --bg-card: #ffffff;         /* Pure Apple White Base Blocks */
       --bg-active: #e2e3e5;       
       --text-primary: #1c1c1e;    /* Deep Apple System Dark Gray */
@@ -23,7 +23,8 @@
       --warning: #ff9500;         /* System Apple Orange Warning Tints */
       --danger: #ff3b30;          /* Apple iOS Notification Crimson Scarlet Red */
       --info: #007aff;
-      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-dark: rgba(18, 18, 20, 0.92);
       --glass-blur: blur(30px) saturate(190%);
     }
 
@@ -36,83 +37,259 @@
     html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; position: fixed; }
     
     /* THE STABLE VIEWPORT CONTAINMENT CELL UNIT */
-    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: #edeef0; display: flex; flex-direction: column; position: relative; overflow: hidden; z-index: 1; }
+    .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: #0c0c0e; display: flex; flex-direction: column; position: relative; overflow: hidden; z-index: 1; }
     
     /* UNIVERSAL INTERACTIVE HEADER LAYER WITH GLASS BLUR OVERLAY */
     .app-header {
-      height: 80px; padding: 0 24px; padding-top: max(0px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 100; flex-shrink: 0; position: relative; width: 100%;
+      height: 70px; padding: 0 20px; padding-top: max(0px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 100; flex-shrink: 0; position: relative; width: 100%;
     }
     .brand-title-container { display: flex; flex-direction: column; }
-    .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.5rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
-    .brand-title-sub { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
+    .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
+    .brand-title-sub { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 700; }
     
     /* HAMBURGER STYLING ELEMENTS */
-    .hamburger-icon-trigger { font-size: 1.6rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; }
-    .header-dropdown-menu { position: absolute; top: 80px; right: 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; width: 220px; box-shadow: 0 12px 30px rgba(0,0,0,0.05); display: none; flex-direction: column; z-index: 200; overflow: hidden; }
+    .hamburger-icon-trigger { font-size: 1.5rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; }
+    .header-dropdown-menu { position: absolute; top: 70px; right: 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; width: 220px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 200; overflow: hidden; }
     .dropdown-menu-item { padding: 16px 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); text-align: left; background: none; border: none; width: 100%; }
     .dropdown-menu-item:last-child { border-bottom: none; }
     .dropdown-menu-item:active { background: rgba(0,0,0,0.04); }
 
     /* RUNTIME SWITCHABLE VIEW CONFIGURATIONS */
-    .view-deck { flex: 1; overflow-y: auto; padding: 20px 16px; padding-bottom: calc(110px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
-    .global-view-wrapper { display: none; width: 100%; } .global-view-wrapper.active-frame { display: block; }
-    .feed-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+    .view-deck { flex: 1; overflow-y: auto; padding: 0; padding-bottom: calc(65px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
+    .global-view-wrapper { display: none; width: 100%; height: 100%; } 
+    .global-view-wrapper.active-frame { display: block; }
     
-    /* 🛒 FRONT-END CUSTOMER HUB CORE STYLING ELEMENTS */
-    .feed-card { background: var(--bg-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.03); width: 100%; cursor: pointer; }
+    /* 🎬 REELS / SHORTS FULL-SCREEN VERTICAL SNAPPING FEED CONTAINER */
+    .feed-container-reels { 
+      display: flex; 
+      flex-direction: column; 
+      width: 100%; 
+      height: 100%; 
+      overflow-y: scroll; 
+      scroll-snap-type: y mandatory; 
+      scrollbar-width: none;
+    }
+    .feed-container-reels::-webkit-scrollbar { display: none; }
     
-    /* GALLERY VIEWPORT CONFIGURATION SETUP FOR IMAGES AND VIDEOS */
-    .card-media-gallery { width: 100%; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; height: 320px; max-height: 320px; position: relative; }
-    .card-media-gallery::-webkit-scrollbar { display: none; }
-    .card-media-gallery img, .card-media-gallery video { width: 100%; max-width: 100%; min-width: 100%; flex-shrink: 0; height: 100%; max-height: 100%; object-fit: cover; border-radius: 16px; scroll-snap-align: start; background: #e8e9eb; display: block; }
-    .card-media-gallery img { cursor: zoom-in; }
-    
-    .feed-card-body { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; }
-    .feed-card-body h3 { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); text-transform: lowercase; }
-    .feed-card-body h3::first-letter { text-transform: uppercase; }
-    .feed-card-body p { font-size: 0.9rem; color: #48484a; line-height: 1.5; margin-top: 4px; white-space: pre-wrap; }
-    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .attribute-chip { background: rgba(0, 0, 0, 0.04); color: var(--text-primary); font-size: 0.7rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .feed-card-pricing { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
-    .price-tag { font-family: "Times New Roman", "Didot", serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-    .shipping-extra-tag { font-size: 0.75rem; color: var(--warning); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    
+    /* STANDARD FEED CONTAINER FOR ADMIN/SELECTIONS */
+    .feed-container-standard { display: flex; flex-direction: column; gap: 20px; padding: 16px; width: 100%; }
+
+    /* 🎬 INSTAGRAM REEL STYLE FULL-SCREEN PRODUCT CARD */
+    .reels-card { 
+      width: 100%; 
+      height: calc(100dvh - 115px); 
+      min-height: calc(100dvh - 115px); 
+      scroll-snap-align: start; 
+      scroll-snap-stop: always; 
+      position: relative; 
+      overflow: hidden; 
+      background: #000000; 
+      display: flex; 
+      flex-direction: column; 
+    }
+
+    /* REELS HORIZONTAL MEDIA CAROUSEL */
+    .reels-media-carousel { 
+      width: 100%; 
+      height: 100%; 
+      display: flex; 
+      overflow-x: auto; 
+      scroll-snap-type: x mandatory; 
+      scrollbar-width: none; 
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0; 
+    }
+    .reels-media-carousel::-webkit-scrollbar { display: none; }
+    .reels-media-slide { 
+      width: 100%; 
+      min-width: 100%; 
+      height: 100%; 
+      flex-shrink: 0; 
+      scroll-snap-align: start; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      background: #000000; 
+      position: relative;
+    }
+    .reels-media-slide img, .reels-media-slide video { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+      display: block; 
+    }
+
+    /* TOP-RIGHT PAGE NUMBER BADGE (1/3) */
+    .reels-top-badge { 
+      position: absolute; top: 16px; right: 16px; 
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      color: #ffffff; padding: 4px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; z-index: 20; letter-spacing: 0.5px;
+    }
+
+    /* RIGHT-SIDE INSTAGRAM REEL FLOATING ACTION COLUMN */
+    .reels-action-column {
+      position: absolute;
+      right: 14px;
+      bottom: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      z-index: 20;
+    }
+    .reels-action-btn {
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease;
+    }
+    .reels-action-btn:active { transform: scale(0.9); }
+    .reels-action-btn.is-active-favorite { color: #ff3b30; background: rgba(255, 255, 255, 0.9); border-color: #ff3b30; }
+    .reels-action-label {
+      font-size: 0.65rem;
+      color: #ffffff;
+      font-weight: 700;
+      margin-top: 3px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+    .reels-action-unit { display: flex; flex-direction: column; align-items: center; }
+
+    /* BOTTOM-LEFT INSTAGRAM CAPTION & GRADIENT OVERLAY */
+    .reels-caption-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 40px 80px 20px 16px;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0.95) 100%);
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .reels-caption-overlay * { pointer-events: auto; }
+    .reels-brand-pill {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: flex-start;
+      margin-bottom: 2px;
+    }
+    .reels-title {
+      font-family: "Times New Roman", "Didot", serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.2;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+    .reels-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .reels-price-extra { font-size: 0.65rem; color: var(--warning); text-transform: uppercase; font-weight: 700; }
+    .reels-teaser-text {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .reels-more-link {
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+      display: inline-block;
+      margin-left: 4px;
+    }
+
+    /* 📄 SLIDING SPEC SHEET OVERLAY (NO DUPLICATED IMAGES) */
+    .reels-spec-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--glass-dark);
+      backdrop-filter: blur(30px) saturate(190%);
+      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 18px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      color: #ffffff;
+    }
+    .reels-spec-sheet.sheet-open { transform: translateY(0); }
+    .reels-spec-sheet::-webkit-scrollbar { display: none; }
+    .sheet-drag-handle {
+      width: 36px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto 4px auto; cursor: pointer;
+    }
+
     /* MODERIZED APPLE ACTION LAYOUT PACKS */
-    .action-btn { padding: 16px; border-radius: 16px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; transition: background 0.2s ease, transform 0.1s ease; }
+    .action-btn { padding: 14px; border-radius: 14px; font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; transition: background 0.2s ease, transform 0.1s ease; }
     .action-btn:active { transform: scale(0.97); }
     
-    .pincode-widget { margin-top: 4px; padding-top: 12px; border-top: 1px dashed #e5e5ea; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .pincode-widget { margin-top: 4px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.15); display: flex; flex-direction: column; gap: 6px; width: 100%; }
     .pincode-row-inputs { display: flex; gap: 8px; width: 100%; }
-    .pincode-input { flex: 1; min-width: 0; padding: 14px 16px; background: #f2f2f7; border: 1px solid rgba(0,0,0,0.08); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; transition: all 0.2s ease; }
-    .pincode-input.pulse-alert { background: rgba(255, 149, 0, 0.08); box-shadow: 0 0 0 2px var(--warning); }
-    .pincode-btn { padding: 0 20px; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.75rem; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
-    .pincode-feedback { font-size: 0.8rem; font-weight: 600; padding: 12px 16px; border-radius: 12px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.4; }
-    .feedback-pending { background: rgba(255, 149, 0, 0.08); color: var(--warning); }
-    .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; align-items: center; }
-    .guess-pill { font-size: 0.7rem; background: #e5e5ea; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #48484a; border: none; }
+    .pincode-input { flex: 1; min-width: 0; padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #ffffff; border-radius: 10px; font-size: 0.85rem; outline: none; transition: all 0.2s ease; }
+    .pincode-input::placeholder { color: rgba(255,255,255,0.5); }
+    .pincode-input.pulse-alert { background: rgba(255, 149, 0, 0.2); box-shadow: 0 0 0 2px var(--warning); }
+    .pincode-btn { padding: 0 16px; background: #ffffff; color: #121214; font-weight: 700; font-size: 0.7rem; border: none; border-radius: 10px; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
+    .pincode-feedback { font-size: 0.75rem; font-weight: 600; padding: 10px 14px; border-radius: 10px; display: block; width: 100%; text-align: left; margin-top: 4px; line-height: 1.3; }
+    .feedback-pending { background: rgba(255, 149, 0, 0.15); color: var(--warning); }
+    .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; align-items: center; }
+    .guess-pill { font-size: 0.65rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #ffffff; border: none; }
     
-    /* FLOATING APPLE GLASS LIKE MODULE OVERLAY BUTTONS */
-    .heart-like-toggle { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 8px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5; }
-    .heart-like-toggle.is-active-favorite { border-color: #c92a2a; color: #c92a2a; transform: scale(1.05); background: #fff; box-shadow: 0 4px 16px rgba(201, 42, 42, 0.12); }
-    .brand-pill { font-size: 0.65rem; font-weight: 700; background: var(--accent); padding: 6px 14px; border-radius: 8px; color: #fff; align-self: flex-start; text-transform: uppercase; letter-spacing: 1px; }
-    .demo-tag { font-size: 0.6rem; background: var(--warning); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; vertical-align: middle; margin-left: 6px; text-transform: uppercase; }
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .attribute-chip { background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* CUSTOMER CATALOG BAR FILTER CHIPS */
-    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; background: var(--bg-surface); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); flex-shrink: 0; width: 100%; }
-    .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; width: 100%; }
+    .catalog-navigation-bar { display: flex; flex-direction: column; gap: 8px; padding: 10px 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); flex-shrink: 0; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; width: 100%; }
     .filter-scroller::-webkit-scrollbar { display: none; }
-    .chip { background: var(--bg-card); color: var(--text-primary); padding: 12px 18px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; transition: all 0.2s ease; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .chip { background: var(--bg-card); color: var(--text-primary); padding: 8px 14px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; transition: all 0.2s ease; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     .chip.chip-active { background: var(--accent); color: #fff; }
 
     /* 🛠========= SECURE WORKSPACE BACKEND UI ELEMENTS ========= */
     .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 16px; }
     .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
     .native-input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.08); background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
+    .feed-card-standard { background: var(--bg-card); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); }
     .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; margin-top: 4px; }
     .btn-reject { background: #ffe5e5; color: var(--danger); }
     .btn-edit-curate { background: var(--bg-active); color: var(--accent); }
     
-    .export-panel-container { background: var(--bg-card); border-radius: 20px; padding: 18px; margin-bottom: 24px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.02); }
+    .export-panel-container { background: var(--bg-card); border-radius: 20px; padding: 18px; margin-bottom: 16px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.02); }
     .export-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; table-layout: fixed; }
     .export-table th, .export-table td { padding: 12px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
     .export-table th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; }
@@ -138,25 +315,39 @@
     .remove-thumb-badge { position: absolute; top: 4px; right: 4px; background: rgba(255, 59, 48, 0.95); color: #ffffff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); z-index: 10; }
 
     /* 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY MATRIX */
-    .lightbox-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 400; display: none; justify-content: center; align-items: center; padding: 24px; }
-    .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 85%; overflow-y: auto; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; }
+    .lightbox-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 400; display: none; justify-content: center; align-items: center; padding: 20px; }
+    .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 85%; overflow-y: auto; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; gap: 14px; scrollbar-width: none; }
     .lightbox-content-card::-webkit-scrollbar { display: none; }
 
     /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
-    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(85px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.03); }
+    .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(65px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
     .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
     .tab-item.tab-active { color: var(--accent); }
-    .tab-item svg { width: 28px; height: 28px; fill: currentColor; transition: transform 0.2s ease; }
+    .tab-item svg { width: 26px; height: 26px; fill: currentColor; transition: transform 0.2s ease; }
     .tab-item:active svg { transform: scale(0.9); }
     
     /* 🔴 THE NATIVE ABSOLUTE FLOATING CIRCULAR BADGE OVER SHOULDER NODE */
-    .tab-counter-badge { position: absolute; top: 12px; right: calc(50% - 24px); background: var(--danger); color: #ffffff; font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(255, 59, 48, 0.3); z-index: 10; font-family: -apple-system, system-ui, sans-serif; }
+    .tab-counter-badge { position: absolute; top: 10px; right: calc(50% - 22px); background: var(--danger); color: #ffffff; font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(255, 59, 48, 0.3); z-index: 10; font-family: -apple-system, system-ui, sans-serif; }
 
     /* PRIVILEGED GATEWAY SHIELD */
     #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; }
     .security-card-box { background: #ffffff; padding: 36px 24px; border-radius: 28px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
     .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
     .supplier-pill { background: #e5e5ea; padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #48484a; }
+
+    /* 🔍 FULL-SCREEN THEATER SWIPE & PINCH-ZOOM STYLING */
+    .theater-nav-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff;
+      border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 520;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .theater-nav-left { left: 16px; }
+    .theater-nav-right { right: 16px; }
+    .theater-page-indicator {
+      position: absolute; bottom: 24px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); color: #fff;
+      padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; z-index: 520; letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
@@ -211,67 +402,71 @@
     <!-- CORE INTERACTIVE APPARATUS DECK ARCHITECTURE -->
     <div class="view-deck">
       
-      <!-- 🛒 CLIENT STREAM DECK 1: LIVE STOREFRONT GRID -->
+      <!-- 🛒 CLIENT STREAM DECK 1: LIVE STOREFRONT GRID (INSTAGRAM REELS STYLE) -->
       <section id="frame-customer-storefront" class="global-view-wrapper active-frame">
-        <div id="customer-cards-anchor" class="feed-container"></div>
+        <div id="customer-cards-anchor" class="feed-container-reels"></div>
       </section>
 
       <!-- ❤️ CLIENT STREAM DECK 2: CUSTOMER MY SELECTION LIST -->
       <section id="frame-customer-selections" class="global-view-wrapper">
-        <div id="customer-selections-anchor" class="feed-container"></div>
+        <div id="customer-selections-anchor" class="feed-container-standard"></div>
       </section>
 
       <!-- 📥 CONTROL PANEL PANE 3: WORKSPACE PIPELINE DIRECTORY -->
       <section id="pane-feed" class="global-view-wrapper">
-        <div class="export-panel-container">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">📦 Client Pincode Request Backlog Queue</h4>
-            <button class="chip" style="font-size:0.65rem; padding:6px 10px; background:var(--accent); color:#fff;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
+        <div style="padding: 16px;">
+          <div class="export-panel-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">📦 Client Pincode Request Backlog Queue</h4>
+              <button class="chip" style="font-size:0.65rem; padding:6px 10px; background:var(--accent); color:#fff;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
+            </div>
+            <table class="export-table">
+              <thead>
+                <tr><th style="width:25%;">Sourced From</th><th style="width:25%;">Item Heading</th><th style="width:30%;">Folder Ref ID</th><th style="width:20%; text-align:right;">Pincodes</th></tr>
+              </thead>
+              <tbody id="export-queue-tbody"></tbody>
+            </table>
           </div>
-          <table class="export-table">
-            <thead>
-              <tr><th style="width:25%;">Sourced From</th><th style="width:25%;">Item Heading</th><th style="width:30%;">Folder Ref ID</th><th style="width:20%; text-align:right;">Pincodes</th></tr>
-            </thead>
-            <tbody id="export-queue-tbody"></tbody>
-          </table>
-        </div>
 
-        <div class="filter-scroller">
-          <div class="chip chip-active" data-status-filter="all">All Workspace</div>
-          <div class="chip" data-status-filter="Imported">New Imports</div>
-          <div class="chip" data-status-filter="Reviewing">Reviewing</div>
-          <div class="chip" data-status-filter="Ready">Ready to Share</div>
-          <button type="button" class="chip" style="margin-left:auto; background:#e5e5ea;" onclick="admin.showSupplierManager()">⚙️ Factories</button>
+          <div class="filter-scroller">
+            <div class="chip chip-active" data-status-filter="all">All Workspace</div>
+            <div class="chip" data-status-filter="Imported">New Imports</div>
+            <div class="chip" data-status-filter="Reviewing">Reviewing</div>
+            <div class="chip" data-status-filter="Ready">Ready to Share</div>
+            <button type="button" class="chip" style="margin-left:auto; background:#e5e5ea;" onclick="admin.showSupplierManager()">⚙️ Factories</button>
+          </div>
+          <div id="feed-cards-anchor" class="feed-container-standard" style="margin-top: 16px; padding: 0;"></div>
         </div>
-        <div id="feed-cards-anchor" class="feed-container" style="margin-top: 16px;"></div>
       </section>
 
       <!-- ➕ CONTROL PANEL PANE 4: TEXT RAW UNORGANIZED CHAT INGESTER -->
       <section id="pane-intake" class="global-view-wrapper">
-        <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
-          <div style="display:grid; grid-template-columns: 1fr; gap:12px;">
-            <div class="form-group">
-              <label class="form-label">Sourcing Supplier Factory</label>
-              <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
-                <select id="intake-supplier-select" style="flex:1; height:46px; background:#fff;"></select>
-                <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0; flex-shrink:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
+        <div style="padding: 16px;">
+          <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
+            <div style="display:grid; grid-template-columns: 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Sourcing Supplier Factory</label>
+                <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                  <select id="intake-supplier-select" style="flex:1; height:46px; background:#fff;"></select>
+                  <button type="button" class="chip" style="background:var(--accent); color:#fff; height:46px; width:46px; padding:0; flex-shrink:0;" onclick="admin.promptQuickAddSupplier()">➕</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Default Markup Margin</label>
+                <select id="intake-margin-preset" style="height:46px; width: 100%; background:#fff;">
+                  <option value="1.25">Standard (+25%)</option>
+                  <option value="1.20">High Ticket (+20%)</option>
+                  <option value="1.30">Premium (+30%)</option>
+                </select>
               </div>
             </div>
             <div class="form-group">
-              <label class="form-label">Default Markup Margin</label>
-              <select id="intake-margin-preset" style="height:46px; width: 100%; background:#fff;">
-                <option value="1.25">Standard (+25%)</option>
-                <option value="1.20">High Ticket (+20%)</option>
-                <option value="1.30">Premium (+30%)</option>
-              </select>
+              <label class="form-label">Raw Sourced Message Content Block</label>
+              <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats..." style="width: 100%; resize: none; border-radius:16px; background:#fff;"></textarea>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Raw Sourced Message Content Block</label>
-            <textarea id="intake-raw-text" rows="12" placeholder="Paste unorganized text block updates straight from supplier chats..." style="width: 100%; resize: none; border-radius:16px; background:#fff;"></textarea>
-          </div>
-          <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
-        </form>
+            <button type="submit" class="action-btn" style="background:var(--accent); color:#fff; width:100%; margin-top:12px;">Process Ingestion</button>
+          </form>
+        </div>
       </section>
 
     </div> <!-- Close view-deck -->
@@ -395,10 +590,18 @@
     </nav>
   </div> <!-- Close phone-shell -->
 
-  <!-- ZOOM CORE THEATER LAYER -->
-  <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 500; display: none; justify-content: center; align-items: center; touch-action: none;">
-    <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 510; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
-    <div id="theater-zoom-viewport" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden;"><img id="theater-zoom-image" src="" alt="Zoom Window" style="max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; transition: transform 0.05s ease-out;"></div>
+  <!-- 🔍 ADVANCED PINCH-ZOOM & SWIPE GALLERY THEATER OVERLAY -->
+  <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 500; display: none; justify-content: center; align-items: center; touch-action: none; overflow: hidden;">
+    <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 530; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
+    
+    <button class="theater-nav-arrow theater-nav-left" id="theater-btn-prev" onclick="theater.prevImage()">❮</button>
+    <button class="theater-nav-arrow theater-nav-right" id="theater-btn-next" onclick="theater.nextImage()">❯</button>
+    
+    <div id="theater-zoom-viewport" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative;">
+      <div id="theater-media-anchor" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transform-origin: center center; transition: transform 0.05s ease-out;"></div>
+    </div>
+    
+    <div class="theater-page-indicator" id="theater-page-badge">1 / 1</div>
   </div>
 
   <script>
@@ -611,70 +814,202 @@
       }
     };
 
+    // =========================================================================
+    // 🧠 UNIVERSAL MULTI-CATEGORY COMMERCE INGESTION PARSER
+    // =========================================================================
     const LearningParser = {
       async executeParse(supplierId, rawText) {
-        if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {} };
-        let rule = { supplierId: supplierId, priceAnchors: ['rate :', 'rate:', 'rate', 'price', 'prc', 'cost'], attributeAnchors: { 'fabric': ['fabric', 'fabrics', 'top :'], 'sizes': ['size', 'size:', 'sizes'], 'weight': ['weight', 'weight :', 'weight:'] } };
+        if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {}, inferredCategory: '' };
 
-        const lines = rawText.split('\n').map(l => l.trim());
-        let detectedPrice = 0; let customAttributes = {};
+        const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        let detectedPrice = 0;
+        let customAttributes = {};
+        let descriptionLines = [];
 
-        for (const line of lines) {
-          if (!line) continue; const lowerLine = line.toLowerCase();
-          for (const anchor of rule.priceAnchors) {
-            if (lowerLine.includes(anchor)) {
-              const segment = lowerLine.split(anchor)[1] || ''; const match = segment.match(/\d+/);
-              if (match) { detectedPrice = parseFloat(match[0]); break; }
-            }
-          }
-        }
+        // Universal commerce keywords to detect pricing lines across categories
+        const priceKeywords = ['rate', 'price', 'prc', 'cost', 'rs', '₹', '/-'];
 
-        for (const [attrKey, anchors] of Object.entries(rule.attributeAnchors)) {
-          for (const line of lines) {
-            if (!line) continue; const lowerLine = line.toLowerCase();
-            for (const anchor of anchors) {
-              if (lowerLine.includes(anchor)) {
-                let derivedVal = line.split(new RegExp(anchor, 'i'))[1] || ''; derivedVal = derivedVal.replace(/^[:\-\s]+/, '').trim();
-                if (derivedVal) { customAttributes[attrKey] = derivedVal; break; }
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const lowerLine = line.toLowerCase();
+
+          // 1. Detect & Extract Numerical Price
+          let isPriceLine = false;
+          for (const kw of priceKeywords) {
+            if (lowerLine.includes(kw)) {
+              const priceMatch = line.match(/(?:rs|₹|rate|price|cost|\b)?\s*[:=\-]?\s*(\d[\d,]*)/i);
+              if (priceMatch && priceMatch[1] && !detectedPrice) {
+                const rawNum = priceMatch[1].replace(/,/g, '');
+                const parsedNum = parseFloat(rawNum);
+                if (parsedNum > 50) {
+                  detectedPrice = parsedNum;
+                  isPriceLine = true;
+                  break;
+                }
               }
             }
-            if (customAttributes[attrKey]) break;
           }
+          if (isPriceLine) continue;
+
+          // 2. Universal Dynamic Colon/Hyphen Extraction (Key : Value or Key - Value)
+          let separatorIndex = -1;
+          if (line.includes(':')) {
+            separatorIndex = line.indexOf(':');
+          } else if (line.includes(' - ') || line.includes(' – ')) {
+            separatorIndex = line.indexOf('-') !== -1 ? line.indexOf('-') : line.indexOf('–');
+          }
+
+          if (separatorIndex !== -1) {
+            let key = line.substring(0, separatorIndex).replace(/[^\w\s()/&.-]/gi, '').trim();
+            let value = line.substring(separatorIndex + 1).trim();
+
+            if (key && value && key.length < 35) {
+              const cleanKey = key.replace(/\b\w/g, char => char.toUpperCase());
+              customAttributes[cleanKey] = value;
+              continue;
+            }
+          }
+
+          // 3. Unstructured text lines added to white-labeled Customer Description
+          descriptionLines.push(line);
         }
 
-        const sliceLines = lines.slice(1);
-        const customerDescription = sliceLines.filter(line => {
-          const lower = line.toLowerCase();
-          return !(lower.includes('rate') || lower.includes('rs') || lower.includes('₹') || lower.includes('$') || lower.includes('+') || lower.includes('price') || lower.includes('/-') || lower.includes('ship'));
-        }).join('\n');
+        // Auto-detect Category/Heading from lead raw line if available
+        let inferredCategory = '';
+        const firstLine = lines[0] || '';
+        if (firstLine && !firstLine.includes(':')) {
+          inferredCategory = firstLine.replace(/[^\w\s()-]/gi, '').trim();
+        }
 
-        return { derivedPrice: detectedPrice, customerDescription, customAttributes };
+        const customerDescription = descriptionLines.join('\n');
+
+        return { 
+          derivedPrice: detectedPrice, 
+          customerDescription, 
+          customAttributes,
+          inferredCategory
+        };
       }
     };
 
+    // =========================================================================
+    // 🔍 SWIPEABLE + PINCH-ZOOM FULL-SCREEN THEATER GALLERY
+    // =========================================================================
     const theater = {
-      scale: 1, lastScale: 1, startDistance: 0, active: false,
+      items: [],
+      currentIndex: 0,
+      scale: 1,
+      lastScale: 1,
+      startDistance: 0,
+      touchStartX: 0,
+      touchEndX: 0,
+      isPinching: false,
+
       init() {
         const viewNode = document.getElementById('theater-zoom-viewport');
         if (!viewNode) return;
+
         viewNode.addEventListener('touchstart', (e) => {
           if (e.touches.length === 2) {
-            this.active = true;
-            this.startDistance = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+            this.isPinching = true;
+            this.startDistance = Math.hypot(
+              e.touches[1].clientX - e.touches[0].clientX,
+              e.touches[1].clientY - e.touches[0].clientY
+            );
+            this.lastScale = this.scale;
+          } else if (e.touches.length === 1) {
+            this.isPinching = false;
+            this.touchStartX = e.touches[0].clientX;
+          }
+        }, { passive: true });
+
+        viewNode.addEventListener('touchmove', (e) => {
+          if (this.isPinching && e.touches.length === 2) {
+            const currentDist = Math.hypot(
+              e.touches[1].clientX - e.touches[0].clientX,
+              e.touches[1].clientY - e.touches[0].clientY
+            );
+            if (this.startDistance > 0) {
+              this.scale = Math.min(Math.max((currentDist / this.startDistance) * this.lastScale, 1), 4);
+              this.applyTransform();
+            }
+          } else if (!this.isPinching && e.touches.length === 1) {
+            this.touchEndX = e.touches[0].clientX;
+          }
+        }, { passive: true });
+
+        viewNode.addEventListener('touchend', (e) => {
+          if (e.touches.length < 2) {
+            this.isPinching = false;
             this.lastScale = this.scale;
           }
-        }, { passive: true });
-        viewNode.addEventListener('touchmove', (e) => {
-          if (this.active && e.touches.length === 2) {
-            const currentDist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
-            if (this.startDistance > 0) { this.scale = Math.min(Math.max((currentDist / this.startDistance) * this.lastScale, 1), 4); this.applyTransform(); }
+
+          if (this.scale === 1 && Math.abs(this.touchStartX - this.touchEndX) > 50) {
+            if (this.touchStartX - this.touchEndX > 50) {
+              this.nextImage();
+            } else if (this.touchEndX - this.touchStartX > 50) {
+              this.prevImage();
+            }
+            this.touchStartX = 0;
+            this.touchEndX = 0;
           }
         }, { passive: true });
-        viewNode.addEventListener('touchend', (e) => { if (e.touches.length < 2) { this.active = false; this.lastScale = this.scale; } }, { passive: true });
       },
-      applyTransform() { const img = document.getElementById('theater-zoom-image'); if (img) img.style.transform = `scale(${this.scale})`; },
-      launch(src) { this.scale = 1; this.applyTransform(); document.getElementById('theater-zoom-image').src = src; document.getElementById('gallery-theater-overlay').style.display = 'flex'; },
-      dismiss() { document.getElementById('gallery-theater-overlay').style.display = 'none'; }
+
+      applyTransform() {
+        const anchor = document.getElementById('theater-media-anchor');
+        if (anchor) anchor.style.transform = `scale(${this.scale})`;
+      },
+
+      launch(mediaArray, startIndex = 0) {
+        if (!Array.isArray(mediaArray) || mediaArray.length === 0) return;
+        this.items = mediaArray;
+        this.currentIndex = startIndex;
+        this.scale = 1;
+        this.applyTransform();
+        this.renderCurrentMedia();
+        document.getElementById('gallery-theater-overlay').style.display = 'flex';
+      },
+
+      renderCurrentMedia() {
+        const anchor = document.getElementById('theater-media-anchor');
+        const badge = document.getElementById('theater-page-badge');
+        if (!anchor) return;
+
+        this.scale = 1;
+        this.applyTransform();
+
+        const currentUrl = catalog.convertDriveLinkToDirectStream(this.items[this.currentIndex].trim());
+        const isVideo = currentUrl.toLowerCase().includes('.mp4') || currentUrl.toLowerCase().includes('.mov') || currentUrl.toLowerCase().includes('.webm');
+
+        if (isVideo) {
+          anchor.innerHTML = `<video src="${escapeHtml(currentUrl)}" autoplay loop muted playsinline style="max-width:95%; max-height:90%; border-radius:16px; object-fit:contain;"></video>`;
+        } else {
+          anchor.innerHTML = `<img src="${escapeHtml(currentUrl)}" alt="Full View" style="max-width:95%; max-height:90%; border-radius:16px; object-fit:contain;">`;
+        }
+
+        if (badge) {
+          badge.innerText = `${this.currentIndex + 1} / ${this.items.length}`;
+        }
+      },
+
+      nextImage() {
+        if (this.currentIndex < this.items.length - 1) {
+          this.currentIndex++;
+          this.renderCurrentMedia();
+        }
+      },
+
+      prevImage() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.renderCurrentMedia();
+        }
+      },
+
+      dismiss() {
+        document.getElementById('gallery-theater-overlay').style.display = 'none';
+      }
     };
 
     const catalog = {
@@ -771,14 +1106,14 @@
         const selectedItems = this.allItems.filter(item => this.likedIDs.includes(item.id));
         
         if(selectedItems.length === 0) {
-          anchor.innerHTML = `<div class="empty-state"><h3>Your Selection List is empty.</h3><p>Tap the heart icon on designs you like while browsing our shop catalog feed.</p></div>`;
+          anchor.innerHTML = `<div class="empty-state" style="padding:40px 20px; text-align:center;"><h3 style="font-size:1.1rem; color:#fff;">Your Selection List is empty.</h3><p style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">Tap the heart icon on designs you like while browsing our catalog feed.</p></div>`;
           return;
         }
         await this.compileCardsHTMLIntoAnchor(selectedItems, anchor, false);
         
         const ctaRow = document.createElement('div');
         ctaRow.style.padding = '10px 0';
-        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; height:54px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
+        ctaRow.innerHTML = `<button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; height:50px; border-radius:16px;" onclick="catalog.checkoutBagIntent()">💬 Bulk Verify Selection List via WhatsApp</button>`;
         anchor.appendChild(ctaRow);
       },
 
@@ -793,10 +1128,10 @@
         return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : url;
       },
 
-      async compileCardsHTMLIntoAnchor(itemsList, anchorNode, appendInputsAndActions = true) {
+      async compileCardsHTMLIntoAnchor(itemsList, anchorNode, isReelsLayout = true) {
         anchorNode.innerHTML = '';
         if (itemsList.length === 0) {
-          anchorNode.innerHTML = `<div class="empty-state"><h3>Collection updates processing.</h3><p>Check back shortly.</p></div>`;
+          anchorNode.innerHTML = `<div class="empty-state" style="padding:40px 20px; text-align:center;"><h3 style="color:#fff;">Collection updates processing.</h3><p style="color:var(--text-muted); margin-top:6px;">Check back shortly.</p></div>`;
           return;
         }
 
@@ -804,11 +1139,6 @@
 
         for (const d of itemsList) {
           if (!d.customAttributes) d.customAttributes = {};
-          const card = document.createElement('div');
-          card.className = 'feed-card';
-          
-          card.setAttribute('onclick', `catalog.openProductLightbox('${escapeHtml(d.id)}')`);
-          
           const isFav = this.likedIDs.includes(d.id);
           const currentCount = this.staticLikesDatabase[d.id] || 0;
           const isDemoItem = d.id.startsWith('demo-item-');
@@ -818,67 +1148,159 @@
             if (value) chipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`;
           }
 
-          let mediaGalleryHtml = '';
-          if (d.cloud_images && d.cloud_images.length > 0) {
-            let galleryElements = '';
-            d.cloud_images.forEach(link => {
-              let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
-              if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-                galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline></video>`;
-              } else {
-                galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Variant" onclick="event.stopPropagation(); theater.launch('${escapeHtml(cleanLink)}')">`;
-              }
-            });
-            mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
-          }
+          if (isReelsLayout) {
+            /* 🎬 AUTHENTIC INSTAGRAM REEL CARD ARCHITECTURE */
+            const card = document.createElement('div');
+            card.className = 'reels-card';
 
-          let guessPillsHtml = '';
-          const matrices = Object.keys(d.pincode_rates || {});
-          if (matrices.length > 0) {
-            guessPillsHtml = `<div class="guess-pill-container" onclick="event.stopPropagation()"><span style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">Quick Selection:</span>` +
-              matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${escapeHtml(d.id)}', '${escapeHtml(p)}')">${escapeHtml(p)}</span>`).join('') + `</div>`;
-          }
+            let mediaSlidesHtml = '';
+            if (d.cloud_images && d.cloud_images.length > 0) {
+              const escapedJson = escapeHtml(JSON.stringify(d.cloud_images));
+              d.cloud_images.forEach((link, idx) => {
+                let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
+                if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
+                  mediaSlidesHtml += `<div class="reels-media-slide"><video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline></video></div>`;
+                } else {
+                  mediaSlidesHtml += `<div class="reels-media-slide"><img src="${escapeHtml(cleanLink)}" alt="Product View" onclick="theater.launch(${escapedJson}, ${idx})"></div>`;
+                }
+              });
+            } else {
+              mediaSlidesHtml = `<div class="reels-media-slide" style="color:#8e8e93; font-size:0.8rem;">No Media Uploaded</div>`;
+            }
 
-          let interactiveWorkflowBlocks = '';
-          if (appendInputsAndActions) {
-            interactiveWorkflowBlocks = `
-              <div class="pincode-widget" onclick="event.stopPropagation()">
-                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Check Delivery Location Area (Shipping &amp; ETA)</label>
-                <div class="pincode-row-inputs">
-                  <input type="text" class="pincode-input" id="input-pin-${escapeHtml(d.id)}" value="${escapeHtml(this.cachedPincode)}" placeholder="6-digit Pincode" onfocus="this.classList.remove('pulse-alert')">
-                  <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${escapeHtml(d.id)}')">Log Location</button>
-                </div>
-                ${guessPillsHtml}
-                <div id="feedback-pin-${escapeHtml(d.id)}" style="margin-top:4px; display:none;"></div>
+            let guessPillsHtml = '';
+            const matrices = Object.keys(d.pincode_rates || {});
+            if (matrices.length > 0) {
+              guessPillsHtml = `<div class="guess-pill-container" onclick="event.stopPropagation()"><span style="font-size:0.65rem; color:rgba(255,255,255,0.6); font-weight:bold;">Quick Area:</span>` +
+                matrices.map(p => `<span class="guess-pill" onclick="catalog.autoFillPincodeWidget('${escapeHtml(d.id)}', '${escapeHtml(p)}')">${escapeHtml(p)}</span>`).join('') + `</div>`;
+            }
+
+            const mediaCount = (d.cloud_images || []).length || 1;
+
+            card.innerHTML = `
+              <!-- TOP-RIGHT SLIDE COUNTER (1/3) -->
+              <div class="reels-top-badge">1/${mediaCount}</div>
+
+              <!-- MEDIA HORIZONTAL CAROUSEL -->
+              <div class="reels-media-carousel" onscroll="catalog.updateReelsSlideBadge(this)">
+                ${mediaSlidesHtml}
               </div>
 
-              <button type="button" class="action-btn" style="background:var(--accent); color:#fff; width:100%; font-weight:800; margin-top:4px; border-radius:14px;" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${escapeHtml(d.id)}')">
-                💬 Check Dispatch &amp; Stock Availability
+              <!-- RIGHT-SIDE FLOATING ACTION COLUMN -->
+              <div class="reels-action-column">
+                <div class="reels-action-unit">
+                  <button class="reels-action-btn ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${escapeHtml(d.id)}', this, true)">
+                    ❤️
+                  </button>
+                  <span class="reels-action-label likes-value">${currentCount}</span>
+                </div>
+
+                <div class="reels-action-unit">
+                  <button class="reels-action-btn" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${escapeHtml(d.id)}')">
+                    💬
+                  </button>
+                  <span class="reels-action-label">Order</span>
+                </div>
+
+                <div class="reels-action-unit">
+                  <button class="reels-action-btn" onclick="event.stopPropagation(); catalog.toggleReelsSpecSheet('${escapeHtml(d.id)}')">
+                    ℹ️
+                  </button>
+                  <span class="reels-action-label">Specs</span>
+                </div>
+              </div>
+
+              <!-- BOTTOM-LEFT CAPTION & GRADIENT OVERLAY -->
+              <div class="reels-caption-overlay">
+                <div class="reels-brand-pill">BESOINS EXCLUSIVE ${isDemoItem ? '<span class="demo-tag">LIVE DEMO</span>' : ''}</div>
+                <div class="reels-title">${escapeHtml(d.title)}</div>
+                <div class="reels-price">₹${escapeHtml(d.consumerPrice || '0')} <span class="reels-price-extra">+ Shipping Extra</span></div>
+                <div class="reels-teaser-text">
+                  ${escapeHtml((d.description || '').split('\n')[0])}
+                  <span class="reels-more-link" onclick="catalog.toggleReelsSpecSheet('${escapeHtml(d.id)}')">...more</span>
+                </div>
+              </div>
+
+              <!-- 📄 SLIDING SPEC SHEET DRAWER (FULL BACKGROUND PHOTO REMAINS VISIBLE) -->
+              <div class="reels-spec-sheet" id="spec-sheet-${escapeHtml(d.id)}">
+                <div class="sheet-drag-handle" onclick="catalog.toggleReelsSpecSheet('${escapeHtml(d.id)}')"></div>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="font-family:serif; font-size:1.2rem; color:#fff;">${escapeHtml(d.title)}</h3>
+                  <button type="button" class="chip" style="font-size:0.65rem; padding:4px 10px; background:rgba(255,255,255,0.2); color:#fff;" onclick="catalog.toggleReelsSpecSheet('${escapeHtml(d.id)}')">✕ Close</button>
+                </div>
+
+                <p style="font-size:0.85rem; color:rgba(255,255,255,0.85); line-height:1.5; white-space:pre-wrap;">${escapeHtml(d.description)}</p>
+
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Technical Specifications</span>
+                  <div class="dynamic-attributes-container">${chipsHtml}</div>
+                </div>
+
+                <div class="pincode-widget" onclick="event.stopPropagation()">
+                  <span style="font-size:0.65rem; color:rgba(255,255,255,0.7); text-transform:uppercase; font-weight:bold;">Check Regional Delivery ETA</span>
+                  <div class="pincode-row-inputs">
+                    <input type="text" class="pincode-input" id="input-pin-${escapeHtml(d.id)}" value="${escapeHtml(this.cachedPincode)}" placeholder="6-digit Delivery Pincode" onfocus="this.classList.remove('pulse-alert')">
+                    <button type="button" class="pincode-btn" onclick="catalog.verifyPincodeTrigger('${escapeHtml(d.id)}')">Check ETA</button>
+                  </div>
+                  ${guessPillsHtml}
+                  <div id="feedback-pin-${escapeHtml(d.id)}" style="display:none;"></div>
+                </div>
+
+                <button type="button" class="action-btn" style="background:#ffffff; color:#121214; width:100%; font-weight:800; border-radius:12px; margin-top:4px;" onclick="event.stopPropagation(); catalog.triggerDirectWhatsAppInquiry('${escapeHtml(d.id)}')">
+                  💬 Check Dispatch &amp; Stock Availability
+                </button>
+              </div>
+            `;
+            anchorNode.appendChild(card);
+            if(this.cachedPincode) this.verifyPincodeTrigger(d.id);
+
+          } else {
+            /* STANDARD LIST CARD (For Selection List & Admin Workspace) */
+            const card = document.createElement('div');
+            card.className = 'feed-card-standard';
+
+            let mediaGalleryHtml = '';
+            if (d.cloud_images && d.cloud_images.length > 0) {
+              let cleanLink = this.convertDriveLinkToDirectStream(d.cloud_images[0].trim());
+              mediaGalleryHtml = `<img src="${escapeHtml(cleanLink)}" alt="Cover" style="width:100%; height:200px; object-fit:contain; background:#000000; border-radius:14px;" onclick="catalog.openProductLightbox('${escapeHtml(d.id)}')">`;
+            }
+
+            card.innerHTML = `
+              ${mediaGalleryHtml}
+              <div class="feed-card-body">
+                <h3>${escapeHtml(d.title)}</h3>
+                <p>${escapeHtml(d.description)}</p>
+                <div class="dynamic-attributes-container">${chipsHtml}</div>
+              </div>
+              <div class="feed-card-pricing">
+                <span class="price-tag">₹${escapeHtml(d.consumerPrice || '0')}</span>
+              </div>
+              <button type="button" class="action-btn" style="background:#ffe5e5; color:var(--danger); width:100%;" onclick="catalog.handleLikeTap('${escapeHtml(d.id)}', this, false)">
+                ❌ Remove from Selections
               </button>
             `;
+            anchorNode.appendChild(card);
           }
+        }
+      },
 
-          card.innerHTML = `
-            ${mediaGalleryHtml}
-            <div class="heart-like-toggle ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${escapeHtml(d.id)}', this, ${appendInputsAndActions})">
-              ❤️ <span class="likes-value">${currentCount}</span>
-            </div>
-            <div class="brand-pill">Exclusive Catalog ${isDemoItem ? '<span class="demo-tag">Live Demo</span>' : ''}</div>
-            <div class="feed-card-body">
-              <h3>${escapeHtml(d.title)}</h3>
-              <p>${escapeHtml((d.description || '').split('\n')[0])}...</p>
-              <div class="dynamic-attributes-container">${chipsHtml}</div>
-            </div>
-            <div class="feed-card-pricing">
-              <div style="display:flex; align-items:baseline; gap:6px;">
-                 <span class="price-tag">₹${escapeHtml(d.consumerPrice || '0')}</span>
-                 <span class="shipping-extra-tag">+ Shipping Extra</span>
-              </div>
-            </div>
-            ${interactiveWorkflowBlocks}
-          `;
-          anchorNode.appendChild(card);
-          if(this.cachedPincode && appendInputsAndActions) this.verifyPincodeTrigger(d.id); 
+      toggleReelsSpecSheet(id) {
+        const sheet = document.getElementById(`spec-sheet-${id}`);
+        if (sheet) {
+          sheet.classList.toggle('sheet-open');
+        }
+      },
+
+      updateReelsSlideBadge(carouselEl) {
+        const slideWidth = carouselEl.offsetWidth;
+        if (!slideWidth) return;
+        const currentIdx = Math.round(carouselEl.scrollLeft / slideWidth) + 1;
+        const totalSlides = carouselEl.children.length;
+        const cardEl = carouselEl.closest('.reels-card');
+        if (cardEl) {
+          const badge = cardEl.querySelector('.reels-top-badge');
+          if (badge) badge.innerText = `${currentIdx}/${totalSlides}`;
         }
       },
 
@@ -897,23 +1319,24 @@
         let mediaGalleryHtml = '';
         if (d.cloud_images && d.cloud_images.length > 0) {
           let galleryElements = '';
-          d.cloud_images.forEach(link => {
+          const escapedJson = escapeHtml(JSON.stringify(d.cloud_images));
+          d.cloud_images.forEach((link, idx) => {
             let cleanLink = this.convertDriveLinkToDirectStream(link.trim());
             if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-              galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline style="width:100%; border-radius:16px; margin-bottom:8px;"></video>`;
+              galleryElements += `<div style="height:220px; background:#000000; border-radius:14px; overflow:hidden; margin-bottom:8px; display:flex; justify-content:center; align-items:center;"><video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline style="max-width:100%; max-height:100%; object-fit:contain;"></video></div>`;
             } else {
-              galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Zoom" style="width:100%; border-radius:16px; margin-bottom:8px;" onclick="theater.launch('${escapeHtml(cleanLink)}')">`;
+              galleryElements += `<div style="height:220px; background:#000000; border-radius:14px; overflow:hidden; margin-bottom:8px; display:flex; justify-content:center; align-items:center;"><img src="${escapeHtml(cleanLink)}" alt="Zoom" style="max-width:100%; max-height:100%; object-fit:contain;" onclick="theater.launch(${escapedJson}, ${idx})"></div>`;
             }
           });
-          mediaGalleryHtml = `<div style="width:100%; max-height:300px; overflow-y:auto; margin-bottom:12px; scrollbar-width:none;">${galleryElements}</div>`;
+          mediaGalleryHtml = `<div style="width:100%; max-height:260px; overflow-y:auto; margin-bottom:12px; scrollbar-width:none;">${galleryElements}</div>`;
         }
 
         anchor.innerHTML = `
           ${mediaGalleryHtml}
-          <div style="font-family:serif; font-size:1.4rem; font-weight:500; color:var(--accent); text-transform:capitalize;">${escapeHtml(d.title)}</div>
-          <div style="font-size:0.85rem; color:#48484a; line-height:1.5; margin:12px 0; white-space:pre-wrap;">${escapeHtml(d.description)}</div>
-          <div class="dynamic-attributes-container" style="margin-bottom:16px;">${attributeChipsHtml}</div>
-          <div style="font-family:serif; font-size:1.6rem; font-weight:700; color:var(--accent); margin-bottom:8px;">₹${escapeHtml(d.consumerPrice)}</div>
+          <div style="font-family:serif; font-size:1.3rem; font-weight:500; color:var(--accent); text-transform:capitalize;">${escapeHtml(d.title)}</div>
+          <div style="font-size:0.85rem; color:#48484a; line-height:1.5; margin:10px 0; white-space:pre-wrap;">${escapeHtml(d.description)}</div>
+          <div class="dynamic-attributes-container" style="margin-bottom:12px;">${attributeChipsHtml}</div>
+          <div style="font-family:serif; font-size:1.5rem; font-weight:700; color:var(--accent); margin-bottom:8px;">₹${escapeHtml(d.consumerPrice)}</div>
         `;
         
         overlay.style.display = 'flex';
@@ -970,7 +1393,12 @@
         
         localStorage.setItem('Besoins_Likes_Cache', JSON.stringify(this.likedIDs));
         localStorage.setItem('Besoins_Public_Likes_Matrix', JSON.stringify(this.staticLikesDatabase));
-        element.querySelector('.likes-value').innerText = this.staticLikesDatabase[id];
+        
+        const cardUnit = element.closest('.reels-action-unit') || element.parentElement;
+        if(cardUnit) {
+          const valSpan = cardUnit.querySelector('.likes-value');
+          if(valSpan) valSpan.innerText = this.staticLikesDatabase[id];
+        }
         this.updateBagFloatingCTAState();
 
         if(!refreshCurrentTimelineView) {
@@ -1187,13 +1615,16 @@
           const draftId = 'drf_' + crypto.randomUUID();
           const parsed = await LearningParser.executeParse(supplierId, rawText);
           const lines = rawText.split('\n').filter(l => l.trim().length > 0);
-          const inferredTitle = lines[0] ? lines[0].replace(/[^\w\s]/gi, '').substring(0, 35) : 'Batch Item Design';
+          
+          const inferredTitle = parsed.inferredCategory 
+            ? parsed.inferredCategory.substring(0, 35) 
+            : (lines[0] ? lines[0].replace(/[^\w\s]/gi, '').substring(0, 35) : 'Batch Item Design');
 
           await CloudDB.saveProduct({
             id: draftId, supplierId, title: inferredTitle, description: parsed.customerDescription, rawText: rawText,
             basePrice: parsed.derivedPrice || 0, consumerPrice: parsed.derivedPrice ? Math.round(parsed.derivedPrice * baseMargin) : 0,
             pincode_rates: {}, cloud_images: [], has_images: false, googleFolderId: '', customAttributes: parsed.customAttributes || {},
-            category: '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            category: parsed.inferredCategory || '', collection: '', decision: 'Pending', status: 'Imported', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
           });
 
           rawTextEl.value = ''; await this.renderFeedTimeline(); this.navigate('feed');
@@ -1262,21 +1693,13 @@
 
         for (const d of filtered) {
           if (!d.customAttributes) d.customAttributes = {};
-          const card = document.createElement('div'); card.className = 'feed-card'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
-          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
+          const card = document.createElement('div'); card.className = 'feed-card-standard'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip" style="background:#e5e5ea; color:#1c1c1e;">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
 
           let mediaGalleryHtml = '';
           if (d.cloud_images && d.cloud_images.length > 0) {
-            let galleryElements = '';
-            d.cloud_images.forEach(link => {
-              let cleanLink = catalog.convertDriveLinkToDirectStream(link.trim());
-              if (link.toLowerCase().includes('.mp4') || link.toLowerCase().includes('.mov') || link.toLowerCase().includes('.webm')) {
-                galleryElements += `<video src="${escapeHtml(cleanLink)}" autoplay loop muted playsinline></video>`;
-              } else {
-                galleryElements += `<img src="${escapeHtml(cleanLink)}" alt="Pattern">`;
-              }
-            });
-            mediaGalleryHtml = `<div class="card-media-gallery">${galleryElements}</div>`;
+            let cleanLink = catalog.convertDriveLinkToDirectStream(d.cloud_images[0].trim());
+            mediaGalleryHtml = `<img src="${escapeHtml(cleanLink)}" alt="Pattern" style="width:100%; height:180px; object-fit:contain; background:#000000; border-radius:12px;">`;
           }
 
           let linkElement = d.googleFolderId
