@@ -1,49 +1,61 @@
-const CACHE_NAME = 'besoins-cache-v4'; // Change this string (e.g., to v2) when you update the app code!
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'besoins-shell-v2';
+const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon.svg'
 ];
 
-// Install Event - Caching the structural assets
+// 1. Install Phase - Cache Shell
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting()) // Forces immediate activation
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
 });
 
-// Activate Event - Cleaning up old version caches automatically
+// 2. Activate Phase - Claim Clients Immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Fetch Event - Fallback network-first logic to ensure fast live updates
+// 3. Fetch Interceptor
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request).then((response) => {
-      // If network works, update the cache copy dynamically
-      if (response.status === 200) {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
+  const url = new URL(event.request.url);
+
+  // API Network-First Strategy for Live Data Stream
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        // Fallback handled seamlessly via index.html localStorage cache
+        return new Response(JSON.stringify({ offline: true }), {
+          headers: { 'Content-Type': 'application/json' }
         });
-      }
-      return response;
-    }).catch(() => {
-      // If network fails (offline), serve the cached version snapshot
-      return caches.match(event.request);
+      })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate Strategy for UI Shell Assets
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+        }
+        return networkResponse;
+      }).catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });

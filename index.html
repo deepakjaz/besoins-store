@@ -9,19 +9,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
-    /* =========================================================================
-       🎨 MODERIZED PREMIUM APPLE & TRANSLUCENT GLASS LAYER TOKENS
-       ========================================================================= */
     :root {
-      --bg-primary: #121214;      /* Deep Midnight Dark Base */
+      --bg-primary: #121214;
       --bg-surface: rgba(255, 255, 255, 0.75);
-      --bg-card: #ffffff;         /* Pure Apple White Base Blocks */
+      --bg-card: #ffffff;
       --bg-active: #e2e3e5;       
-      --text-primary: #1c1c1e;    /* Deep Apple System Dark Gray */
+      --text-primary: #1c1c1e;
       --text-muted: #8e8e93;      
       --accent: #222222;          
-      --warning: #ff9500;         /* System Apple Orange Warning Tints */
-      --danger: #ff3b30;          /* Apple iOS Notification Crimson Scarlet Red */
+      --warning: #ff9500;
+      --danger: #ff3b30;
       --info: #007aff;
       --glass-bg: rgba(255, 255, 255, 0.85);
       --glass-dark: rgba(18, 18, 20, 0.92);
@@ -36,10 +33,8 @@
 
     html, body { background: var(--bg-primary); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; position: fixed; }
     
-    /* THE STABLE VIEWPORT CONTAINMENT CELL UNIT */
     .phone-shell { width: 100%; max-width: 480px; height: 100dvh; background: #0c0c0e; display: flex; flex-direction: column; position: relative; overflow: hidden; z-index: 1; }
     
-    /* UNIVERSAL INTERACTIVE HEADER LAYER WITH GLASS BLUR OVERLAY */
     .app-header {
       height: 70px; padding: 0 20px; padding-top: max(0px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 100; flex-shrink: 0; position: relative; width: 100%;
     }
@@ -47,19 +42,16 @@
     .brand-title-main { font-family: "Times New Roman", "Didot", "Georgia", serif; font-size: 1.4rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); line-height: 1.1; }
     .brand-title-sub { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; font-weight: 700; }
     
-    /* HAMBURGER STYLING ELEMENTS */
     .hamburger-icon-trigger { font-size: 1.5rem; cursor: pointer; color: var(--accent); background: none; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; }
     .header-dropdown-menu { position: absolute; top: 70px; right: 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; width: 220px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 200; overflow: hidden; }
     .dropdown-menu-item { padding: 16px 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); text-align: left; background: none; border: none; width: 100%; }
     .dropdown-menu-item:last-child { border-bottom: none; }
     .dropdown-menu-item:active { background: rgba(0,0,0,0.04); }
 
-    /* RUNTIME SWITCHABLE VIEW CONFIGURATIONS */
     .view-deck { flex: 1; overflow-y: auto; padding: 0; padding-bottom: calc(65px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; width: 100%; position: relative; }
     .global-view-wrapper { display: none; width: 100%; height: 100%; } 
     .global-view-wrapper.active-frame { display: block; }
     
-    /* 🎬 REELS / SHORTS FULL-SCREEN VERTICAL SNAPPING FEED CONTAINER */
     .feed-container-reels { 
       display: flex; 
       flex-direction: column; 
@@ -71,10 +63,8 @@
     }
     .feed-container-reels::-webkit-scrollbar { display: none; }
     
-    /* STANDARD FEED CONTAINER FOR ADMIN/SELECTIONS */
     .feed-container-standard { display: flex; flex-direction: column; gap: 20px; padding: 16px; width: 100%; }
 
-    /* 🎬 INSTAGRAM REEL STYLE FULL-SCREEN PRODUCT CARD */
     .reels-card { 
       width: 100%; 
       height: calc(100dvh - 115px); 
@@ -88,7 +78,6 @@
       flex-direction: column; 
     }
 
-    /* REELS HORIZONTAL MEDIA CAROUSEL */
     .reels-media-carousel { 
       width: 100%; 
       height: 100%; 
@@ -119,14 +108,12 @@
       display: block; 
     }
 
-    /* TOP-RIGHT PAGE NUMBER BADGE (1/3) */
     .reels-top-badge { 
       position: absolute; top: 16px; right: 16px; 
       background: rgba(0,0,0,0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       color: #ffffff; padding: 4px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; z-index: 20; letter-spacing: 0.5px;
     }
 
-    /* RIGHT-SIDE INSTAGRAM REEL FLOATING ACTION COLUMN */
     .reels-action-column {
       position: absolute;
       right: 14px;
@@ -166,7 +153,6 @@
     }
     .reels-action-unit { display: flex; flex-direction: column; align-items: center; }
 
-    /* BOTTOM-LEFT INSTAGRAM CAPTION & GRADIENT OVERLAY */
     .reels-caption-overlay {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -228,7 +214,6 @@
       margin-left: 4px;
     }
 
-    /* 📄 SLIDING SPEC SHEET OVERLAY (NO DUPLICATED IMAGES) */
     .reels-spec-sheet {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -255,7 +240,6 @@
       width: 36px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto 4px auto; cursor: pointer;
     }
 
-    /* MODERIZED APPLE ACTION LAYOUT PACKS */
     .action-btn { padding: 14px; border-radius: 14px; font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; transition: background 0.2s ease, transform 0.1s ease; }
     .action-btn:active { transform: scale(0.97); }
     
@@ -273,14 +257,12 @@
     .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .attribute-chip { background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* CUSTOMER CATALOG BAR FILTER CHIPS */
     .catalog-navigation-bar { display: flex; flex-direction: column; gap: 8px; padding: 10px 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); flex-shrink: 0; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); }
     .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; width: 100%; }
     .filter-scroller::-webkit-scrollbar { display: none; }
     .chip { background: var(--bg-card); color: var(--text-primary); padding: 8px 14px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap; transition: all 0.2s ease; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     .chip.chip-active { background: var(--accent); color: #fff; }
 
-    /* 🛠========= SECURE WORKSPACE BACKEND UI ELEMENTS ========= */
     .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 16px; }
     .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
     .native-input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.08); background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
@@ -294,7 +276,6 @@
     .export-table th, .export-table td { padding: 12px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
     .export-table th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; }
 
-    /* FULLSCREEN SLIDING APPLE DRAWER OVERLAY ASSIGNMENTS */
     .fullscreen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 300; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
     .fullscreen-overlay.overlay-open { transform: translateY(0) !important; }
     .overlay-header { height: 75px; padding: 0 24px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; background: rgba(255,255,255,0.4); }
@@ -310,32 +291,26 @@
     .remove-matrix-row-btn { background: none; border: none; color: var(--danger); font-size: 1.4rem; cursor: pointer; padding: 0 8px; }
     .add-matrix-row-trigger { background: rgba(0,0,0,0.03); padding: 14px; border-radius: 12px; text-align: center; font-size: 0.8rem; color: var(--accent); cursor: pointer; font-weight: bold; margin-bottom: 16px; width: 100%; }
 
-    /* Media Preview Wrapper with Delete Icon Overlay */
     .drawer-preview-wrapper { position: relative; width: 100%; aspect-ratio: 1; }
     .remove-thumb-badge { position: absolute; top: 4px; right: 4px; background: rgba(255, 59, 48, 0.95); color: #ffffff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); z-index: 10; }
 
-    /* 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY MATRIX */
     .lightbox-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 400; display: none; justify-content: center; align-items: center; padding: 20px; }
     .lightbox-content-card { background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 28px; width: 100%; max-height: 85%; overflow-y: auto; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; gap: 14px; scrollbar-width: none; }
     .lightbox-content-card::-webkit-scrollbar { display: none; }
 
-    /* 🛒 PURE MINIMALIST SYSTEM NAVIGATION BOTTOM BLUR FOOTER MATRIX */
     .bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: calc(65px + env(safe-area-inset-bottom)); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(0,0,0,0.05); z-index: 200; padding-bottom: env(safe-area-inset-bottom); display: grid; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
     .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
     .tab-item.tab-active { color: var(--accent); }
     .tab-item svg { width: 26px; height: 26px; fill: currentColor; transition: transform 0.2s ease; }
     .tab-item:active svg { transform: scale(0.9); }
     
-    /* 🔴 THE NATIVE ABSOLUTE FLOATING CIRCULAR BADGE OVER SHOULDER NODE */
     .tab-counter-badge { position: absolute; top: 10px; right: calc(50% - 22px); background: var(--danger); color: #ffffff; font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(255, 59, 48, 0.3); z-index: 10; font-family: -apple-system, system-ui, sans-serif; }
 
-    /* PRIVILEGED GATEWAY SHIELD */
     #studio-security-shield-curtain { position: absolute; top:0; left:0; width:100%; height:100%; background:var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; }
     .security-card-box { background: #ffffff; padding: 36px 24px; border-radius: 28px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
     .supplier-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
     .supplier-pill { background: #e5e5ea; padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #48484a; }
 
-    /* 🔍 FULL-SCREEN THEATER SWIPE & PINCH-ZOOM STYLING */
     .theater-nav-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff;
@@ -354,7 +329,6 @@
 
   <div class="phone-shell">
     
-    <!-- 🔒 PRIVILEGED GATEWAY LOCK SHIELD BLOCK -->
     <div id="studio-security-shield-curtain">
       <div class="security-card-box">
         <h3 style="font-family:serif; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; font-size:1.2rem;">Operator Gateway</h3>
@@ -369,7 +343,6 @@
       </div>
     </div>
 
-    <!-- 🛒 DYNAMIC RETAIL LIGHTBOX OVERLAY SHELL FRAME -->
     <div id="product-detail-lightbox" class="lightbox-modal-overlay" onclick="catalog.closeProductLightbox(event)">
       <div class="lightbox-content-card" onclick="event.stopPropagation()">
         <div id="lightbox-render-anchor"></div>
@@ -377,7 +350,6 @@
       </div>
     </div>
 
-    <!-- HEADER NAVIGATION CANVAS MODULE -->
     <header class="app-header">
       <div class="brand-title-container">
         <span class="brand-title-main" id="dynamic-header-title">Besoins</span>
@@ -392,27 +364,21 @@
       </div>
     </header>
 
-    <!-- NAVIGATION FILTER CHIP BAR -->
     <nav class="catalog-navigation-bar" id="public-navigation-filter-row">
       <div class="filter-scroller" id="client-category-scroller">
         <div class="chip chip-active" onclick="catalog.filterCategory('all', this)">All Collections</div>
       </div>
     </nav>
 
-    <!-- CORE INTERACTIVE APPARATUS DECK ARCHITECTURE -->
     <div class="view-deck">
-      
-      <!-- 🛒 CLIENT STREAM DECK 1: LIVE STOREFRONT GRID (INSTAGRAM REELS STYLE) -->
       <section id="frame-customer-storefront" class="global-view-wrapper active-frame">
         <div id="customer-cards-anchor" class="feed-container-reels"></div>
       </section>
 
-      <!-- ❤️ CLIENT STREAM DECK 2: CUSTOMER MY SELECTION LIST -->
       <section id="frame-customer-selections" class="global-view-wrapper">
         <div id="customer-selections-anchor" class="feed-container-standard"></div>
       </section>
 
-      <!-- 📥 CONTROL PANEL PANE 3: WORKSPACE PIPELINE DIRECTORY -->
       <section id="pane-feed" class="global-view-wrapper">
         <div style="padding: 16px;">
           <div class="export-panel-container">
@@ -439,7 +405,6 @@
         </div>
       </section>
 
-      <!-- ➕ CONTROL PANEL PANE 4: TEXT RAW UNORGANIZED CHAT INGESTER -->
       <section id="pane-intake" class="global-view-wrapper">
         <div style="padding: 16px;">
           <form id="intake-form" onsubmit="admin.handleIntakeSubmit(event)">
@@ -469,9 +434,8 @@
         </div>
       </section>
 
-    </div> <!-- Close view-deck -->
+    </div>
 
-    <!-- SECURE MASTER CURATOR FULLSCREEN DRAWER -->
     <section class="fullscreen-overlay" id="curation-drawer">
       <div class="overlay-header">
         <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Curate Collection Master</h2>
@@ -547,7 +511,6 @@
       </div>
     </section>
 
-    <!-- FACTORIES DIRECTORY OVERLAY -->
     <section class="fullscreen-overlay" id="supplier-manager-drawer">
       <div class="overlay-header">
         <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Sourcing Factories</h2>
@@ -566,7 +529,6 @@
       </div>
     </section>
 
-    <!-- 🛒 RE-ALIGNED NATIVE SVG BOTTOM APPARATUS NAV BAR PANELS -->
     <nav class="bottom-tabs" id="public-customer-navigation-bar" style="grid-template-columns: repeat(4, 1fr); width: 100%;">
       <div class="tab-item tab-active" id="cust-nav-shop" onclick="catalog.switchClientActiveTab('shop')">
         <svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/></svg>
@@ -583,14 +545,12 @@
       </div>
     </nav>
 
-    <!-- SECURE OPERATOR CORE NAVIGATION LAYOUTS -->
     <nav class="bottom-tabs" id="privileged-studio-tabs-bar" style="display: none; grid-template-columns: 1fr 1fr;">
       <div class="tab-item tab-active" id="nav-feed" onclick="admin.navigate('feed')">📥 Workspace Deck</div>
       <div class="tab-item" id="nav-intake" onclick="admin.navigate('intake')">➕ Stream Ingest</div>
     </nav>
-  </div> <!-- Close phone-shell -->
+  </div>
 
-  <!-- 🔍 ADVANCED PINCH-ZOOM & SWIPE GALLERY THEATER OVERLAY -->
   <div id="gallery-theater-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(18,18,18,0.98); z-index: 500; display: none; justify-content: center; align-items: center; touch-action: none; overflow: hidden;">
     <button class="theater-close-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 530; display: flex; justify-content: center; align-items: center;" onclick="theater.dismiss()">×</button>
     
@@ -605,9 +565,6 @@
   </div>
 
   <script>
-    // =========================================================================
-    // 🛡️ XSS PROTECTION ESCAPE UTILITY
-    // =========================================================================
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -618,9 +575,6 @@
         .replace(/'/g, '&#039;');
     }
 
-    // =========================================================================
-    // 🌐 FIXED LOCAL CORE SEED IMMUTABLE FALLBACKS
-    // =========================================================================
     const CORE_DEMO_FALLBACK_DATABASE = [
       {
         id: "demo-item-1",
@@ -641,9 +595,6 @@
       }
     ];
 
-    // =========================================================================
-    // ☁️ LIVE SERVERLESS VERCEL API BRIDGE CONFIGURATIONS
-    // =========================================================================
     const CloudDB = {
       apiProductsUrl: '/api/products',
       apiDriveUrl: '/api/drive',
@@ -706,7 +657,6 @@
                 folderId: targetItem.googleFolderId
               })
             });
-            console.log("Google Drive storage subfolder purge signal transmitted.");
           } catch (e) { console.warn(e); }
         }
 
@@ -815,7 +765,7 @@
     };
 
     // =========================================================================
-    // 🧠 UNIVERSAL MULTI-CATEGORY COMMERCE INGESTION PARSER
+    // 🧠 SMART DEALS-FILTERED COMMERCE PARSER
     // =========================================================================
     const LearningParser = {
       async executeParse(supplierId, rawText) {
@@ -826,7 +776,6 @@
         let customAttributes = {};
         let descriptionLines = [];
 
-        // Universal commerce keywords to detect pricing lines across categories
         const priceKeywords = ['rate', 'price', 'prc', 'cost', 'rs', '₹', '/-'];
 
         for (let i = 0; i < lines.length; i++) {
@@ -851,7 +800,7 @@
           }
           if (isPriceLine) continue;
 
-          // 2. Universal Dynamic Colon/Hyphen Extraction (Key : Value or Key - Value)
+          // 2. Universal Dynamic Colon/Hyphen Extraction
           let separatorIndex = -1;
           if (line.includes(':')) {
             separatorIndex = line.indexOf(':');
@@ -870,15 +819,26 @@
             }
           }
 
-          // 3. Unstructured text lines added to white-labeled Customer Description
           descriptionLines.push(line);
         }
 
-        // Auto-detect Category/Heading from lead raw line if available
+        // 3. Smart Title Auto-Detection (Filters out "Offer price" & promo emojis)
         let inferredCategory = '';
-        const firstLine = lines[0] || '';
-        if (firstLine && !firstLine.includes(':')) {
-          inferredCategory = firstLine.replace(/[^\w\s()-]/gi, '').trim();
+        for (const rawLine of lines) {
+          const cleanCandidate = rawLine.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '').trim();
+          const lower = cleanCandidate.toLowerCase();
+          
+          if (
+            cleanCandidate.length > 2 &&
+            !cleanCandidate.includes(':') &&
+            !lower.includes('offer price') &&
+            !lower.includes('sale') &&
+            !lower.includes('discount') &&
+            !lower.includes('book here')
+          ) {
+            inferredCategory = cleanCandidate.substring(0, 35);
+            break;
+          }
         }
 
         const customerDescription = descriptionLines.join('\n');
@@ -892,9 +852,6 @@
       }
     };
 
-    // =========================================================================
-    // 🔍 SWIPEABLE + PINCH-ZOOM FULL-SCREEN THEATER GALLERY
-    // =========================================================================
     const theater = {
       items: [],
       currentIndex: 0,
@@ -1021,6 +978,18 @@
         this.cachedPincode = localStorage.getItem('Besoins_Active_Pincode') || '';
         this.initializeMockLikesMatrix();
         await this.loadTimelineData();
+        this.checkUrlDeepLinkTarget();
+      },
+
+      checkUrlDeepLinkTarget() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetId = urlParams.get('id');
+        if (targetId) {
+          setTimeout(() => {
+            const el = document.getElementById(`reel-card-${targetId}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 600);
+        }
       },
 
       initializeMockLikesMatrix() {
@@ -1149,9 +1118,9 @@
           }
 
           if (isReelsLayout) {
-            /* 🎬 AUTHENTIC INSTAGRAM REEL CARD ARCHITECTURE */
             const card = document.createElement('div');
             card.className = 'reels-card';
+            card.id = `reel-card-${d.id}`;
 
             let mediaSlidesHtml = '';
             if (d.cloud_images && d.cloud_images.length > 0) {
@@ -1178,15 +1147,12 @@
             const mediaCount = (d.cloud_images || []).length || 1;
 
             card.innerHTML = `
-              <!-- TOP-RIGHT SLIDE COUNTER (1/3) -->
               <div class="reels-top-badge">1/${mediaCount}</div>
 
-              <!-- MEDIA HORIZONTAL CAROUSEL -->
               <div class="reels-media-carousel" onscroll="catalog.updateReelsSlideBadge(this)">
                 ${mediaSlidesHtml}
               </div>
 
-              <!-- RIGHT-SIDE FLOATING ACTION COLUMN -->
               <div class="reels-action-column">
                 <div class="reels-action-unit">
                   <button class="reels-action-btn ${isFav ? 'is-active-favorite' : ''}" onclick="event.stopPropagation(); catalog.handleLikeTap('${escapeHtml(d.id)}', this, true)">
@@ -1210,7 +1176,6 @@
                 </div>
               </div>
 
-              <!-- BOTTOM-LEFT CAPTION & GRADIENT OVERLAY -->
               <div class="reels-caption-overlay">
                 <div class="reels-brand-pill">BESOINS EXCLUSIVE ${isDemoItem ? '<span class="demo-tag">LIVE DEMO</span>' : ''}</div>
                 <div class="reels-title">${escapeHtml(d.title)}</div>
@@ -1221,7 +1186,6 @@
                 </div>
               </div>
 
-              <!-- 📄 SLIDING SPEC SHEET DRAWER (FULL BACKGROUND PHOTO REMAINS VISIBLE) -->
               <div class="reels-spec-sheet" id="spec-sheet-${escapeHtml(d.id)}">
                 <div class="sheet-drag-handle" onclick="catalog.toggleReelsSpecSheet('${escapeHtml(d.id)}')"></div>
                 
@@ -1256,7 +1220,6 @@
             if(this.cachedPincode) this.verifyPincodeTrigger(d.id);
 
           } else {
-            /* STANDARD LIST CARD (For Selection List & Admin Workspace) */
             const card = document.createElement('div');
             card.className = 'feed-card-standard';
 
@@ -1425,20 +1388,25 @@
         }
 
         const d = this.allItems.find(x => x.id === id); if(!d) return;
-        let text = `Hi BESOINS! I want to run a dispatch availability confirmation sequence for this variant:\n\n📌 *Product Name:* ${d.title}\n🆔 *Reference ID:* \`${d.id}\`\n📍 *Target Route Pincode:* ${code}\n\n⏳ *Status:* Location logged. Please check custom dispatch slot timeline and factory supplier shipping fees for me.`;
+        
+        // Direct Clickable Link Generation
+        const itemUrl = `https://besoins-store.vercel.app/?id=${d.id}`;
+        let text = `Hi BESOINS! I want to check availability for this design:\n\n📌 *Product Name:* ${d.title}\n🔗 *Direct Link:* ${itemUrl}\n📍 *Delivery Pincode:* ${code}\n\n⏳ Please verify custom shipping slots and factory stock timeline for me.`;
         window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
       },
 
       async checkoutBagIntent() {
         if(this.likedIDs.length === 0) return;
-        let text = `Hi BESOINS! I have compiled my selection lines list queue:\n`;
-        if(this.cachedPincode) text += `📍 *Global Target Route Pincode:* ${this.cachedPincode}\n`;
+        let text = `Hi BESOINS! I have compiled my selection list:\n`;
+        if(this.cachedPincode) text += `📍 *Delivery Pincode:* ${this.cachedPincode}\n`;
         text += `\n-----------------------\n`;
         for (const id of this.likedIDs) {
           const d = this.allItems.find(x => x.id === id);
-          if (d) text += `▪️ *${d.title}* (ID: \`${d.id}\`) - Base Rate: ₹${d.consumerPrice}\n`;
+          if (d) {
+            text += `▪️ *${d.title}* - ₹${d.consumerPrice}\n🔗 https://besoins-store.vercel.app/?id=${d.id}\n\n`;
+          }
         }
-        text += `\nPlease verify custom factory shipping timelines and stock availability parameters for these selections. Thanks!`;
+        text += `\nPlease verify stock availability & shipping timelines for these selections. Thanks!`;
         window.open(`https://wa.me/919029515185?text=${encodeURIComponent(text)}`, '_blank');
       }
     };
@@ -1521,8 +1489,14 @@
 
       handleDeviceMediaFileSelection(e) {
         const files = Array.from(e.target.files);
-        
+        const MAX_SINGLE_FILE_BYTES = 8 * 1024 * 1024; // 8MB Guardrail
+
         files.forEach(file => {
+          if (file.size > MAX_SINGLE_FILE_BYTES) {
+            alert(`File "${file.name}" exceeds the 8MB limit. Please trim or compress video files before uploading.`);
+            return;
+          }
+
           const reader = new FileReader();
           reader.onload = (event) => {
             const base64Data = event.target.result.split(',')[1];
@@ -1853,11 +1827,18 @@
               body: JSON.stringify(payload)
             });
             
-            const responseData = await response.json();
-            if (responseData.status === "success") {
+            // Clean Response Verification (Prevents SyntaxError on HTML server error responses)
+            const responseText = await response.text();
+            let responseData = {};
+            try {
+              responseData = JSON.parse(responseText);
+            } catch (pErr) {
+              throw new Error("Server boundary error: Payload too large for single batch upload. Try uploading fewer/smaller video files at once.");
+            }
+
+            if (response.ok && responseData.status === "success") {
               finalCloudImagesArray = [...finalCloudImagesArray, ...responseData.links];
               detectedGoogleFolderId = responseData.folderId;
-              console.log("Google Drive assets synchronization complete.");
             } else {
               throw new Error(responseData.message || "Drive upload error");
             }
