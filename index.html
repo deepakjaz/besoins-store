@@ -214,7 +214,6 @@
       margin-left: 4px;
     }
 
-    /* 📄 SLIDING SPEC SHEET OVERLAY (PREVENTS ACCIDENTAL SCROLL VISIBILITY) */
     .reels-spec-sheet {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -225,7 +224,7 @@
       border-radius: 24px 24px 0 0;
       padding: 20px 18px;
       z-index: 30;
-      display: none; /* HARD HIDDEN UNTIL TRIGGERED */
+      display: none;
       visibility: hidden;
       pointer-events: none;
       flex-direction: column;
@@ -284,7 +283,6 @@
     .export-table th, .export-table td { padding: 12px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
     .export-table th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; }
 
-    /* 🛡️ STRICT HARD-HIDDEN OVERLAY DRAWER STYLING */
     .fullscreen-overlay { 
       position: absolute; 
       top: 0; left: 0; 
@@ -293,7 +291,7 @@
       backdrop-filter: var(--glass-blur); 
       -webkit-backdrop-filter: var(--glass-blur); 
       z-index: 300; 
-      display: none; /* HARD HIDDEN WHEN CLOSED */
+      display: none;
       visibility: hidden;
       pointer-events: none;
       flex-direction: column; 
@@ -464,6 +462,7 @@
 
     </div>
 
+    <!-- SECURE MASTER CURATOR FULLSCREEN DRAWER -->
     <section class="fullscreen-overlay" id="curation-drawer">
       <div class="overlay-header">
         <h2 style="font-family:serif; font-size:1.1rem; font-weight:600;">Curate Collection Master</h2>
@@ -477,6 +476,19 @@
             <span id="uploader-feedback-label" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-primary);">📸 Select Images / Videos to Sync with Google Drive</span>
             <input type="file" id="drawer-hidden-file-input" accept="image/*,video/*" multiple style="display:none;" onchange="admin.handleDeviceMediaFileSelection(event)">
             <div class="drawer-media-preview-container" id="drawer-media-preview-anchor"></div>
+          </div>
+
+          <!-- ⚡ SPRINT C: ADAPTIVE AI PROMPT GENERATION ENGINE MODULE -->
+          <div style="background: rgba(0, 122, 255, 0.06); border: 1px solid rgba(0, 122, 255, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--info);">✨ AI Prompt Engine (Gemini &amp; Canva)</span>
+              <span style="font-size:0.6rem; background:var(--info); color:#fff; padding:2px 6px; border-radius:4px; font-weight:bold;">SPRINT C</span>
+            </div>
+            <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:12px;">Generate contextual lifestyle 30s video scripts &amp; mobile portrait Canva briefs locked directly to product specs.</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+              <button type="button" class="chip" style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); color:var(--text-primary); padding:10px 6px; text-align:center;" onclick="PromptEngine.copyGemini30sVideoScript()">🎙️ Copy Gemini 30s Video</button>
+              <button type="button" class="chip" style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); color:var(--text-primary); padding:10px 6px; text-align:center;" onclick="PromptEngine.copyCanvaMobileBrief()">🎨 Copy Canva Brief</button>
+            </div>
           </div>
 
           <div class="form-group">
@@ -874,6 +886,102 @@
       }
     };
 
+    // =========================================================================
+    // ⚡ SPRINT C: ADAPTIVE SEQUENTIAL LIFESTYLE PROMPT ENGINE
+    // =========================================================================
+    const PromptEngine = {
+      MANDATORY_NEGATIVE_CONSTRAINT: "STRICT REQUIREMENT: Maintain 100% exact fabric, print, color, and embellishment specifications of the listed product. Do NOT introduce external clothing, alternative fabrics, or unmentioned design variations.",
+
+      extractActiveSpecs() {
+        const title = document.getElementById('curate-title')?.value.trim() || 'Exclusive Design';
+        const description = document.getElementById('curate-description')?.value.trim() || '';
+        const category = document.getElementById('curate-category')?.value.trim() || '';
+        
+        let specsList = [];
+        document.querySelectorAll('.matrix-row').forEach(tr => {
+          const k = tr.querySelector('.style-attr-key')?.value.trim();
+          const v = tr.querySelector('.style-attr-val')?.value.trim();
+          if (k && v) specsList.push(`${k}: ${v}`);
+        });
+
+        const specsText = specsList.length > 0 ? specsList.join(', ') : 'Standard Quality Finish';
+
+        // Infer Real-World Human Lifestyle Scene Context
+        let lifestyleContext = "walking confidently down an upscale city boutique street, natural daylight";
+        const combinedText = (title + ' ' + description + ' ' + category).toLowerCase();
+
+        if (combinedText.includes('toran') || combinedText.includes('decor') || combinedText.includes('ganpati') || combinedText.includes('home')) {
+          lifestyleContext = "opening an elegant wooden double door during a warm festive celebration, welcoming guests into a sunlit home";
+        } else if (combinedText.includes('cordset') || combinedText.includes('suit') || combinedText.includes('formal') || combinedText.includes('work')) {
+          lifestyleContext = "walking effortlessly through a sunlit minimalist glass office corridor, adjusting a cuff, carrying a tablet";
+        } else if (combinedText.includes('bag') || combinedText.includes('travel') || combinedText.includes('sandal') || combinedText.includes('footwear')) {
+          lifestyleContext = "walking through an airport terminal lounge during sunset transit, candid organic pacing";
+        } else if (combinedText.includes('saree') || combinedText.includes('lehenga') || combinedText.includes('organza') || combinedText.includes('silk')) {
+          lifestyleContext = "gracefully turning in a luxury architectural courtyard, slow-motion fabric drapes caught in soft golden hour sunlight";
+        }
+
+        return { title, description, specsText, lifestyleContext };
+      },
+
+      copyGemini30sVideoScript() {
+        const { title, description, specsText, lifestyleContext } = this.extractActiveSpecs();
+        const price = document.getElementById('curate-consumer-price')?.value || '1,500';
+
+        const geminiPrompt = `30-SECOND UNIFIED COMMERCIAL VIDEO GENERATION DIRECTIVE:
+------------------------------------------------------------------
+PRODUCT ITEM: "${title}"
+SPECS: ${specsText}
+SUMMARY: ${description}
+PRICE: ₹${price}
+
+LIFESTYLE CONTEXT:
+The subject is in a real-world human environment: ${lifestyleContext}.
+
+3-SCENE 30-SECOND SEQUENTIAL ARCS (10s EACH):
+• 00:00-00:10 (SCENE 1 - HOOK): Smooth 360-degree orbit camera angle establishing subject in ${lifestyleContext}. High-fashion editorial lighting.
+• 00:10-00:20 (SCENE 2 - CRAFTSMANSHIP): Macro close-up panning shot focusing on exact product texture (${specsText}). Slow-motion fabric movement.
+• 00:20-00:30 (SCENE 3 - CALL TO ACTION): Full portrait candid shot walking towards camera, holding phone displaying WhatsApp order confirmation.
+
+EMBEDDED VOICEOVER NARRATION (SINGLE CONTINUOUS AUDIO VOICE & MUSIC SCORE):
+"Elevate your signature aesthetic with ${title}. Crafted featuring ${specsText}. Available exclusively at Besoins for ₹${price}. Tap WhatsApp to verify availability now."
+
+AUDIO CONTINUITY RULE:
+Ensure 100% continuous background ambient score and a single consistent voiceover narrator throughout all 30 seconds without track cutting.
+
+${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
+
+        navigator.clipboard.writeText(geminiPrompt);
+        alert("✨ 30s Gemini Commercial Video Script copied to clipboard!");
+      },
+
+      copyCanvaMobileBrief() {
+        const { title, description, specsText } = this.extractActiveSpecs();
+        const price = document.getElementById('curate-consumer-price')?.value || '1,500';
+
+        // STRICT CANVA SANITIZATION: Remove any video/reel/clip keywords & Enforce 9:16 Mobile Size
+        let sanitizedTitle = title.replace(/\b(video|reel|story|motion|clip|footage|film)\b/gi, '').trim();
+        let sanitizedDesc = description.replace(/\b(video|reel|story|motion|clip|footage|film)\b/gi, '').trim();
+
+        const canvaBrief = `CANVA MOBILE PORTRAIT DESIGN BRIEF (1080x1920 / 9:16 RATIO):
+------------------------------------------------------------------
+FORMAT: Mobile Portrait Layout Card
+TITLE: ${sanitizedTitle}
+TECHNICAL ATTRIBUTES: ${specsText}
+HIGHLIGHTS: ${sanitizedDesc}
+RETAIL PRICE DISPLAY: ₹${price} + Shipping Extra
+
+VISUAL COMPOSITION:
+• Clean luxury glassmorphism dark aesthetic background.
+• Crisp high-contrast typography featuring "BESOINS EXCLUSIVE".
+• Bottom gradient overlay with price badge and WhatsApp CTA button.
+
+${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
+
+        navigator.clipboard.writeText(canvaBrief);
+        alert("🎨 Canva Mobile Portrait Brief copied to clipboard!");
+      }
+    };
+
     const theater = {
       items: [],
       currentIndex: 0,
@@ -1004,14 +1112,12 @@
       },
 
       checkUrlDeepLinkTarget() {
-        // Enforce strict customer view isolation when link is opened
         const supplierDrawer = document.getElementById('supplier-manager-drawer');
         const curatorDrawer = document.getElementById('curation-drawer');
         if (supplierDrawer) supplierDrawer.classList.remove('overlay-open');
         if (curatorDrawer) curatorDrawer.classList.remove('overlay-open');
         globalNavigation.dismissSecurityCurtain();
 
-        // Target specific product card inside customer feed container only via offset Top
         const urlParams = new URLSearchParams(window.location.search);
         const targetId = urlParams.get('id');
         if (targetId) {
@@ -1913,19 +2019,17 @@
       hideCuratorDrawer() { this.activeDraftRecord = null; this.selectedFilesBuffer = []; document.getElementById('curation-drawer').classList.remove('overlay-open'); this.renderFeedTimeline(); }
     };
 
-    // AUTOMATIC SERVICE WORKER UPDATE INTERCEPTOR
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
           .then((reg) => {
-            reg.update(); // Checks for new SW code on Vercel on every page visit
+            reg.update();
             reg.onupdatefound = () => {
               const installingWorker = reg.installing;
               if (installingWorker) {
                 installingWorker.onstatechange = () => {
                   if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log('[PWA] New version deployed! Auto-refreshing for fresh build...');
-                    window.location.reload(); // Instantly reloads into the new build
+                    window.location.reload();
                   }
                 };
               }
