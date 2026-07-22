@@ -63,7 +63,7 @@
     }
     .feed-container-reels::-webkit-scrollbar { display: none; }
     
-    .feed-container-standard { display: flex; flex-direction: column; gap: 20px; padding: 16px; width: 100%; }
+    .feed-container-standard { display: flex; flex-direction: column; gap: 12px; padding: 12px; width: 100%; }
 
     .reels-card { 
       width: 100%; 
@@ -261,8 +261,8 @@
     .guess-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; align-items: center; }
     .guess-pill { font-size: 0.65rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #ffffff; border: none; }
     
-    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .attribute-chip { background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dynamic-attributes-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .attribute-chip { background: rgba(0, 0, 0, 0.05); color: var(--text-primary); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .catalog-navigation-bar { display: flex; flex-direction: column; gap: 8px; padding: 10px 16px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); flex-shrink: 0; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); }
     .filter-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; width: 100%; }
@@ -273,15 +273,43 @@
     .form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 16px; }
     .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
     .native-input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.08); background: var(--bg-card); color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.01); }
-    .feed-card-standard { background: var(--bg-card); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); }
-    .feed-quick-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; margin-top: 4px; }
-    .btn-reject { background: #ffe5e5; color: var(--danger); }
-    .btn-edit-curate { background: var(--bg-active); color: var(--accent); }
     
-    .export-panel-container { background: var(--bg-card); border-radius: 20px; padding: 18px; margin-bottom: 16px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.02); }
-    .export-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; table-layout: fixed; }
-    .export-table th, .export-table td { padding: 12px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
-    .export-table th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding-bottom: 8px; }
+    /* 📱 ELEGANT APP-STORE WORKDESK LIST ITEM LAYOUT */
+    .feed-card-standard { 
+      background: var(--bg-card); 
+      border-radius: 18px; 
+      padding: 14px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03); 
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .workdesk-row-top { display: flex; gap: 14px; align-items: flex-start; width: 100%; }
+    .workdesk-thumb { width: 88px; height: 88px; border-radius: 14px; object-fit: cover; background: #000000; flex-shrink: 0; }
+    .workdesk-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .workdesk-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .workdesk-factory-pill { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .workdesk-price-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+    .price-retail { font-size: 0.95rem; font-weight: 800; color: var(--info); }
+    .price-cost { font-size: 0.75rem; text-decoration: line-through; color: var(--text-muted); }
+    
+    .workdesk-action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); }
+    .workdesk-btn { padding: 8px 4px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; border: none; cursor: pointer; text-transform: uppercase; text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; }
+    .btn-share-link { background: #e5f0ff; color: var(--info); }
+    .btn-vault { background: #f2f2f7; color: var(--text-primary); text-decoration: none; }
+    .btn-curate-action { background: var(--accent); color: #ffffff; }
+    .btn-purge-action { background: #ffe5e5; color: var(--danger); }
+
+    /* 📦 COLLAPSIBLE ACCORDION PINCODE BACKLOG QUEUE */
+    .export-panel-container { background: var(--bg-card); border-radius: 18px; padding: 14px 16px; margin-bottom: 12px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
+    .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .accordion-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(0,0,0,0.08); overflow-x: auto; }
+    .accordion-body.accordion-open { display: block; }
+    
+    .export-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
+    .export-table th, .export-table td { padding: 10px 6px; border-bottom: 1px solid #f2f2f7; word-wrap: break-word; white-space: normal; overflow: hidden; text-align: left; vertical-align: middle; }
+    .export-table th { color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; padding-bottom: 6px; }
 
     .fullscreen-overlay { 
       position: absolute; 
@@ -406,28 +434,40 @@
       </section>
 
       <section id="pane-feed" class="global-view-wrapper">
-        <div style="padding: 16px;">
+        <div style="padding: 12px;">
+          
+          <!-- 📦 COLLAPSIBLE ACCORDION PINCODE QUEUE -->
           <div class="export-panel-container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">📦 Client Pincode Request Backlog Queue</h4>
-              <button class="chip" style="font-size:0.65rem; padding:6px 10px; background:var(--accent); color:#fff;" onclick="admin.copyBulkPincodeIntent()">Copy WhatsApp Ticket</button>
+            <div class="accordion-header" onclick="admin.togglePincodeAccordion()">
+              <h4 style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-primary);" id="pincode-accordion-label">📦 Client Pincode Request Queue</h4>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button type="button" class="chip" style="font-size:0.6rem; padding:4px 8px; background:var(--accent); color:#fff;" onclick="event.stopPropagation(); admin.copyBulkPincodeIntent();">Copy Ticket</button>
+                <span id="accordion-arrow-icon" style="font-size:0.8rem; font-weight:bold; color:var(--text-muted);">▾</span>
+              </div>
             </div>
-            <table class="export-table">
-              <thead>
-                <tr><th style="width:25%;">Sourced From</th><th style="width:25%;">Item Heading</th><th style="width:30%;">Folder Ref ID</th><th style="width:20%; text-align:right;">Pincodes</th></tr>
-              </thead>
-              <tbody id="export-queue-tbody"></tbody>
-            </table>
+            <div class="accordion-body" id="pincode-accordion-body">
+              <table class="export-table">
+                <thead>
+                  <tr>
+                    <th style="width:25%;">Factory</th>
+                    <th style="width:50%;">Product Share Link</th>
+                    <th style="width:25%; text-align:right;">Pincodes</th>
+                  </tr>
+                </thead>
+                <tbody id="export-queue-tbody"></tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="filter-scroller">
+          <div class="filter-scroller" style="margin-bottom: 12px;">
             <div class="chip chip-active" data-status-filter="all">All Workspace</div>
             <div class="chip" data-status-filter="Imported">New Imports</div>
             <div class="chip" data-status-filter="Reviewing">Reviewing</div>
             <div class="chip" data-status-filter="Ready">Ready to Share</div>
             <button type="button" class="chip" style="margin-left:auto; background:#e5e5ea;" onclick="admin.showSupplierManager()">⚙️ Factories</button>
           </div>
-          <div id="feed-cards-anchor" class="feed-container-standard" style="margin-top: 16px; padding: 0;"></div>
+          
+          <div id="feed-cards-anchor" class="feed-container-standard" style="padding: 0;"></div>
         </div>
       </section>
 
@@ -804,9 +844,6 @@
       }
     };
 
-    // =========================================================================
-    // 🧠 SMART DEALS-FILTERED INGESTION PARSER
-    // =========================================================================
     const LearningParser = {
       async executeParse(supplierId, rawText) {
         if (!rawText) return { derivedPrice: 0, customerDescription: '', customAttributes: {}, inferredCategory: '' };
@@ -860,7 +897,6 @@
           descriptionLines.push(line);
         }
 
-        // Clean Title Detection (Filters out "Offer price" & deal tags)
         let inferredCategory = '';
         for (const rawLine of lines) {
           const cleanCandidate = rawLine.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '').replace(/[*_~`]/g, '').trim();
@@ -890,16 +926,11 @@
       }
     };
 
-    // =========================================================================
-    // ⚡ SPRINT C: ADAPTIVE PROMPT ENGINE & CANVA DIRECT ASSET LINKING
-    // =========================================================================
     const PromptEngine = {
       MANDATORY_NEGATIVE_CONSTRAINT: "STRICT REQUIREMENT: Maintain 100% exact fabric, print, color, and embellishment specifications of the listed product. Do NOT introduce external clothing, alternative fabrics, or unmentioned design variations.",
 
       extractActiveSpecs() {
         let rawTitle = document.getElementById('curate-title')?.value.trim() || 'Exclusive Design';
-        
-        // Clean Title: Strip out deal tags like "Offer price"
         let cleanTitle = rawTitle.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}*]/gu, '')
           .replace(/[*_~`]/g, '')
           .replace(/offer\s*price/gi, '')
@@ -918,7 +949,6 @@
 
         const specsText = specsList.length > 0 ? specsList.join(', ') : 'Standard Quality Finish';
 
-        // Direct Google Drive Asset URLs
         let mediaUrlsBlock = "No uploaded media links attached.";
         if (admin.activeDraftRecord && admin.activeDraftRecord.cloud_images && admin.activeDraftRecord.cloud_images.length > 0) {
           mediaUrlsBlock = admin.activeDraftRecord.cloud_images.map((url, idx) => {
@@ -1589,6 +1619,15 @@ ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
         } catch (err) { console.error(err); }
       },
 
+      togglePincodeAccordion() {
+        const body = document.getElementById('pincode-accordion-body');
+        const arrow = document.getElementById('accordion-arrow-icon');
+        if(body) {
+          body.classList.toggle('accordion-open');
+          if(arrow) arrow.innerText = body.classList.contains('accordion-open') ? '▴' : '▾';
+        }
+      },
+
       seedSuppliersData() {
         let cached = localStorage.getItem('Besoins_Factories_Directory_Index');
         let list = cached ? JSON.parse(cached) : [{ id: 'sup_1', name: 'Kumbh Textiles (Surat HQ)' }, { id: 'sup_2', name: 'Shabeena Embroidery Wholesalers' }];
@@ -1798,28 +1837,32 @@ ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
         const fullyCompiledAdminList = [...cloudProducts, ...verifiedDemoFallbackItems];
         
         const tbody = document.getElementById('export-queue-tbody');
+        const countLabel = document.getElementById('pincode-accordion-label');
         if(tbody) {
           tbody.innerHTML = '';
           const backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
-          let hasRows = false;
+          let pendingCount = 0;
           for(const [draftId, pinCodes] of Object.entries(backlog)) {
             const match = fullyCompiledAdminList.find(x => x.id === draftId);
             if(match && pinCodes.length > 0) {
-              hasRows = true; const tr = document.createElement('tr');
-              let folderDisplay = match.googleFolderId 
-                ? `<a href="https://drive.google.com/drive/folders/${escapeHtml(match.googleFolderId)}" target="_blank" style="color:var(--info); font-family:monospace; font-size:0.75rem; text-decoration:underline; word-break:break-all;">${escapeHtml(match.googleFolderId)}</a>`
-                : '<span style="color:var(--text-muted); font-size:0.75rem;">No Vault Link</span>';
-                
+              pendingCount += pinCodes.length;
+              const tr = document.createElement('tr');
+              const itemShareUrl = `https://besoins-store.vercel.app/?id=${match.id}`;
+              
               tr.innerHTML = `
-                <td style="width: 25%;"><b>${escapeHtml(this.suppliersCache[match.supplierId] || 'Factory')}</b></td>
-                <td style="width: 25%; font-weight: 600;">${escapeHtml(match.title)}</td>
-                <td style="width: 30%;">${folderDisplay}</td>
-                <td style="width: 20%; text-align: right;"><span style="color:var(--warning); font-weight:bold;">${escapeHtml(pinCodes.join(', '))}</span></td>
+                <td style="width:25%;"><b>${escapeHtml(this.suppliersCache[match.supplierId] || 'Factory')}</b></td>
+                <td style="width:50%;">
+                  <a href="${itemShareUrl}" target="_blank" style="color:var(--info); font-weight:600; text-decoration:underline;">${escapeHtml(match.title)}</a>
+                </td>
+                <td style="width:25%; text-align:right;"><span style="color:var(--warning); font-weight:bold;">${escapeHtml(pinCodes.join(', '))}</span></td>
               `;
               tbody.appendChild(tr);
             }
           }
-          if(!hasRows) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes verified clear.</td></tr>`;
+          if(countLabel) {
+            countLabel.innerText = `📦 Client Pincode Backlog Queue (${pendingCount} Pending)`;
+          }
+          if(pendingCount === 0) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:10px;">Operational routes verified clear.</td></tr>`;
         }
 
         const filtered = fullyCompiledAdminList.filter(d => this.currentFilter === 'all' || d.status === this.currentFilter);
@@ -1830,34 +1873,38 @@ ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
         for (const d of filtered) {
           if (!d.customAttributes) d.customAttributes = {};
           const card = document.createElement('div'); card.className = 'feed-card-standard'; const name = this.suppliersCache[d.supplierId] || 'Direct Sourced';
-          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip" style="background:#e5e5ea; color:#1c1c1e;">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
+          let attributeChipsHtml = ''; for (const [key, value] of Object.entries(d.customAttributes)) { if (value) attributeChipsHtml += `<span class="attribute-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>`; }
 
-          let mediaGalleryHtml = '';
+          let mediaImgHtml = '<div class="workdesk-thumb" style="display:flex; align-items:center; justify-content:center; color:#8e8e93; font-size:0.65rem;">No Image</div>';
           if (d.cloud_images && d.cloud_images.length > 0) {
             let cleanLink = catalog.convertDriveLinkToDirectStream(d.cloud_images[0].trim());
-            mediaGalleryHtml = `<img src="${escapeHtml(cleanLink)}" alt="Pattern" style="width:100%; height:180px; object-fit:contain; background:#000000; border-radius:12px;">`;
+            mediaImgHtml = `<img src="${escapeHtml(cleanLink)}" alt="Thumb" class="workdesk-thumb">`;
           }
 
-          let linkElement = d.googleFolderId
-            ? `<a href="https://drive.google.com/drive/folders/${escapeHtml(d.googleFolderId)}" target="_blank" style="font-size:0.65rem; font-family:monospace; color:var(--info); background:#e5e5ea; padding:4px 8px; border-radius:6px; text-decoration:underline;" onclick="event.stopPropagation()">Vault Link</a>`
-            : `<span style="font-size:0.65rem; font-family:monospace; background:#f2f2f7; color:var(--text-muted); padding:4px 8px; border-radius:6px;">No Vault Link</span>`;
+          let vaultElement = d.googleFolderId
+            ? `<a href="https://drive.google.com/drive/folders/${escapeHtml(d.googleFolderId)}" target="_blank" class="workdesk-btn btn-vault" onclick="event.stopPropagation()">📁 Vault</a>`
+            : `<span class="workdesk-btn btn-vault" style="opacity:0.5; cursor:not-allowed;">📁 Vault</span>`;
 
           const shareUrl = `https://besoins-store.vercel.app/?id=${d.id}`;
 
           card.innerHTML = `
-            ${mediaGalleryHtml}
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="supplier-pill">From: ${escapeHtml(name)}</span>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="chip" style="font-size:0.65rem; padding:4px 8px; background:var(--accent); color:#fff;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${shareUrl}'); alert('Product link copied to clipboard!');">📋 Copy Direct Link</button>
-                ${linkElement}
+            <div class="workdesk-row-top">
+              ${mediaImgHtml}
+              <div class="workdesk-info">
+                <span class="workdesk-factory-pill">${escapeHtml(name)}</span>
+                <div class="workdesk-title">${escapeHtml(d.title)}</div>
+                <div class="dynamic-attributes-container">${attributeChipsHtml}</div>
+                <div class="workdesk-price-row">
+                  <span class="price-retail">₹${escapeHtml(d.consumerPrice)}</span>
+                  <span class="price-cost">Cost: ₹${escapeHtml(d.basePrice)}</span>
+                </div>
               </div>
             </div>
-            <div class="feed-card-body"><h3>${escapeHtml(d.title)}</h3><p style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(d.description)}</p><div class="dynamic-attributes-container">${attributeChipsHtml}</div></div>
-            <div class="feed-card-pricing"><span style="font-size:1.1rem; font-weight:bold; color:var(--info);">Retail: ₹${escapeHtml(d.consumerPrice)}</span><span style="font-size:0.85rem; text-decoration:line-through; color:var(--text-muted);">Cost: ₹${escapeHtml(d.basePrice)}</span></div>
-            <div class="feed-quick-actions">
-              <button type="button" class="action-btn btn-reject" onclick="admin.fastSkipItem('${escapeHtml(d.id)}')">Purge</button>
-              <button type="button" class="action-btn btn-edit-curate" onclick="admin.showCuratorDrawer('${escapeHtml(d.id)}')">Curate</button>
+            <div class="workdesk-action-grid">
+              <button type="button" class="workdesk-btn btn-share-link" onclick="event.stopPropagation(); navigator.clipboard.writeText('${shareUrl}'); alert('Product direct share link copied!');">📋 Share</button>
+              ${vaultElement}
+              <button type="button" class="workdesk-btn btn-curate-action" onclick="admin.showCuratorDrawer('${escapeHtml(d.id)}')">✏️ Curate</button>
+              <button type="button" class="workdesk-btn btn-purge-action" onclick="admin.fastSkipItem('${escapeHtml(d.id)}')">🗑️ Purge</button>
             </div>
           `;
           anchor.appendChild(card);
@@ -1868,7 +1915,7 @@ ${this.MANDATORY_NEGATIVE_CONSTRAINT}`;
         const backlog = JSON.parse(localStorage.getItem('Besoins_Pending_Pincodes') || '{}');
         let txt = "Hi Factory Desk! Please verify shipping logistics parameters for these lookups:\n\n";
         let hasData = false;
-        for(const [id, codes] of Object.entries(backlog)) { if(codes.length > 0) { hasData = true; txt += `▪️ Item Reference Slot: [${id}]\n📍 Route Target Pincodes: ${codes.join(', ')}\n\n`; } }
+        for(const [id, codes] of Object.entries(backlog)) { if(codes.length > 0) { hasData = true; txt += `▪️ Product Direct Link: https://besoins-store.vercel.app/?id=${id}\n📍 Route Target Pincodes: ${codes.join(', ')}\n\n`; } }
         if(!hasData) return alert("Log backlog trace empty.");
         navigator.clipboard.writeText(txt); alert("Log ticket copied to system buffer clipboard.");
       },
